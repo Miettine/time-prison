@@ -49,7 +49,7 @@ public class TimeTracker : MonoBehaviour
 
 			if (stateInTime.Action.Equals(ActionType.StartTimeTravel)) {
 				Destroy(pastPlayer);
-				timeTravelAmounts.Clear();
+
 				TimeTravelling = false;
 			}
 			/*
@@ -73,7 +73,9 @@ public class TimeTracker : MonoBehaviour
 
 	internal void StartTimeTravel(float toPastInSeconds) 
 	{
-		timeTravelAmounts.Add(toPastInSeconds);
+		if (timeTravelAmounts.Count == 0) {
+			timeTravelAmounts.Add(toPastInSeconds);
+		}
 
 		var playerTransform = playerController.transform;
 		AddStateInTime(new StateInTime(TimeTracker.ObjectInTime.Player, Time.time, new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, ActionType.StartTimeTravel));
