@@ -15,7 +15,7 @@ public class TimeTracker : MonoBehaviour
 
 	public bool TimeTravelling { get; private set; } = false;
 
-	private float timeTravelAmount;
+	private List<float> timeTravelAmounts = new List<float>();
 
 	[SerializeField]
 	private float snapshotRate = 0.1f;
@@ -37,26 +37,30 @@ public class TimeTracker : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (TimeTravelling) {
-			var stateInTime = GetState(Time.time - timeTravelAmount);
-			Debug.Log(stateInTime);
-			if (stateInTime != null) {
-				pastPlayer.transform.position = stateInTime.Position;
-				pastPlayer.transform.rotation = stateInTime.Rotation;
+		if (!TimeTravelling) {
+			return;
+		}
 
-				if (stateInTime.Action.Equals(ActionType.StartTimeTravel)) {
+		var stateInTime = GetState(Time.time - timeTravelAmounts.Sum());
+		Debug.Log(stateInTime);
+		if (stateInTime != null) {
+			pastPlayer.transform.position = stateInTime.Position;
+			pastPlayer.transform.rotation = stateInTime.Rotation;
+
+			if (stateInTime.Action.Equals(ActionType.StartTimeTravel)) {
+				Destroy(pastPlayer);
+				timeTravelAmounts.Clear();
+				TimeTravelling = false;
+			}
+			/*
+			switch (stateInTime.Action) {
+				case StateInTime.ActionType.StartTimeTravel:
 					Destroy(pastPlayer);
 					TimeTravelling = false;
-				}
-				/*
-				switch (stateInTime.Action) {
-					case StateInTime.ActionType.StartTimeTravel:
-						Destroy(pastPlayer);
-						TimeTravelling = false;
-						break;
-				}*/
-			}
+					break;
+			}*/
 		}
+
 	}
 
 	private void TimeUpdate() {
@@ -67,13 +71,9 @@ public class TimeTracker : MonoBehaviour
 		AddStateInTime(stateInTime);
 	}
 
-	private object GetState(object p) {
-		throw new NotImplementedException();
-	}
-
 	internal void StartTimeTravel(float toPastInSeconds) 
 	{
-		timeTravelAmount = toPastInSeconds;
+		timeTravelAmounts.Add(toPastInSeconds);
 
 		var playerTransform = playerController.transform;
 		AddStateInTime(new StateInTime(TimeTracker.ObjectInTime.Player, Time.time, new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, ActionType.StartTimeTravel));
@@ -83,8 +83,6 @@ public class TimeTracker : MonoBehaviour
 		pastPlayer = Instantiate(pastPlayerPrefab);
 		
 		//var recorder = playerController.GetComponent<TimeRecorder>();
-
-
 	}
 	private StateInTime GetState(float time) {
 

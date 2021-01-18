@@ -930,7 +930,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deadzone: 0.1
   moveSpeed: 200000
-  timeTravelAmount: 10
+  timeTravelAmount: 3
 --- !u!4 &2130696183
 Transform:
   m_ObjectHideFlags: 0
