@@ -4,7 +4,7 @@ using UnityEngine;
 using static TimeTracker;
 
 public class ObjectInTime {
-	public ObjectType ObjectType { get; private set; }
+	public ObjectType _ObjectType { get; private set; }
 	public float Time { get; private set; }
 	public Vector3 Position { get; private set; }
 	public Quaternion Rotation { get; private set; }
@@ -12,7 +12,7 @@ public class ObjectInTime {
 	public ActionType Action { get; private set; }
 
 	public ObjectInTime(ObjectType objectType, float time, Vector3 position, Quaternion rotation, ActionType action) {
-		ObjectType = objectType;
+		_ObjectType = objectType;
 		Time = time;
 		Position = position;
 		Rotation = rotation;
@@ -22,7 +22,9 @@ public class ObjectInTime {
 	public override string ToString() {
 		return $"time: {Time}, position:{Position}, action:{Action}";
 	}
-
+	public enum ObjectType {
+		Player
+	}
 	public enum ActionType {
 		Undefined,
 		Standing,

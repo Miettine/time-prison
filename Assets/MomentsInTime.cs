@@ -7,8 +7,10 @@ using UnityEngine;
 /// </summary>
 public class MomentsInTime
 {
+	//Dictionary<float, ObjectInTime> _momentsInTime = new Dictionary<float, ObjectInTime>();
+
 	List<ObjectInTime> momentsInTime = new List<ObjectInTime>();
-	public void AddObjectInTime(ObjectInTime stateInTime) {
+	public void AddObject(ObjectInTime stateInTime) {
 		momentsInTime.Add(stateInTime);
 	}
 
@@ -17,10 +19,10 @@ public class MomentsInTime
 	/// </summary>
 	/// <param name="time"></param>
 	/// <param name="objectInTime"></param>
-	public void AddObjectInTime(float time, ObjectInTime objectInTime) {
-		AddObjectInTime(objectInTime);
+	public void AddObject(float time, ObjectInTime objectInTime) {
+		AddObject(objectInTime);
 	}
-	public ObjectInTime GetObjectInTime(float time) {
+	public ObjectInTime GetObject(float time) {
 		/*
 		for (int i = 0; i < statesInTime.Capacity - 1; i++) {
 			var s = statesInTime[i];
@@ -33,4 +35,5 @@ public class MomentsInTime
 		var matches = momentsInTime.Find(stateInTime => stateInTime.Time >= time);
 		return matches;
 	}
+
 }
