@@ -89,7 +89,16 @@ public class TimeTracker : MonoBehaviour
 		//TODO: Could remove the latest state in time before adding the StartTimeTravel-action, to make the time travel recording more reliable.
 
 		//I want the time that gets stored here to be the moment in time when the player started time travel.
-		momentsInTime.AddObject(new ObjectInTime("Player1", ObjectType.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, ActionType.StartTimeTravel));
+		momentsInTime.AddObject(
+			new ObjectInTime(
+				"Player1", 
+				ObjectType.Player, 
+				GetTime(), 
+				new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), 
+				new Quaternion(playerTransform.rotation.x, playerTransform.rotation.y, playerTransform.rotation.z, playerTransform.rotation.w),
+				ActionType.StartTimeTravel
+				)
+			);
 
 		timeTravelAmounts.Add(toPastInSeconds);
 
@@ -98,7 +107,9 @@ public class TimeTracker : MonoBehaviour
 		//The current time is different now that the player has started to time travel.
 		float currentTime = GetTime();
 
-		var pastPlayer = Instantiate(pastPlayerPrefab);
+		var state = momentsInTime.GetObject("Player1", currentTime);
+
+		var pastPlayer = Instantiate(pastPlayerPrefab, state.Position, state.Rotation);
 		pastPlayer.name = "Player1";
 		//var recorder = playerController.GetComponent<TimeRecorder>();
 	}
