@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Is used to store and retrieve the states and actions of objects and characters throughout moments in time.
+/// </summary>
 public class MomentsInTime
 {
 	List<ObjectInTime> momentsInTime = new List<ObjectInTime>();
