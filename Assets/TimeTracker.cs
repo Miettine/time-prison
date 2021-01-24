@@ -13,6 +13,8 @@ public class TimeTracker : MonoBehaviour
 
 	GameObject pastPlayer = null;
 
+	UIController UIController;
+
 	public bool TimeTravelling { get; private set; } = false;
 
 	private List<float> timeTravelAmounts = new List<float>();
@@ -21,6 +23,7 @@ public class TimeTracker : MonoBehaviour
 	private float snapshotRate = 0.1f;
 
 	private void Awake() {
+		UIController = GameObject.FindObjectOfType<UIController>();
 		playerController = GameObject.FindObjectOfType<PlayerController>();
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
 	}
@@ -37,11 +40,15 @@ public class TimeTracker : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		float time = GetTime();
+
+		UIController.SetTimeText(time);
+
 		if (!TimeTravelling) {
 			return;
 		}
 
-		var stateInTime = GetState(Time.time - timeTravelAmounts.Sum());
+		var stateInTime = GetState(time);
 		Debug.Log(stateInTime);
 		if (stateInTime != null) {
 			pastPlayer.transform.position = stateInTime.Position;
@@ -60,15 +67,18 @@ public class TimeTracker : MonoBehaviour
 					break;
 			}*/
 		}
-
 	}
 
 	private void TimeUpdate() {
 		var playerTransform = playerController.transform;
 		var l = (ActionType)(int)playerController.LatestAction;
-		var stateInTime = new StateInTime(TimeTracker.ObjectInTime.Player, Time.time, new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
+		var stateInTime = new StateInTime(TimeTracker.ObjectInTime.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
 		//playerController.ResetLatestAction();
 		AddStateInTime(stateInTime);
+	}
+
+	private float GetTime() {
+		return Time.time - timeTravelAmounts.Sum();
 	}
 
 	internal void StartTimeTravel(float toPastInSeconds) 
@@ -78,7 +88,10 @@ public class TimeTracker : MonoBehaviour
 		}
 
 		var playerTransform = playerController.transform;
-		AddStateInTime(new StateInTime(TimeTracker.ObjectInTime.Player, Time.time, new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, ActionType.StartTimeTravel));
+
+		//TODO: Could remove the latest state in time, to make the time travel recording more reliable.
+
+		AddStateInTime(new StateInTime(TimeTracker.ObjectInTime.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, ActionType.StartTimeTravel));
 
 		TimeTravelling = true;
 
@@ -88,7 +101,7 @@ public class TimeTracker : MonoBehaviour
 	}
 	private StateInTime GetState(float time) {
 
-		for (int i = 0; i < statesInTime.Capacity; i++) {
+		for (int i = 0; i < statesInTime.Capacity - 1; i++) {
 			var s = statesInTime[i];
 			if (time <= s.Time) {
 				return s;
