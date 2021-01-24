@@ -12,8 +12,6 @@ public class TimeTracker : MonoBehaviour
 	PlayerController playerController;
 	GameObject pastPlayerPrefab;
 
-	GameObject pastPlayer = null;
-
 	UIController UIController;
 
 	public bool TimeTravelling { get; private set; } = false;
@@ -48,6 +46,9 @@ public class TimeTracker : MonoBehaviour
 		}
 
 		var stateInTime = momentsInTime.GetObject(time);
+
+		var pastPlayer = GameObject.Find("Player1");
+
 		Debug.Log(stateInTime);
 		if (stateInTime != null) {
 			pastPlayer.transform.position = stateInTime.Position;
@@ -93,7 +94,7 @@ public class TimeTracker : MonoBehaviour
 
 		TimeTravelling = true;
 
-		pastPlayer = Instantiate(pastPlayerPrefab);
+		var pastPlayer = Instantiate(pastPlayerPrefab);
 		pastPlayer.name = "Player1";
 		//var recorder = playerController.GetComponent<TimeRecorder>();
 	}
