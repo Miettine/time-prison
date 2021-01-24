@@ -83,15 +83,16 @@ public class TimeTracker : MonoBehaviour
 
 	internal void StartTimeTravel(float toPastInSeconds) 
 	{
-		if (timeTravelAmounts.Count == 0) {
-			timeTravelAmounts.Add(toPastInSeconds);
-		}
 
 		var playerTransform = playerController.transform;
 
-		//TODO: Could remove the latest state in time, to make the time travel recording more reliable.
+		//TODO: Could remove the latest state in time before adding the StartTimeTravel-action, to make the time travel recording more reliable.
 
 		AddStateInTime(new StateInTime(TimeTracker.ObjectInTime.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, ActionType.StartTimeTravel));
+
+		if (timeTravelAmounts.Count == 0) {
+			timeTravelAmounts.Add(toPastInSeconds);
+		}
 
 		TimeTravelling = true;
 
@@ -100,7 +101,7 @@ public class TimeTracker : MonoBehaviour
 		//var recorder = playerController.GetComponent<TimeRecorder>();
 	}
 	private StateInTime GetState(float time) {
-
+		/*
 		for (int i = 0; i < statesInTime.Capacity - 1; i++) {
 			var s = statesInTime[i];
 			if (time <= s.Time) {
@@ -108,9 +109,9 @@ public class TimeTracker : MonoBehaviour
 			}
 		}
 
-		return null;
-		//var matches = statesInTime.Find(stateInTime => stateInTime.Time >= time);
-		//return matches;
+		return null;*/
+		var matches = statesInTime.Find(stateInTime => stateInTime.Time >= time);
+		return matches;
 	}
 
 	public enum ObjectInTime {
