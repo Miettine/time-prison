@@ -45,7 +45,7 @@ public class TimeTracker : MonoBehaviour
 			return;
 		}
 
-		var stateInTime = momentsInTime.GetObject(time);
+		var stateInTime = momentsInTime.GetObject("Player1", time);
 
 		var pastPlayer = GameObject.Find("Player1");
 
@@ -88,11 +88,15 @@ public class TimeTracker : MonoBehaviour
 
 		//TODO: Could remove the latest state in time before adding the StartTimeTravel-action, to make the time travel recording more reliable.
 
+		//I want the time that gets stored here to be the moment in time when the player started time travel.
 		momentsInTime.AddObject(new ObjectInTime("Player1", ObjectType.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, ActionType.StartTimeTravel));
 
 		timeTravelAmounts.Add(toPastInSeconds);
 
 		TimeTravelling = true;
+
+		//The current time is different now that the player has started to time travel.
+		float currentTime = GetTime();
 
 		var pastPlayer = Instantiate(pastPlayerPrefab);
 		pastPlayer.name = "Player1";
