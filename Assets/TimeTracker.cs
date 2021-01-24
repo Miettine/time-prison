@@ -48,7 +48,7 @@ public class TimeTracker : MonoBehaviour
 			return;
 		}
 
-		var stateInTime = GetState(time);
+		var stateInTime = GetObjectInTime(time);
 		Debug.Log(stateInTime);
 		if (stateInTime != null) {
 			pastPlayer.transform.position = stateInTime.Position;
@@ -98,7 +98,7 @@ public class TimeTracker : MonoBehaviour
 		
 		//var recorder = playerController.GetComponent<TimeRecorder>();
 	}
-	private ObjectInTime GetState(float time) {
+	private ObjectInTime GetObjectInTime(float time) {
 		/*
 		for (int i = 0; i < statesInTime.Capacity - 1; i++) {
 			var s = statesInTime[i];
