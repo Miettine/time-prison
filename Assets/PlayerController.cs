@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using static StateInTime;
+using static ObjectInTime;
 
 public class PlayerController : MonoBehaviour
 {
@@ -66,15 +66,15 @@ public class PlayerController : MonoBehaviour
 
 			rigidbody.AddForce(direction * moveSpeed * Time.deltaTime);
 
-			LatestAction = StateInTime.ActionType.Walking;
+			LatestAction = ObjectInTime.ActionType.Walking;
 			//transform.Translate(direction * moveSpeed * Time.deltaTime);
 		} else {
-			LatestAction = StateInTime.ActionType.Standing;
+			LatestAction = ObjectInTime.ActionType.Standing;
 		}
 
 		if (Input.GetKeyUp(KeyCode.Space) && !timeTracker.TimeTravelling)
 		{
-			LatestAction = StateInTime.ActionType.StartTimeTravel;
+			LatestAction = ObjectInTime.ActionType.StartTimeTravel;
 			timeTracker.StartTimeTravel(timeTravelAmount);
 		}
 	}
