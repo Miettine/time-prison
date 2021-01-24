@@ -90,9 +90,7 @@ public class TimeTracker : MonoBehaviour
 
 		AddStateInTime(new StateInTime(TimeTracker.ObjectInTime.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, ActionType.StartTimeTravel));
 
-		if (timeTravelAmounts.Count == 0) {
-			timeTravelAmounts.Add(toPastInSeconds);
-		}
+		timeTravelAmounts.Add(toPastInSeconds);
 
 		TimeTravelling = true;
 
