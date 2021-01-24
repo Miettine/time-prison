@@ -71,7 +71,7 @@ public class TimeTracker : MonoBehaviour
 	private void TimeUpdate() {
 		var playerTransform = playerController.transform;
 		var l = (ActionType)(int)playerController.LatestAction;
-		var stateInTime = new ObjectInTime(ObjectType.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
+		var stateInTime = new ObjectInTime("Player1", ObjectType.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
 		//playerController.ResetLatestAction();
 		momentsInTime.AddObject(stateInTime);
 	}
@@ -87,14 +87,14 @@ public class TimeTracker : MonoBehaviour
 
 		//TODO: Could remove the latest state in time before adding the StartTimeTravel-action, to make the time travel recording more reliable.
 
-		momentsInTime.AddObject(new ObjectInTime(ObjectType.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, ActionType.StartTimeTravel));
+		momentsInTime.AddObject(new ObjectInTime("Player1", ObjectType.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, ActionType.StartTimeTravel));
 
 		timeTravelAmounts.Add(toPastInSeconds);
 
 		TimeTravelling = true;
 
 		pastPlayer = Instantiate(pastPlayerPrefab);
-		
+		pastPlayer.name = "Player1";
 		//var recorder = playerController.GetComponent<TimeRecorder>();
 	}
 }
