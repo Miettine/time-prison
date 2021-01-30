@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
 		if (Input.GetKeyUp(KeyCode.Space) && !timeTracker.TimeTravelling)
 		{
 			LatestAction = ObjectInTime.ActionType.StartTimeTravel;
-			timeTracker.StartTimeTravel(timeTravelAmount);
+			timeTracker.StartTimeTravelToBeginning();
 		}
 	}
 /*
