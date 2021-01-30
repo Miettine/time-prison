@@ -71,7 +71,7 @@ public class TimeTracker : MonoBehaviour
 	}
 
 	internal void TimeParadox() {
-		throw new NotImplementedException();
+		Debug.LogWarning("Time paradox!");
 	}
 
 	private void TimeUpdate() {

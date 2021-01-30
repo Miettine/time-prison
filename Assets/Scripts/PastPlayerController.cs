@@ -30,17 +30,13 @@ public class PastPlayerController : MonoBehaviour
 
 		var withinRange = toPlayer.magnitude < fieldOfViewRange;
 
-		Vector3 lookDirection = transform.eulerAngles;
+		Vector3 lookDirection = transform.rotation * Vector3.forward;
 
 		var lookDirectionToPlayerAngle = Vector3.Angle(lookDirection, toPlayer);
-		var withinFieldOfViewAngle = lookDirectionToPlayerAngle < fieldOfViewDegrees;
-
-		Debug.Log("toPlayer:" + toPlayer);
-		Debug.Log("lookdir:"+lookDirection);
-		Debug.Log("lookDirectionToPlayerAngle:" + lookDirectionToPlayerAngle);
+		var withinFieldOfViewAngle = lookDirectionToPlayerAngle < fieldOfViewDegrees / 2;
 
 		if (withinFieldOfViewAngle && withinRange) {
-			//timeTracker.TimeParadox();
+			timeTracker.TimeParadox();
 		}
 	}
 }
