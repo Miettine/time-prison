@@ -45,27 +45,29 @@ public class TimeTracker : MonoBehaviour
 			return;
 		}
 
-		var stateInTime = momentsInTime.GetObject($"Player{timeTravelCount}", time);
+		for (int i = 1; i <= timeTravelCount; i++) {
+			var stateInTime = momentsInTime.GetObject($"Player{i}", time);
 
-		var pastPlayer = GameObject.Find($"Player{timeTravelCount}");
+			var pastPlayer = GameObject.Find($"Player{i}");
 
-		Debug.Log(stateInTime);
-		if (stateInTime != null) {
-			pastPlayer.transform.position = stateInTime.Position;
-			pastPlayer.transform.rotation = stateInTime.Rotation;
+			Debug.Log(stateInTime);
+			if (stateInTime != null) {
+				pastPlayer.transform.position = stateInTime.Position;
+				pastPlayer.transform.rotation = stateInTime.Rotation;
 
-			if (stateInTime.Action.Equals(ActionType.StartTimeTravel)) {
-				Destroy(pastPlayer);
-
-				TimeTravelling = false;
-			}
-			/*
-			switch (stateInTime.Action) {
-				case StateInTime.ActionType.StartTimeTravel:
+				if (stateInTime.Action.Equals(ActionType.StartTimeTravel)) {
 					Destroy(pastPlayer);
+
 					TimeTravelling = false;
-					break;
-			}*/
+				}
+				/*
+				switch (stateInTime.Action) {
+					case StateInTime.ActionType.StartTimeTravel:
+						Destroy(pastPlayer);
+						TimeTravelling = false;
+						break;
+				}*/
+			}
 		}
 	}
 
@@ -108,10 +110,12 @@ public class TimeTracker : MonoBehaviour
 		//The current time is different now that the player has started to time travel.
 		float currentTime = GetTime();
 
-		var state = momentsInTime.GetObject($"Player{timeTravelCount}", currentTime);
+		for (int i = 1; i <= timeTravelCount; i++) {
+			var state = momentsInTime.GetObject($"Player{i}", currentTime);
 
-		var pastPlayer = Instantiate(pastPlayerPrefab, state.Position, state.Rotation);
-		pastPlayer.name = $"Player{timeTravelCount}";
+			var pastPlayer = Instantiate(pastPlayerPrefab, state.Position, state.Rotation);
+			pastPlayer.name = $"Player{i}";
+		}
 		//var recorder = playerController.GetComponent<TimeRecorder>();
 	}
 
