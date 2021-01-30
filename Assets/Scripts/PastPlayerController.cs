@@ -4,43 +4,43 @@ using UnityEngine;
 
 public class PastPlayerController : MonoBehaviour
 {
-    float fieldOfViewDegrees;
-    float fieldOfViewRange;
-    Transform playerTransform;
-    TimeTracker timeTracker;
+	float fieldOfViewDegrees;
+	float fieldOfViewRange;
+	Transform playerTransform;
+	TimeTracker timeTracker;
 
-    private void Awake() {
-        timeTracker = FindObjectOfType<TimeTracker>();
-    }
+	private void Awake() {
+		timeTracker = FindObjectOfType<TimeTracker>();
+	}
 
 	// Start is called before the first frame update
 	void Start()
-    {
-        var light = GetComponentInChildren<Light>();
-        fieldOfViewDegrees = light.spotAngle;
-        fieldOfViewRange = light.range;
+	{
+		var light = GetComponentInChildren<Light>();
+		fieldOfViewDegrees = light.spotAngle;
+		fieldOfViewRange = light.range;
 
-        playerTransform = FindObjectOfType<PlayerController>().transform;
-    }
+		playerTransform = FindObjectOfType<PlayerController>().transform;
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        var toPlayer = playerTransform.position - this.transform.position;
+	// Update is called once per frame
+	void Update()
+	{
+		var toPlayer = playerTransform.position - this.transform.position;
 
-        var withinRange = toPlayer.magnitude < fieldOfViewRange;
+		var withinRange = toPlayer.magnitude < fieldOfViewRange;
 
-        Vector3 lookDirection = transform.eulerAngles;
+		Vector3 lookDirection = transform.eulerAngles;
 
-        var lookDirectionToPlayerAngle = Vector3.Angle(lookDirection, toPlayer);
-        var withinFieldOfViewAngle = lookDirectionToPlayerAngle < fieldOfViewDegrees;
+		var lookDirectionToPlayerAngle = Vector3.Angle(lookDirection, toPlayer);
+		var withinFieldOfViewAngle = lookDirectionToPlayerAngle < fieldOfViewDegrees;
 
-        Debug.Log("toPlayer:" + toPlayer);
-        Debug.Log("lookdir:"+lookDirection);
-        Debug.Log("lookDirectionToPlayerAngle:" + lookDirectionToPlayerAngle);
+		Debug.Log("toPlayer:" + toPlayer);
+		Debug.Log("lookdir:"+lookDirection);
+		Debug.Log("lookDirectionToPlayerAngle:" + lookDirectionToPlayerAngle);
 
-        if (withinFieldOfViewAngle && withinRange) {
-            //timeTracker.TimeParadox();
-        }
-    }
+		if (withinFieldOfViewAngle && withinRange) {
+			//timeTracker.TimeParadox();
+		}
+	}
 }
