@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIController : Singleton<UIController>
+public class UIController : MonoBehaviour
 {
 	Text TimeText;
 
