@@ -17,6 +17,10 @@ public class PlayerController : MonoBehaviour
 	[SerializeField]
 	private float timeTravelAmount = 3f;
 
+	[SerializeField]
+	private float lookTowardsRotationModifier = 250f;
+
+	Quaternion lastLookDirection;
 
 	internal ActionType LatestAction { get; set; } 
 	/*
@@ -58,11 +62,13 @@ public class PlayerController : MonoBehaviour
 		float h = Input.GetAxisRaw("Horizontal");
 
 		Vector3 direction = new Vector3(h, 0f, v).normalized;
+		var lookRotation = Quaternion.LookRotation(direction);
+
+		transform.rotation = Quaternion.RotateTowards(transform.rotation, lastLookDirection == null ? lookRotation : lastLookDirection, Time.deltaTime * lookTowardsRotationModifier);
 
 		if (direction.normalized.magnitude > deadzone) 
 		{
-
-			transform.rotation = Quaternion.LookRotation(direction);
+			lastLookDirection = lookRotation;
 
 			rigidbody.AddForce(direction * moveSpeed * Time.deltaTime);
 
