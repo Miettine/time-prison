@@ -63,6 +63,9 @@ public class TimeTracker : MonoBehaviour
 				}*/
 			} else if (pastPlayer != null && stateInTime == null) {
 				Destroy(pastPlayer);
+			} else if (pastPlayer == null && stateInTime != null) {
+				Debug.LogWarning($"Found a state in time with no player instantiated. Instantiating Player{i}");
+				InstantiatePastPlayer(i, stateInTime.Position, stateInTime.Rotation);
 			}
 		}
 	}
@@ -111,10 +114,14 @@ public class TimeTracker : MonoBehaviour
 		for (int i = 1; i <= GetTimeTravelCount(); i++) {
 			var state = momentsInTime.GetObject($"Player{i}", currentTime);
 
-			var pastPlayer = Instantiate(pastPlayerPrefab, state.Position, state.Rotation);
-			pastPlayer.name = $"Player{i}";
+			InstantiatePastPlayer(i, state.Position, state.Rotation);
 		}
 		//var recorder = playerController.GetComponent<TimeRecorder>();
+	}
+
+	private void InstantiatePastPlayer(int playerId, Vector3 position, Quaternion rotation) {
+		var pastPlayer = Instantiate(pastPlayerPrefab, position, rotation);
+		pastPlayer.name = $"Player{playerId}";
 	}
 
 	internal void StartTimeTravelToBeginning() {
