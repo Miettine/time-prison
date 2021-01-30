@@ -12,7 +12,7 @@ public class TimeTracker : MonoBehaviour
 	PlayerController playerController;
 	GameObject pastPlayerPrefab;
 
-	UIController UIController;
+	UIController uiController;
 
 	public bool TimeTravelling { get; private set; } = false;
 
@@ -24,7 +24,7 @@ public class TimeTracker : MonoBehaviour
 	private void Awake() {
 		momentsInTime = new MomentsInTime();
 
-		UIController = GameObject.FindObjectOfType<UIController>();
+		uiController = GameObject.FindObjectOfType<UIController>();
 		playerController = GameObject.FindObjectOfType<PlayerController>();
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
 	}
@@ -39,7 +39,7 @@ public class TimeTracker : MonoBehaviour
 	{
 		float time = GetTime();
 
-		UIController.SetTimeText(time);
+		uiController.SetTimeText(time);
 
 		if (!TimeTravelling) {
 			return;
