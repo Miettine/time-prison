@@ -78,7 +78,7 @@ public class PlayerController : MonoBehaviour
 			LatestAction = ObjectInTime.ActionType.Standing;
 		}
 
-		if (Input.GetKeyUp(KeyCode.Space) && !timeTracker.TimeTravelling)
+		if (Input.GetKeyUp(KeyCode.Space))
 		{
 			LatestAction = ObjectInTime.ActionType.StartTimeTravel;
 			timeTracker.StartTimeTravelToBeginning();

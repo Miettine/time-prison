@@ -41,24 +41,18 @@ public class TimeTracker : MonoBehaviour
 
 		uiController.SetTimeText(time);
 
-		if (!TimeTravelling) {
-			return;
-		}
-
 		for (int i = 1; i <= timeTravelCount; i++) {
 			var stateInTime = momentsInTime.GetObject($"Player{i}", time);
 
 			var pastPlayer = GameObject.Find($"Player{i}");
 
 			Debug.Log(stateInTime);
-			if (stateInTime != null) {
+			if (stateInTime != null && pastPlayer != null) {
 				pastPlayer.transform.position = stateInTime.Position;
 				pastPlayer.transform.rotation = stateInTime.Rotation;
 
 				if (stateInTime.Action.Equals(ActionType.StartTimeTravel)) {
 					Destroy(pastPlayer);
-
-					TimeTravelling = false;
 				}
 				/*
 				switch (stateInTime.Action) {
@@ -67,6 +61,8 @@ public class TimeTracker : MonoBehaviour
 						TimeTravelling = false;
 						break;
 				}*/
+			} else if (pastPlayer != null && stateInTime == null) {
+				Destroy(pastPlayer);
 			}
 		}
 	}
