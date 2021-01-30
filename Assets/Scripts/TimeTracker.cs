@@ -70,6 +70,10 @@ public class TimeTracker : MonoBehaviour
 		}
 	}
 
+	internal void TimeParadox() {
+		throw new NotImplementedException();
+	}
+
 	private void TimeUpdate() {
 		var playerTransform = playerController.transform;
 		var l = (ActionType)(int)playerController.LatestAction;
