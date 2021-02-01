@@ -960,6 +960,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: FieldOfView
       objectReference: {fileID: 0}
+    - target: {fileID: 1090898091, guid: 40ebd839fbd994741be730bf8e4e82d3, type: 3}
+      propertyPath: m_DrawHalo
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1090898091, guid: 40ebd839fbd994741be730bf8e4e82d3, type: 3}
+      propertyPath: m_Shadows.m_Type
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1090898091, guid: 40ebd839fbd994741be730bf8e4e82d3, type: 3}
+      propertyPath: m_Shadows.m_Resolution
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4066797282086455816, guid: 40ebd839fbd994741be730bf8e4e82d3,
         type: 3}
       propertyPath: m_RootOrder
@@ -1338,4 +1350,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 561fde0bed4bd784680fb98d47a12e93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeTracker: {fileID: 0}

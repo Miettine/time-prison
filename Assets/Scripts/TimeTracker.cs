@@ -46,7 +46,6 @@ public class TimeTracker : MonoBehaviour
 
 			var pastPlayer = GameObject.Find($"Player{i}");
 
-			Debug.Log(stateInTime);
 			if (stateInTime != null && pastPlayer != null) {
 				pastPlayer.transform.position = stateInTime.Position;
 				pastPlayer.transform.rotation = stateInTime.Rotation;
@@ -62,6 +61,7 @@ public class TimeTracker : MonoBehaviour
 						break;
 				}*/
 			} else if (pastPlayer != null && stateInTime == null) {
+				Debug.LogWarning($"Given state in time has no player recorded. Destroying Player{i}");
 				Destroy(pastPlayer);
 			} else if (pastPlayer == null && stateInTime != null) {
 				Debug.LogWarning($"Found a state in time with no player instantiated. Instantiating Player{i}");
