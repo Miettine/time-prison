@@ -964,7 +964,7 @@ PrefabInstance:
     - target: {fileID: 4066797282086455816, guid: 40ebd839fbd994741be730bf8e4e82d3,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.9403553
+      value: -7.16
       objectReference: {fileID: 0}
     - target: {fileID: 4066797282086455816, guid: 40ebd839fbd994741be730bf8e4e82d3,
         type: 3}
@@ -974,7 +974,7 @@ PrefabInstance:
     - target: {fileID: 4066797282086455816, guid: 40ebd839fbd994741be730bf8e4e82d3,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.4714892
+      value: 4.89
       objectReference: {fileID: 0}
     - target: {fileID: 4066797282086455816, guid: 40ebd839fbd994741be730bf8e4e82d3,
         type: 3}
@@ -1249,7 +1249,6 @@ GameObject:
   - component: {fileID: 2130696183}
   - component: {fileID: 2130696182}
   - component: {fileID: 2130696181}
-  - component: {fileID: 2130696184}
   m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
@@ -1287,7 +1286,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   deadzone: 0.1
   moveSpeed: 200000
-  timeTravelAmount: 3
   lookTowardsRotationModifier: 150
 --- !u!4 &2130696183
 Transform:
@@ -1304,15 +1302,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2130696184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2130696180}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 561fde0bed4bd784680fb98d47a12e93, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

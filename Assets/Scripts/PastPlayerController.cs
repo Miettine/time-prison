@@ -39,7 +39,6 @@ public class PastPlayerController : MonoBehaviour
 
 		bool withinRange = toPlayer.magnitude < fieldOfViewRange;
 
-		Debug.Log($"withinRange:{withinRange}");
 		/*
 		If the present player is not within the range of the field of view, the present player is definitely not within sight.
 		*/
@@ -53,8 +52,6 @@ public class PastPlayerController : MonoBehaviour
 
 		//Look direction vector is at the center of the field of view, therefore, I must divide fieldOfViewDegrees by 2 here.
 		bool withinFieldOfViewAngle = lookDirectionToPlayerAngle < fieldOfViewDegrees / 2;
-
-		Debug.Log($"withinFieldOfViewAngle:{withinFieldOfViewAngle}");
 
 		//The present player is close enough to be seen, but this past player is looking in another direction.
 		if (!withinFieldOfViewAngle) {
@@ -75,13 +72,18 @@ public class PastPlayerController : MonoBehaviour
 		if (!hasRaycastHit) {
 			return false;
 		}
-		var collider = hitInfo.collider;
 
+		var collider = hitInfo.collider;
 		if (collider == null) {
 			return false;
 		}
 
-		return collider.gameObject.transform.parent.name == "Player";
+		var transformParent = collider.gameObject.transform.parent;
+		if (transformParent == null) {
+			return false;
+		}
+
+		return transformParent.name == "Player";
 	}
 
 	public bool HeardPresentPlayer(){
