@@ -15,9 +15,6 @@ public class PlayerController : MonoBehaviour
 	private float moveSpeed = 1000f;
 
 	[SerializeField]
-	private float timeTravelAmount = 3f;
-
-	[SerializeField]
 	private float lookTowardsRotationModifier = 250f;
 
 	Quaternion lastLookDirection;
@@ -62,11 +59,19 @@ public class PlayerController : MonoBehaviour
 		float h = Input.GetAxisRaw("Horizontal");
 
 		Vector3 direction = new Vector3(h, 0f, v).normalized;
-		var lookRotation = Quaternion.LookRotation(direction);
 
-		transform.rotation = Quaternion.RotateTowards(transform.rotation, lastLookDirection == null ? lookRotation : lastLookDirection, Time.deltaTime * lookTowardsRotationModifier);
+		Quaternion lookRotation;
+		if (direction.magnitude > deadzone) {
+			 lookRotation = Quaternion.LookRotation(direction, Vector3.up);
+		} else if (lastLookDirection != null) {
+			lookRotation = lastLookDirection;
+		} else {
+			lookRotation = Quaternion.identity;
+		}
 
-		if (direction.normalized.magnitude > deadzone) 
+		transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, Time.deltaTime * lookTowardsRotationModifier);
+
+		if (direction.magnitude > deadzone) 
 		{
 			lastLookDirection = lookRotation;
 

@@ -9,9 +9,11 @@ public class PastPlayerController : MonoBehaviour
 	float fieldOfViewRange;
 	Transform playerTransform;
 	TimeTracker timeTracker;
+	int lineOfSightLayerMask;
 
 	private void Awake() {
 		timeTracker = FindObjectOfType<TimeTracker>();
+		lineOfSightLayerMask = LayerMask.GetMask("Player", "Walls");
 	}
 
 	// Start is called before the first frame update
@@ -59,27 +61,27 @@ public class PastPlayerController : MonoBehaviour
 			return false;
 		}
 
-		var layermask = LayerMask.GetMask("Default");
 		//Finally, we use raycasts to see if the player is hiding behind walls.
-		//var layerMask = LayerMask.GetMask("Player", "Walls");
-		bool hasRaycastHit = Physics.Raycast(this.transform.position, lookDirection, out var hitInfo, fieldOfViewRange);
 
-		Debug.Log($"hasRaycastHit:{hasRaycastHit}");
+		var pos = this.transform.position;
+
+		var vectorAtEyePoint = new Vector3(pos.x, pos.y + 1.7f - 0.15f, pos.z);
+
+		Ray ray = new Ray(vectorAtEyePoint, toPlayer);
+		Debug.DrawRay(vectorAtEyePoint, toPlayer, Color.red);
+
+		bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, lineOfSightLayerMask);
 
 		if (!hasRaycastHit) {
 			return false;
 		}
 		var collider = hitInfo.collider;
 
-		Debug.Log($"collider:{collider}");
-
 		if (collider == null) {
 			return false;
 		}
 
-		var gameObjectName = collider.gameObject.name;
-		Debug.Log($"name:{gameObjectName}");
-		return gameObjectName == "Player";
+		return collider.gameObject.transform.parent.name == "Player";
 	}
 
 	public bool HeardPresentPlayer(){
