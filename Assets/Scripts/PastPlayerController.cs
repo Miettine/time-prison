@@ -9,11 +9,15 @@ public class PastPlayerController : MonoBehaviour
 	float fieldOfViewRange;
 	Transform playerTransform;
 	TimeTracker timeTracker;
+
 	int lineOfSightLayerMask;
+	int playerLayer;
 
 	private void Awake() {
 		timeTracker = FindObjectOfType<TimeTracker>();
+
 		lineOfSightLayerMask = LayerMask.GetMask("Player", "Walls");
+		playerLayer = LayerMask.NameToLayer("Player");
 	}
 
 	// Start is called before the first frame update
@@ -46,8 +50,10 @@ public class PastPlayerController : MonoBehaviour
 			return false;
 		}
 
+		//The direction where this past player character is pointing
 		Vector3 lookDirection = transform.rotation * Vector3.forward;
 
+		//The angle in degrees from the look direction into the direction where the present player is.
 		var lookDirectionToPlayerAngle = Vector3.Angle(lookDirection, toPlayer);
 
 		//Look direction vector is at the center of the field of view, therefore, I must divide fieldOfViewDegrees by 2 here.
@@ -70,20 +76,28 @@ public class PastPlayerController : MonoBehaviour
 		bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, lineOfSightLayerMask);
 
 		if (!hasRaycastHit) {
+			/*
+			Previous checks to withinRange and withinFieldOfViewAngle should have eliminated the possibility of not hitting 
+			anything with the raycast. This is unexpected behaviour so we are logging this as a warning.
+			*/
+			Debug.LogWarning("No raycast hit was detected when determining line of sight occlusion.");
 			return false;
 		}
 
 		var collider = hitInfo.collider;
 		if (collider == null) {
-			return false;
+			//Failing to find a collider shouldn't be possible, so I am throwing an error.
+			throw new Exception("Did not find a collider when determining line of sight occlusion.");
 		}
 
+		return collider.gameObject.layer == playerLayer;
+
+		/*
 		var transformParent = collider.gameObject.transform.parent;
 		if (transformParent == null) {
 			return false;
 		}
-
-		return transformParent.name == "Player";
+		return transformParent.name == "Player";*/
 	}
 
 	public bool HeardPresentPlayer(){

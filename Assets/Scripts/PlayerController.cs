@@ -55,11 +55,23 @@ public class PlayerController : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		float v = Input.GetAxisRaw("Vertical");
-		float h = Input.GetAxisRaw("Horizontal");
+		{
+			float v = Input.GetAxisRaw("Vertical");
+			float h = Input.GetAxisRaw("Horizontal");
 
-		Vector3 direction = new Vector3(h, 0f, v).normalized;
-
+			ProcessMovementInput(new Vector3(h, 0f, v));
+		}
+		
+		if (Input.GetKeyUp(KeyCode.Space))
+		{
+			LatestAction = ObjectInTime.ActionType.StartTimeTravel;
+			timeTracker.StartTimeTravelToBeginning();
+		}
+	}
+	
+	private void ProcessMovementInput(Vector3 direction){
+		// I want the player character to rotate slowly towards the direction that the player pushed the arrow keys in. The following code accomplishes this.
+		
 		Quaternion lookRotation;
 		if (direction.magnitude > deadzone) {
 			 lookRotation = Quaternion.LookRotation(direction, Vector3.up);
@@ -75,18 +87,12 @@ public class PlayerController : MonoBehaviour
 		{
 			lastLookDirection = lookRotation;
 
-			rigidbody.AddForce(direction * moveSpeed * Time.deltaTime);
+			rigidbody.AddForce(direction.normalized * moveSpeed * Time.deltaTime);
 
 			LatestAction = ObjectInTime.ActionType.Walking;
 			//transform.Translate(direction * moveSpeed * Time.deltaTime);
 		} else {
 			LatestAction = ObjectInTime.ActionType.Standing;
-		}
-
-		if (Input.GetKeyUp(KeyCode.Space))
-		{
-			LatestAction = ObjectInTime.ActionType.StartTimeTravel;
-			timeTracker.StartTimeTravelToBeginning();
 		}
 	}
 /*
