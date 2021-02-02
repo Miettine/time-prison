@@ -31,7 +31,7 @@ public class TimeTravel : MonoBehaviour
 
 	// Start is called before the first frame update
 	void Start() {
-		InvokeRepeating("TimeUpdate", snapshotRate, snapshotRate);
+		InvokeRepeating("TakeSnapshot", snapshotRate, snapshotRate);
 	}
 
 	// Update is called once per frame
@@ -74,7 +74,7 @@ public class TimeTravel : MonoBehaviour
 		Debug.LogWarning("Time paradox!");
 	}
 
-	private void TimeUpdate() {
+	private void TakeSnapshot() {
 		var playerTransform = playerController.transform;
 		var l = (ActionType)(int)playerController.LatestAction;
 		var stateInTime = new ObjectInTime($"Player{GetTimeTravelCount() + 1}", ObjectType.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
