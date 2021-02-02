@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static TimeTracker;
+using static TimeTravel;
 
 public class ObjectInTime {
 	public string Id { get; private set; }

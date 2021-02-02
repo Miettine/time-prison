@@ -2,11 +2,11 @@ using System;
 using UnityEngine;
 using static ObjectInTime;
 
-public class PlayerController : MonoBehaviour
+public class Player : MonoBehaviour
 {
 
 	new Rigidbody rigidbody;
-	TimeTracker timeTracker;
+	TimeTravel timeTracker;
 
 	[SerializeField]
 	private float deadzone = 0.1f;
@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake() {
 		rigidbody = GetComponent<Rigidbody>();
-		timeTracker = GameObject.Find("TimeTracker").GetComponent<TimeTracker>();
+		timeTracker = GameObject.Find("TimeTracker").GetComponent<TimeTravel>();
 	}
 	// Start is called before the first frame update
 	void Start()
@@ -81,13 +81,13 @@ public class PlayerController : MonoBehaviour
 			lookRotation = Quaternion.identity;
 		}
 
-		transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, Time.deltaTime * lookTowardsRotationModifier);
+		transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, UnityEngine.Time.deltaTime * lookTowardsRotationModifier);
 
 		if (direction.magnitude > deadzone) 
 		{
 			lastLookDirection = lookRotation;
 
-			rigidbody.AddForce(direction.normalized * moveSpeed * Time.deltaTime);
+			rigidbody.AddForce(direction.normalized * moveSpeed * UnityEngine.Time.deltaTime);
 
 			LatestAction = ObjectInTime.ActionType.Walking;
 			//transform.Translate(direction * moveSpeed * Time.deltaTime);

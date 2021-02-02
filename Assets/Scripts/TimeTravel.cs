@@ -5,14 +5,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using static ObjectInTime;
 
-public class TimeTracker : MonoBehaviour
+public class TimeTravel : MonoBehaviour
 {
 	private MomentsInTime momentsInTime;
 
-	PlayerController playerController;
+	Player playerController;
 	GameObject pastPlayerPrefab;
 
-	UIController uiController;
+	UI uiController;
 
 	public bool TimeTravelling { get; private set; } = false;
 
@@ -24,8 +24,8 @@ public class TimeTracker : MonoBehaviour
 	private void Awake() {
 		momentsInTime = new MomentsInTime();
 
-		uiController = GameObject.FindObjectOfType<UIController>();
-		playerController = GameObject.FindObjectOfType<PlayerController>();
+		uiController = GameObject.FindObjectOfType<UI>();
+		playerController = GameObject.FindObjectOfType<Player>();
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
 	}
 
@@ -83,7 +83,7 @@ public class TimeTracker : MonoBehaviour
 	}
 
 	private float GetTime() {
-		return Time.time - timeTravelAmounts.Sum();
+		return UnityEngine.Time.time - timeTravelAmounts.Sum();
 	}
 	private int GetTimeTravelCount() {
 		return timeTravelAmounts.Count;

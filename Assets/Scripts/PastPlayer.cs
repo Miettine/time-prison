@@ -3,18 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PastPlayerController : MonoBehaviour
+public class PastPlayer : MonoBehaviour
 {
 	float fieldOfViewDegrees;
 	float fieldOfViewRange;
 	Transform playerTransform;
-	TimeTracker timeTracker;
+	TimeTravel timeTracker;
 
 	int lineOfSightLayerMask;
 	int playerLayer;
 
 	private void Awake() {
-		timeTracker = FindObjectOfType<TimeTracker>();
+		timeTracker = FindObjectOfType<TimeTravel>();
 
 		lineOfSightLayerMask = LayerMask.GetMask("Player", "Walls");
 		playerLayer = LayerMask.NameToLayer("Player");
@@ -27,7 +27,7 @@ public class PastPlayerController : MonoBehaviour
 		fieldOfViewDegrees = light.spotAngle;
 		fieldOfViewRange = light.range;
 
-		playerTransform = FindObjectOfType<PlayerController>().transform;
+		playerTransform = FindObjectOfType<Player>().transform;
 	}
 
 	// Update is called once per frame

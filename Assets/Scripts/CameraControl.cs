@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour {
+public class CameraControl : MonoBehaviour {
 
 	private Transform playerTransform;
 	private Vector3 relativePositionToPlayer;
@@ -14,7 +14,7 @@ public class CameraController : MonoBehaviour {
 	// Start is called before the first frame update
 	void Start()
 	{
-		var pc = GameObject.Find("Player").GetComponent<PlayerController>();
+		var pc = GameObject.Find("Player").GetComponent<Player>();
 		playerTransform = pc.transform;
 		relativePositionToPlayer = playerTransform.position + transform.position;
 	}
