@@ -12,7 +12,7 @@ public class TimeTravel : MonoBehaviour
 	Player playerController;
 	GameObject pastPlayerPrefab;
 
-	UI uiController;
+	UI ui;
 
 	public bool TimeTravelling { get; private set; } = false;
 
@@ -24,7 +24,7 @@ public class TimeTravel : MonoBehaviour
 	private void Awake() {
 		momentsInTime = new MomentsInTime();
 
-		uiController = GameObject.FindObjectOfType<UI>();
+		ui = GameObject.FindObjectOfType<UI>();
 		playerController = GameObject.FindObjectOfType<Player>();
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
 	}
@@ -39,7 +39,7 @@ public class TimeTravel : MonoBehaviour
 	{
 		float time = GetTime();
 
-		uiController.SetTimeText(time);
+		ui.SetTimeText(time);
 
 		for (int i = 1; i <= GetTimeTravelCount(); i++) {
 			var stateInTime = momentsInTime.GetObject($"Player{i}", time);

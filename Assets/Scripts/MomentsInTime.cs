@@ -9,9 +9,9 @@ public class MomentsInTime
 {
 	//Dictionary<float, ObjectInTime> _momentsInTime = new Dictionary<float, ObjectInTime>();
 
-	List<ObjectInTime> momentsInTime = new List<ObjectInTime>();
+	List<ObjectInTime> objectsInTime = new List<ObjectInTime>();
 	public void AddObject(ObjectInTime stateInTime) {
-		momentsInTime.Add(stateInTime);
+		objectsInTime.Add(stateInTime);
 	}
 
 	/// <summary>
@@ -32,7 +32,7 @@ public class MomentsInTime
 		}
 
 		return null;*/
-		var matches = momentsInTime.Find(stateInTime => id.Equals(stateInTime.Id) && stateInTime.Time >= time);
+		var matches = objectsInTime.Find(stateInTime => id.Equals(stateInTime.Id) && stateInTime.Time >= time);
 		return matches;
 	}
 
