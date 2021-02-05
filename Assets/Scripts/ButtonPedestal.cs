@@ -16,6 +16,7 @@ public class ButtonPedestal : MonoBehaviour
 		}
 	}
 	public void Interact() {
+		CancelInvoke();
 		door.Open();
 
 		Invoke("CloseDoor", openForTime);

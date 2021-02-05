@@ -65,29 +65,30 @@ public class Player : MonoBehaviour
 			ProcessMovementInput(new Vector3(h, 0f, v));
 		}
 		
-		if (Input.GetKeyUp(KeyCode.Space))
-		{
+		if (Input.GetKeyUp(KeyCode.Space)) {
 			LatestAction = ObjectInTime.ActionType.StartTimeTravel;
 			timeTracker.StartTimeTravelToBeginning();
+			return;
 		}
-		LookForInteractableObjects();
+		if (Input.GetKeyDown(KeyCode.E)) {
+			InteractWithNearbyObjects();
+		}
 	}
 	
-	private void LookForInteractableObjects() {
-		var interactableObjectsColliders = Physics.OverlapSphere(transform.position, 1f, interactableObjectsLayerMask);
+	private void InteractWithNearbyObjects() {
+		var interactableObjectsColliders = Physics.OverlapSphere(transform.position, 2f, interactableObjectsLayerMask);
 
-		
 		if (interactableObjectsColliders.Length == 0) {
 			return;
 		}
 
 		foreach (var collider in interactableObjectsColliders) {
-			Debug.Log(collider);
 
 			var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
 
 			if (buttonPedestal != null) {
 				buttonPedestal.Interact();
+				return;
 			}
 		}
 	}
