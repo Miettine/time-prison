@@ -19,7 +19,9 @@ public class Player : MonoBehaviour
 
 	Quaternion lastLookDirection;
 
-	internal ActionType LatestAction { get; set; } 
+	internal ActionType LatestAction { get; set; }
+
+	int interactableObjectsLayerMask;
 	/*
 	private ActionType lastRecordedAction = ActionType.Undefined;
 
@@ -45,6 +47,7 @@ public class Player : MonoBehaviour
 	private void Awake() {
 		rigidbody = GetComponent<Rigidbody>();
 		timeTracker = GameObject.Find("TimeTracker").GetComponent<TimeTravel>();
+		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
 	}
 	// Start is called before the first frame update
 	void Start()
@@ -67,8 +70,28 @@ public class Player : MonoBehaviour
 			LatestAction = ObjectInTime.ActionType.StartTimeTravel;
 			timeTracker.StartTimeTravelToBeginning();
 		}
+		LookForInteractableObjects();
 	}
 	
+	private void LookForInteractableObjects() {
+		var interactableObjectsColliders = Physics.OverlapSphere(transform.position, 1f, interactableObjectsLayerMask);
+
+		
+		if (interactableObjectsColliders.Length == 0) {
+			return;
+		}
+
+		foreach (var collider in interactableObjectsColliders) {
+			Debug.Log(collider);
+
+			var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
+
+			if (buttonPedestal != null) {
+				buttonPedestal.Interact();
+			}
+		}
+	}
+
 	private void ProcessMovementInput(Vector3 direction){
 		// I want the player character to rotate slowly towards the direction that the player pushed the arrow keys in. The following code accomplishes this.
 		
