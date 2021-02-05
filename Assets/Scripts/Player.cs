@@ -1,6 +1,6 @@
 using System;
 using UnityEngine;
-using static ObjectInTime;
+using static CharacterInTime;
 
 public class Player : MonoBehaviour
 {
@@ -66,7 +66,7 @@ public class Player : MonoBehaviour
 		}
 		
 		if (Input.GetKeyUp(KeyCode.Space)) {
-			LatestAction = ObjectInTime.ActionType.StartTimeTravel;
+			LatestAction = CharacterInTime.ActionType.StartTimeTravel;
 			timeTracker.StartTimeTravelToBeginning();
 			return;
 		}
@@ -113,10 +113,10 @@ public class Player : MonoBehaviour
 
 			rigidbody.AddForce(direction.normalized * moveSpeed * UnityEngine.Time.deltaTime);
 
-			LatestAction = ObjectInTime.ActionType.Walking;
+			LatestAction = CharacterInTime.ActionType.Walking;
 			//transform.Translate(direction * moveSpeed * Time.deltaTime);
 		} else {
-			LatestAction = ObjectInTime.ActionType.Standing;
+			LatestAction = CharacterInTime.ActionType.Standing;
 		}
 	}
 /*

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using static ObjectInTime;
+using static CharacterInTime;
 
 public class TimeTravel : MonoBehaviour
 {
@@ -42,7 +42,7 @@ public class TimeTravel : MonoBehaviour
 		ui.SetTimeText(time);
 
 		for (int i = 1; i <= GetTimeTravelCount(); i++) {
-			var stateInTime = momentsInTime.GetObject($"Player{i}", time);
+			var stateInTime = momentsInTime.GetCharacter($"Player{i}", time);
 
 			var pastPlayer = GameObject.Find($"Player{i}");
 
@@ -75,11 +75,22 @@ public class TimeTravel : MonoBehaviour
 	}
 
 	private void TakeSnapshot() {
-		var playerTransform = playerController.transform;
-		var l = (ActionType)(int)playerController.LatestAction;
-		var stateInTime = new ObjectInTime($"Player{GetTimeTravelCount() + 1}", ObjectType.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
-		//playerController.ResetLatestAction();
-		momentsInTime.AddObject(stateInTime);
+		{
+			var playerTransform = playerController.transform;
+			var l = (ActionType)(int)playerController.LatestAction;
+
+			var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", CharacterType.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
+			//playerController.ResetLatestAction();
+			momentsInTime.AddObject(stateInTime);
+		}
+	
+		{
+			var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
+			foreach (var largeDoor in largeDoors) {
+				var stateInTime = new InanimateDoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpen());
+				momentsInTime.AddObject(stateInTime);
+			}
+		}
 	}
 
 	private float GetTime() {
@@ -98,9 +109,9 @@ public class TimeTravel : MonoBehaviour
 
 		//I want the time that gets stored here to be the moment in time when the player started time travel.
 		momentsInTime.AddObject(
-			new ObjectInTime(
+			new CharacterInTime(
 				$"Player{GetTimeTravelCount() + 1}", 
-				ObjectType.Player, 
+				CharacterType.Player, 
 				GetTime(), 
 				new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), 
 				new Quaternion(playerTransform.rotation.x, playerTransform.rotation.y, playerTransform.rotation.z, playerTransform.rotation.w),
@@ -116,7 +127,7 @@ public class TimeTravel : MonoBehaviour
 		float currentTime = GetTime();
 
 		for (int i = 1; i <= GetTimeTravelCount(); i++) {
-			var state = momentsInTime.GetObject($"Player{i}", currentTime);
+			var state = momentsInTime.GetObject<CharacterInTime>($"Player{i}", currentTime);
 
 			InstantiatePastPlayer(i, state.Position, state.Rotation);
 		}

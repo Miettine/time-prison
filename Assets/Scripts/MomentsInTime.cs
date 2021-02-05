@@ -22,7 +22,7 @@ public class MomentsInTime
 	public void AddObject(float time, ObjectInTime objectInTime) {
 		AddObject(objectInTime);
 	}
-	public ObjectInTime GetObject(string id, float time) {
+	public T GetObject<T>(string id, float time) where T : ObjectInTime {
 		/*
 		for (int i = 0; i < statesInTime.Capacity - 1; i++) {
 			var s = statesInTime[i];
@@ -32,8 +32,12 @@ public class MomentsInTime
 		}
 
 		return null;*/
-		var matches = objectsInTime.Find(stateInTime => id.Equals(stateInTime.Id) && stateInTime.Time >= time);
-		return matches;
+		var match = objectsInTime.Find(objectInTime => 
+		id.Equals(objectInTime.Id) && 
+		objectInTime.Time >= time &&
+		objectInTime is T);
+
+		return (T)match;
 	}
 
 }
