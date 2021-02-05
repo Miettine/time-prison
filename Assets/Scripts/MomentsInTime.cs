@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +23,7 @@ public class MomentsInTime
 	public void AddObject(float time, ObjectInTime objectInTime) {
 		AddObject(objectInTime);
 	}
-	public T GetObject<T>(string id, float time) where T : ObjectInTime {
+	private T GetObject<T>(string id, float time) where T : ObjectInTime {
 		/*
 		for (int i = 0; i < statesInTime.Capacity - 1; i++) {
 			var s = statesInTime[i];
@@ -40,4 +41,7 @@ public class MomentsInTime
 		return (T)match;
 	}
 
+	public CharacterInTime GetCharacter(string id, float time) => GetObject<CharacterInTime>(id, time);
+
+	public InanimateDoorObjectInTime GetInanimateObject(string id, float time) => GetObject<InanimateDoorObjectInTime>(id, time);
 }

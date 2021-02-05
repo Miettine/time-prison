@@ -1,4 +1,4 @@
-﻿internal class InanimateDoorObjectInTime : ObjectInTime{
+﻿public class InanimateDoorObjectInTime : ObjectInTime{
 	public InanimateObjectType ObjectType { get; private set; }
 	public bool IsOpen { get; private set; }
 

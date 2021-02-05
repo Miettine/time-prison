@@ -127,7 +127,7 @@ public class TimeTravel : MonoBehaviour
 		float currentTime = GetTime();
 
 		for (int i = 1; i <= GetTimeTravelCount(); i++) {
-			var state = momentsInTime.GetObject<CharacterInTime>($"Player{i}", currentTime);
+			var state = momentsInTime.GetCharacter($"Player{i}", currentTime);
 
 			InstantiatePastPlayer(i, state.Position, state.Rotation);
 		}

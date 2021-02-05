@@ -1,3 +1,3 @@
-﻿internal enum InanimateObjectType {
+﻿public enum InanimateObjectType {
 	LargeDoor
 }
