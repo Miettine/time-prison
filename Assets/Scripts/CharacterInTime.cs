@@ -10,7 +10,7 @@ public class CharacterInTime : ObjectInTime {
 
 	public ActionType Action { get; private set; }
 
-	public CharacterInTime(string id, CharacterType objectType, float time, Vector3 position, Quaternion rotation, ActionType action) : base(id, time) {
+	public CharacterInTime(string id, float time, CharacterType objectType, Vector3 position, Quaternion rotation, ActionType action) : base(id, time) {
 		_ObjectType = objectType;
 		Position = position;
 		Rotation = rotation;

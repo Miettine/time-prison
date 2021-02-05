@@ -79,7 +79,7 @@ public class TimeTravel : MonoBehaviour
 			var playerTransform = playerController.transform;
 			var l = (ActionType)(int)playerController.LatestAction;
 
-			var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", CharacterType.Player, GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
+			var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", GetTime(), CharacterType.Player,  new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
 			//playerController.ResetLatestAction();
 			momentsInTime.AddObject(stateInTime);
 		}
@@ -110,9 +110,9 @@ public class TimeTravel : MonoBehaviour
 		//I want the time that gets stored here to be the moment in time when the player started time travel.
 		momentsInTime.AddObject(
 			new CharacterInTime(
-				$"Player{GetTimeTravelCount() + 1}", 
+				$"Player{GetTimeTravelCount() + 1}",
+				GetTime(),
 				CharacterType.Player, 
-				GetTime(), 
 				new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), 
 				new Quaternion(playerTransform.rotation.x, playerTransform.rotation.y, playerTransform.rotation.z, playerTransform.rotation.w),
 				ActionType.StartTimeTravel
