@@ -5,18 +5,19 @@ using UnityEngine;
 
 public class LargeDoor : MonoBehaviour
 {
+	MeshRenderer meshRenderer;
+	new Collider collider;
+
 	bool isOpen = false;
-	public void Open() {
-		gameObject.SetActive(false);
-		isOpen = true;
+	public bool IsOpen { get => isOpen; set {
+			meshRenderer.enabled = !value;
+			collider.enabled = !value;
+			isOpen = value;
+		}
 	}
 
-	public void Close() {
-		gameObject.SetActive(true);
-		isOpen = false;
-	}
-
-	internal bool IsOpen() {
-		return isOpen;
+	private void Awake() {
+		meshRenderer = GetComponentInChildren<MeshRenderer>();
+		collider = GetComponentInChildren<Collider>();
 	}
 }

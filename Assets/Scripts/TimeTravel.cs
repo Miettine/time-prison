@@ -68,6 +68,16 @@ public class TimeTravel : MonoBehaviour
 				InstantiatePastPlayer(i, stateInTime.Position, stateInTime.Rotation);
 			}
 		}
+		{ 
+			var stateInTime = momentsInTime.GetInanimateObject("LargeDoor", time);
+
+			var largeDoor = GameObject.FindObjectOfType<LargeDoor>();
+			Debug.Log(stateInTime);
+			Debug.Log(largeDoor);
+			if (stateInTime != null && largeDoor != null) {
+				largeDoor.IsOpen = stateInTime.IsOpen;
+			}
+		}
 	}
 
 	internal void TimeParadox() {
@@ -87,7 +97,7 @@ public class TimeTravel : MonoBehaviour
 		{
 			var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
 			foreach (var largeDoor in largeDoors) {
-				var stateInTime = new InanimateDoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpen());
+				var stateInTime = new InanimateDoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpen);
 				momentsInTime.AddObject(stateInTime);
 			}
 		}
