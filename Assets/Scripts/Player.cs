@@ -22,33 +22,13 @@ public class Player : MonoBehaviour
 	internal ActionType LatestAction { get; set; }
 
 	int interactableObjectsLayerMask;
-	/*
-	private ActionType lastRecordedAction = ActionType.Undefined;
-
-	internal ActionType LatestAction { get {
-			//if (lastRecordedAction == ActionType.StartTimeTravel)
-			if (lastRecordedAction == ActionType.StartTimeTravel) {
-				lastRecordedAction = ActionType.Undefined;
-				return ActionType.StartTimeTravel;
-			}
-			return lastRecordedAction;
-		} 
-		private set {
-			
-			if (lastRecordedAction == ActionType.StartTimeTravel && value != ActionType.StartTimeTravel) {
-				lastRecordedAction = ActionType.StartTimeTravel;
-			} else {
-				lastRecordedAction = value;
-			}
-		} 
-	}*/
-	//internal float TimeTravelAmount { get => timeTravelAmount; }
 
 	private void Awake() {
 		rigidbody = GetComponent<Rigidbody>();
 		timeTracker = GameObject.Find("TimeTracker").GetComponent<TimeTravel>();
 		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
 	}
+
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -114,14 +94,8 @@ public class Player : MonoBehaviour
 			rigidbody.AddForce(direction.normalized * moveSpeed * UnityEngine.Time.deltaTime);
 
 			LatestAction = CharacterInTime.ActionType.Walking;
-			//transform.Translate(direction * moveSpeed * Time.deltaTime);
 		} else {
 			LatestAction = CharacterInTime.ActionType.Standing;
 		}
 	}
-/*
-	internal void ResetLatestAction() {
-		LatestAction = ActionType.Undefined;
-	}
-*/
 }
