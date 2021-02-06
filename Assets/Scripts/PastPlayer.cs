@@ -8,15 +8,15 @@ public class PastPlayer : MonoBehaviour
 	float fieldOfViewDegrees;
 	float fieldOfViewRange;
 	Transform playerTransform;
-	TimeTravel timeTracker;
+	TimeTravel timeTravel;
 
 	int lineOfSightLayerMask;
 	int playerLayer;
 
 	private void Awake() {
-		timeTracker = FindObjectOfType<TimeTravel>();
+		timeTravel = FindObjectOfType<TimeTravel>();
 
-		lineOfSightLayerMask = LayerMask.GetMask("Player", "Walls");
+		lineOfSightLayerMask = LayerMask.GetMask("Player", "Walls", "Doors");
 		playerLayer = LayerMask.NameToLayer("Player");
 	}
 
@@ -30,15 +30,74 @@ public class PastPlayer : MonoBehaviour
 		playerTransform = FindObjectOfType<Player>().transform;
 	}
 
+	bool SeesObjectInteractionFromPresentPlayer() {
+		//TODO: Eliminate repeated code between this and SeesPresentPlayer.
+
+		var door = FindObjectOfType<LargeDoor>();
+
+		if (door == null) {
+			return false;
+		}
+		var targetTransform = door.transform;
+
+		var toTarget = targetTransform.position - this.transform.position;
+
+		bool withinRange = toTarget.magnitude < fieldOfViewRange;
+
+		if (!withinRange) {
+			return false;
+		}
+
+		//The direction where this past player character is pointing
+		Vector3 lookDirection = transform.rotation * Vector3.forward;
+
+		var lookDirectionToTargetAngle = Vector3.Angle(lookDirection, toTarget);
+
+		bool withinFieldOfViewAngle = lookDirectionToTargetAngle < fieldOfViewDegrees / 2;
+
+		if (!withinFieldOfViewAngle) {
+			return false;
+		}
+
+		var pos = this.transform.position;
+
+		var vectorAtEyePoint = new Vector3(pos.x, pos.y + 1.7f - 0.15f, pos.z);
+
+		Ray ray = new Ray(vectorAtEyePoint, toTarget);
+		Debug.DrawRay(vectorAtEyePoint, toTarget, Color.red);
+
+		bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, lineOfSightLayerMask);
+
+		if (!hasRaycastHit) {
+			/*
+			Previous checks to withinRange and withinFieldOfViewAngle should have eliminated the possibility of not hitting 
+			anything with the raycast. This is unexpected behaviour so we are logging this as a warning.
+			*/
+			Debug.LogWarning("No raycast hit was detected when determining line of sight occlusion.");
+			return false;
+		}
+
+		var collider = hitInfo.collider;
+		if (collider == null) {
+			//Failing to find a collider shouldn't be possible, so I am throwing an error.
+			throw new Exception("Did not find a collider when determining line of sight occlusion.");
+		}
+
+		return timeTravel.HasStateContradiction(door.name, door.IsOpen);
+	}
+
 	// Update is called once per frame
 	void Update()
 	{
-		if (SeesPresentPlayer()) {
-			timeTracker.TimeParadox();
+
+
+		if (SeesPresentPlayer() || SeesObjectInteractionFromPresentPlayer()) {
+			timeTravel.TimeParadox();
 		}
 	}
 	
 	private bool SeesPresentPlayer() {
+
 		var toPlayer = playerTransform.position - this.transform.position;
 
 		bool withinRange = toPlayer.magnitude < fieldOfViewRange;

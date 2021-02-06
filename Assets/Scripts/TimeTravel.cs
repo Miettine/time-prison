@@ -72,8 +72,7 @@ public class TimeTravel : MonoBehaviour
 			var stateInTime = momentsInTime.GetInanimateObject("LargeDoor", time);
 
 			var largeDoor = GameObject.FindObjectOfType<LargeDoor>();
-			Debug.Log(stateInTime);
-			Debug.Log(largeDoor);
+
 			if (stateInTime != null && largeDoor != null) {
 				largeDoor.IsOpen = stateInTime.IsOpen;
 			}
@@ -101,6 +100,12 @@ public class TimeTravel : MonoBehaviour
 				momentsInTime.AddObject(stateInTime);
 			}
 		}
+	}
+
+	internal bool HasStateContradiction(string doorName, bool isOpen) {
+		var objectPastState = momentsInTime.GetInanimateObject(doorName, GetTime());
+
+		return objectPastState.IsOpen != isOpen;
 	}
 
 	private float GetTime() {
