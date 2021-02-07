@@ -12,12 +12,14 @@ public class PastPlayer : MonoBehaviour
 
 	int lineOfSightLayerMask;
 	int playerLayer;
+	int doorsLayer;
 
 	private void Awake() {
 		timeTravel = FindObjectOfType<TimeTravel>();
 
 		lineOfSightLayerMask = LayerMask.GetMask("Player", "Walls", "Doors");
 		playerLayer = LayerMask.NameToLayer("Player");
+		doorsLayer = LayerMask.NameToLayer("Doors");
 	}
 
 	// Start is called before the first frame update
@@ -66,7 +68,7 @@ public class PastPlayer : MonoBehaviour
 		Ray ray = new Ray(vectorAtEyePoint, toTarget);
 		Debug.DrawRay(vectorAtEyePoint, toTarget, Color.red);
 
-		bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, lineOfSightLayerMask);
+		bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, LayerMask.GetMask("Doors"), QueryTriggerInteraction.Collide);
 
 		if (!hasRaycastHit) {
 			/*
@@ -78,9 +80,14 @@ public class PastPlayer : MonoBehaviour
 		}
 
 		var collider = hitInfo.collider;
+		Debug.Log(collider) ;
 		if (collider == null) {
 			//Failing to find a collider shouldn't be possible, so I am throwing an error.
 			throw new Exception("Did not find a collider when determining line of sight occlusion.");
+		}
+		Debug.Log($"{collider.gameObject.layer} != {collider.gameObject.layer}");
+		if (collider.gameObject.layer != doorsLayer) {
+			return false;
 		}
 
 		return timeTravel.HasStateContradiction(door.name, door);

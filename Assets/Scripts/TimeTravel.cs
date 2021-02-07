@@ -106,10 +106,10 @@ public class TimeTravel : MonoBehaviour
 		}
 	}
 
-	internal bool HasStateContradiction(string doorName, bool isOpen) {
+	internal bool HasStateContradiction(string doorName, LargeDoor door) {
 		var objectPastState = momentsInTime.GetInanimateObject(doorName, GetTime());
 
-		return objectPastState.IsOpen != isOpen;
+		return objectPastState.IsOpen != door.IsOpenInPresent();
 	}
 
 	private float GetTime() {
