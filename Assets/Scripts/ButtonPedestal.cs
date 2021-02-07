@@ -17,11 +17,11 @@ public class ButtonPedestal : MonoBehaviour
 	}
 	public void Interact() {
 		CancelInvoke();
-		door.OpenInPresent();
+		door.OpenByPresentAction();
 
 		Invoke("CloseDoor", openForTime);
 	}
 	void CloseDoor() {
-		door.CloseInPresent();
+		door.CloseByPresentAction();
 	}
 }

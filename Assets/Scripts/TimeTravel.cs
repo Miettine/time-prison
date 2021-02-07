@@ -74,10 +74,10 @@ public class TimeTravel : MonoBehaviour
 			var largeDoor = GameObject.FindObjectOfType<LargeDoor>();
 
 			if (stateInTime != null && largeDoor != null) {
-				if (stateInTime.IsOpen && !largeDoor.IsOpenInPast()) {
-					largeDoor.OpenInPast();
-				} else if (!stateInTime.IsOpen && largeDoor.IsOpenInPast()) {
-					largeDoor.CloseInPast();
+				if (stateInTime.IsOpen && !largeDoor.IsOpenByPastAction()) {
+					largeDoor.OpenByPastAction();
+				} else if (!stateInTime.IsOpen && largeDoor.IsOpenByPastAction()) {
+					largeDoor.CloseByPastAction();
 				}
 			}
 		}
@@ -100,7 +100,7 @@ public class TimeTravel : MonoBehaviour
 		if (!TimeTravelling) {
 			var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
 			foreach (var largeDoor in largeDoors) {
-				var stateInTime = new InanimateDoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenInPresent());
+				var stateInTime = new InanimateDoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
 				momentsInTime.AddObject(stateInTime);
 			}
 		}
@@ -109,7 +109,7 @@ public class TimeTravel : MonoBehaviour
 	internal bool HasStateContradiction(string doorName, LargeDoor door) {
 		var objectPastState = momentsInTime.GetInanimateObject(doorName, GetTime());
 
-		return objectPastState.IsOpen != door.IsOpenInPresent();
+		return objectPastState.IsOpen != door.IsOpenByPresentAction();
 	}
 
 	private float GetTime() {

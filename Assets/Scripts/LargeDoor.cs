@@ -22,38 +22,37 @@ public class LargeDoor : MonoBehaviour
 		collider = transform.GetChild(0).GetComponent<Collider>();
 	}
 
-	public void OpenInPast() {
+	public void OpenByPastAction() {
 		pastStateIsOpen = true;
 		isOpen = true;
-		ShowOpenInGraphics(true);
+		EnableGraphicsAndCollider(true);
 	}
 
-	public void OpenInPresent() {
+	public void OpenByPresentAction() {
 		isOpen = true;
-		ShowOpenInGraphics(true);
+		EnableGraphicsAndCollider(true);
 	}
 
-	public void CloseInPast() {
+	public void CloseByPastAction() {
 		pastStateIsOpen = false;
 		isOpen = false;
-		ShowOpenInGraphics(false);
+		EnableGraphicsAndCollider(false);
 	}
-	public void CloseInPresent() {
+	public void CloseByPresentAction() {
 		isOpen = false;
-		ShowOpenInGraphics(false);
+		EnableGraphicsAndCollider(false);
 	}
 
-
-	private void ShowOpenInGraphics(bool open) {
+	private void EnableGraphicsAndCollider(bool open) {
 		meshRenderer.enabled = !open;
 		collider.enabled = !open;
 	}
 
-	internal bool IsOpenInPresent() {
+	internal bool IsOpenByPresentAction() {
 		return isOpen;
 	}
 
-	internal bool IsOpenInPast() {
+	internal bool IsOpenByPastAction() {
 		return pastStateIsOpen;
 	}
 }
