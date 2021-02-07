@@ -24,6 +24,7 @@ public class LargeDoor : MonoBehaviour
 
 	public void OpenInPast() {
 		pastStateIsOpen = true;
+		isOpen = true;
 		ShowOpenInGraphics(true);
 	}
 
@@ -34,6 +35,7 @@ public class LargeDoor : MonoBehaviour
 
 	public void CloseInPast() {
 		pastStateIsOpen = false;
+		isOpen = false;
 		ShowOpenInGraphics(false);
 	}
 	public void CloseInPresent() {

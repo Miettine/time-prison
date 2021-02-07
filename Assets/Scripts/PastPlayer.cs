@@ -80,12 +80,12 @@ public class PastPlayer : MonoBehaviour
 		}
 
 		var collider = hitInfo.collider;
-		Debug.Log(collider) ;
+
 		if (collider == null) {
 			//Failing to find a collider shouldn't be possible, so I am throwing an error.
 			throw new Exception("Did not find a collider when determining line of sight occlusion.");
 		}
-		Debug.Log($"{collider.gameObject.layer} != {collider.gameObject.layer}");
+		//Debug.Log($"{collider.gameObject.layer} != {collider.gameObject.layer}");
 		if (collider.gameObject.layer != doorsLayer) {
 			return false;
 		}

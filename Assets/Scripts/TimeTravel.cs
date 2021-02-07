@@ -84,7 +84,7 @@ public class TimeTravel : MonoBehaviour
 	}
 
 	internal void TimeParadox() {
-		Debug.LogWarning("Time paradox!");
+		throw new Exception("Time paradox!");
 	}
 
 	private void TakeSnapshot() {
