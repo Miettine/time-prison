@@ -83,7 +83,7 @@ public class PastPlayer : MonoBehaviour
 			throw new Exception("Did not find a collider when determining line of sight occlusion.");
 		}
 
-		return timeTravel.HasStateContradiction(door.name, door.IsOpen);
+		return timeTravel.HasStateContradiction(door.name, door);
 	}
 
 	// Update is called once per frame

@@ -25,7 +25,7 @@ public class Player : MonoBehaviour
 
 	private void Awake() {
 		rigidbody = GetComponent<Rigidbody>();
-		timeTracker = GameObject.Find("TimeTracker").GetComponent<TimeTravel>();
+		timeTracker = FindObjectOfType<TimeTravel>();
 		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
 	}
 

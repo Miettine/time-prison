@@ -9,15 +9,47 @@ public class LargeDoor : MonoBehaviour
 	new Collider collider;
 
 	bool isOpen = false;
-	public bool IsOpen { get => isOpen; set {
-			meshRenderer.enabled = !value;
-			collider.enabled = !value;
-			isOpen = value;
-		}
-	}
+
+	bool pastStateIsOpen = false;
+
+	//TimeTravel timeTravel;
 
 	private void Awake() {
+		//timeTravel = FindObjectOfType<TimeTravel>();
 		meshRenderer = GetComponentInChildren<MeshRenderer>();
 		collider = GetComponentInChildren<Collider>();
+	}
+
+	public void OpenInPast() {
+		pastStateIsOpen = true;
+		ShowOpenInGraphics(true);
+	}
+
+	public void OpenInPresent() {
+		isOpen = true;
+		ShowOpenInGraphics(true);
+	}
+
+	public void CloseInPast() {
+		pastStateIsOpen = false;
+		ShowOpenInGraphics(false);
+	}
+	public void CloseInPresent() {
+		isOpen = false;
+		ShowOpenInGraphics(false);
+	}
+
+
+	private void ShowOpenInGraphics(bool open) {
+		meshRenderer.enabled = !open;
+		collider.enabled = !open;
+	}
+
+	internal bool IsOpenInPresent() {
+		return isOpen;
+	}
+
+	internal bool IsOpenInPast() {
+		return pastStateIsOpen;
 	}
 }
