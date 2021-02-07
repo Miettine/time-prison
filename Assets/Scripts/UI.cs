@@ -30,7 +30,7 @@ public class UI : MonoBehaviour
 	}
 
 	void ShowDoorOpenText(float seconds) {
-		doorOpenText.text = seconds.ToString("Door open for 0 seconds");
+		doorOpenText.text = Math.Ceiling(seconds).ToString("Door open for 0 seconds");
 	}
 
 	IEnumerator CountDownShowDoorOpen(float wait) {
