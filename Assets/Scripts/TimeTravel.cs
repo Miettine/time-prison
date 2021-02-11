@@ -13,6 +13,7 @@ public class TimeTravel : MonoBehaviour
 	GameObject pastPlayerPrefab;
 
 	UI ui;
+	Game game;
 
 	public bool TimeTravelling { get; private set; } = false;
 
@@ -21,12 +22,18 @@ public class TimeTravel : MonoBehaviour
 	[SerializeField]
 	private float snapshotRate = 0.1f;
 
+	[SerializeField]
+	private TimeParadoxBehaviour behaviourOnTimeParadox = TimeParadoxBehaviour.ReloadScene;
+
+	public enum TimeParadoxBehaviour { NoEffect, DebugLog, ReloadScene }
+
 	private void Awake() {
 		momentsInTime = new MomentsInTime();
 
 		ui = GameObject.FindObjectOfType<UI>();
 		playerController = GameObject.FindObjectOfType<Player>();
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
+		game = FindObjectOfType<Game>();
 	}
 
 	// Start is called before the first frame update
@@ -84,9 +91,20 @@ public class TimeTravel : MonoBehaviour
 	}
 
 	internal void TimeParadox() {
-		throw new Exception("Time paradox!");
+		switch (behaviourOnTimeParadox) {
+			case TimeParadoxBehaviour.NoEffect:
+				game.ReloadCurrentLevel();
+				break;
+			case TimeParadoxBehaviour.DebugLog:
+				Debug.Log("Time paradox!");
+				break;
+			case TimeParadoxBehaviour.ReloadScene:
+				break;
+		};
 	}
-
+	
+	//internal void TimeParadox(Transform causeLocation, TimeParadoxReason reason) { }
+	
 	private void TakeSnapshot() {
 		{
 			var playerTransform = playerController.transform;

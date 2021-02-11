@@ -25,27 +25,27 @@ public class LargeDoor : MonoBehaviour
 	public void OpenByPastAction() {
 		pastStateIsOpen = true;
 		isOpen = true;
-		EnableGraphicsAndCollider(true);
+		EnableGraphicsAndCollider(false);
 	}
 
 	public void OpenByPresentAction() {
 		isOpen = true;
-		EnableGraphicsAndCollider(true);
+		EnableGraphicsAndCollider(false);
 	}
 
 	public void CloseByPastAction() {
 		pastStateIsOpen = false;
 		isOpen = false;
-		EnableGraphicsAndCollider(false);
+		EnableGraphicsAndCollider(true);
 	}
 	public void CloseByPresentAction() {
 		isOpen = false;
-		EnableGraphicsAndCollider(false);
+		EnableGraphicsAndCollider(true);
 	}
 
-	private void EnableGraphicsAndCollider(bool open) {
-		meshRenderer.enabled = !open;
-		collider.enabled = !open;
+	private void EnableGraphicsAndCollider(bool enabled) {
+		meshRenderer.enabled = enabled;
+		collider.enabled = enabled;
 	}
 
 	internal bool IsOpenByPresentAction() {
@@ -54,5 +54,9 @@ public class LargeDoor : MonoBehaviour
 
 	internal bool IsOpenByPastAction() {
 		return pastStateIsOpen;
+	}
+	
+	public bool HasStateContradiction(){
+		return pastStateIsOpen != isOpen;
 	}
 }

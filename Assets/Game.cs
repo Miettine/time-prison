@@ -17,12 +17,24 @@ public class Game : MonoBehaviour
     {
         
     }
+	
+	public void ReloadCurrentLevel(){
+		 LoadSceneWithIndex(GetActiveSceneIndex());
+	}
 
 	internal void OnLevelPassedTriggerEnter() {
         LoadNextScene();
     }
 
     void LoadNextScene() {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        LoadSceneWithIndex(GetActiveSceneIndex() + 1);
     }
+	
+	void LoadSceneWithIndex(int index){
+		SceneManager.LoadScene(index);
+	}
+	
+	int GetActiveSceneIndex(){
+		return SceneManager.GetActiveScene().buildIndex;
+	}
 }
