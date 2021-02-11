@@ -1,3 +1,4 @@
 ﻿public enum InanimateObjectType {
-	LargeDoor
+	LargeDoor,
+	PressurePlate
 }
