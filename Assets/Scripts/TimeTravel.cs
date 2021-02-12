@@ -93,12 +93,13 @@ public class TimeTravel : MonoBehaviour
 	internal void TimeParadox() {
 		switch (behaviourOnTimeParadox) {
 			case TimeParadoxBehaviour.NoEffect:
-				game.ReloadCurrentLevel();
 				break;
 			case TimeParadoxBehaviour.DebugLog:
 				Debug.Log("Time paradox!");
 				break;
 			case TimeParadoxBehaviour.ReloadScene:
+				Debug.Log("Time paradox!");
+				game.ReloadCurrentLevel();
 				break;
 		};
 	}
