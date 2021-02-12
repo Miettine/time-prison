@@ -95,13 +95,17 @@ public class TimeTravel : MonoBehaviour
 			case TimeParadoxBehaviour.NoEffect:
 				break;
 			case TimeParadoxBehaviour.DebugLog:
-				Debug.Log("Time paradox!");
+				DebugLogTimeParadox();
 				break;
 			case TimeParadoxBehaviour.ReloadScene:
-				Debug.Log("Time paradox!");
+				DebugLogTimeParadox();
 				game.ReloadCurrentLevel();
 				break;
 		};
+	}
+
+	void DebugLogTimeParadox() {
+		Debug.Log("Time paradox!");
 	}
 	
 	//internal void TimeParadox(Transform causeLocation, TimeParadoxReason reason) { }
