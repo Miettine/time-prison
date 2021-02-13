@@ -5,12 +5,18 @@ using UnityEngine;
 public class PressurePlate : MonoBehaviour
 {
 	bool activated = false;
-	bool activatedByPastAction = false;
 
 	int playerLayer;
 	UI ui;
 
+	[SerializeField]
+	LargeDoor door;
+
 	private void Awake() {
+		if (door == null) {
+			throw new System.Exception("Reference to door is null. Please set the reference.");
+		}
+
 		playerLayer = LayerMask.NameToLayer("Player");
 
 		ui = FindObjectOfType<UI>();
@@ -20,7 +26,7 @@ public class PressurePlate : MonoBehaviour
 		Debug.Log(playerLayer);
 		if (other.gameObject.layer == playerLayer) {
 			activated = true;
-			
+			door.OpenByPresentAction();
 			ui.ShowDoorOpenPermanentNotification();
 		}
 	}
@@ -28,17 +34,11 @@ public class PressurePlate : MonoBehaviour
 	private void OnTriggerExit(Collider other) {
 		if (other.gameObject.layer == playerLayer) {
 			activated = false;
+			door.CloseByPresentAction();
 			ui.ShowDoorClosed();
 		}
 	}
 
-	public void ActivateByPastAction() {
-		activatedByPastAction = true;
-	}
-
-	public void DeactivateByPastAction() {
-		activatedByPastAction = false;
-	}
 	public bool isActivated() {
 		return activated;
 	}
