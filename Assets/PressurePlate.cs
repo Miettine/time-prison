@@ -8,20 +8,27 @@ public class PressurePlate : MonoBehaviour
 	bool activatedByPastAction = false;
 
 	int playerLayer;
+	UI ui;
+
 	private void Awake() {
 		playerLayer = LayerMask.NameToLayer("Player");
+
+		ui = FindObjectOfType<UI>();
 	}
 	private void OnTriggerEnter(Collider other) {
-		UpdateActivated(other, true);
+		Debug.Log(other.gameObject.layer);
+		Debug.Log(playerLayer);
+		if (other.gameObject.layer == playerLayer) {
+			activated = true;
+			
+			ui.ShowDoorOpenPermanentNotification();
+		}
 	}
 
 	private void OnTriggerExit(Collider other) {
-		UpdateActivated(other, false);
-	}
-
-	void UpdateActivated(Collider other, bool activate) {
 		if (other.gameObject.layer == playerLayer) {
-			activated = activate;
+			activated = false;
+			ui.ShowDoorClosed();
 		}
 	}
 

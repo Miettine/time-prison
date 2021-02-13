@@ -20,6 +20,14 @@ public class UI : MonoBehaviour
 		timeText.text = time.ToString("Time: 0");
 	}
 
+	internal void ShowDoorOpenPermanentNotification() {
+		doorOpenText.text = "Door open";
+	}
+
+	internal void ShowDoorClosed() {
+		StartCoroutine(ShowDoorClosedNotification());
+	}
+
 	internal void ShowDoorOpenForSeconds(float openForTime) {
 		StopAllCoroutines();
 		doorOpenText.text = "";
@@ -39,6 +47,10 @@ public class UI : MonoBehaviour
 			ShowDoorOpenText(wait);
 			yield return null;
 		}
+		ShowDoorClosed();
+	}
+
+	IEnumerator ShowDoorClosedNotification() {
 		doorOpenText.text = "Door closed";
 		yield return new WaitForSeconds(1.5f);
 		doorOpenText.text = "";
