@@ -48,6 +48,8 @@ public class TimeTravel : MonoBehaviour
 
 		ui.SetTimeText(time);
 
+		int numberOfPastPlayers = 0;
+
 		for (int i = 1; i <= GetTimeTravelCount(); i++) {
 			var stateInTime = momentsInTime.GetCharacter($"Player{i}", time);
 
@@ -60,13 +62,8 @@ public class TimeTravel : MonoBehaviour
 				if (stateInTime.Action.Equals(ActionType.StartTimeTravel)) {
 					Destroy(pastPlayer);
 				}
-				/*
-				switch (stateInTime.Action) {
-					case StateInTime.ActionType.StartTimeTravel:
-						Destroy(pastPlayer);
-						TimeTravelling = false;
-						break;
-				}*/
+
+				numberOfPastPlayers++;
 			} else if (pastPlayer != null && stateInTime == null) {
 				Debug.LogWarning($"Given state in time has no player recorded. Destroying Player{i}");
 				Destroy(pastPlayer);
@@ -74,6 +71,9 @@ public class TimeTravel : MonoBehaviour
 				Debug.LogWarning($"Found a state in time with no player instantiated. Instantiating Player{i}");
 				InstantiatePastPlayer(i, stateInTime.Position, stateInTime.Rotation);
 			}
+		}
+		if (numberOfPastPlayers == 0) {
+			TimeTravelling = false;
 		}
 		{ 
 			var stateInTime = momentsInTime.GetInanimateObject("LargeDoor", time);
