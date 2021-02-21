@@ -83,7 +83,7 @@ public class TimeTravel : MonoBehaviour
 			if (stateInTime != null && largeDoor != null) {
 				if (stateInTime.IsOpen && !largeDoor.IsOpenByPastAction()) {
 					largeDoor.OpenByPastAction();
-				} else if (!stateInTime.IsOpen && largeDoor.IsOpenByPastAction()) {
+				} else if ( !stateInTime.IsOpen && largeDoor.IsOpenByPastAction() ) {
 					largeDoor.CloseByPastAction();
 				}
 			}
@@ -119,8 +119,7 @@ public class TimeTravel : MonoBehaviour
 			//playerController.ResetLatestAction();
 			momentsInTime.AddObject(stateInTime);
 		}
-	
-		if (!TimeTravelling) {
+		{
 			var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
 			foreach (var largeDoor in largeDoors) {
 				var stateInTime = new InanimateDoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
