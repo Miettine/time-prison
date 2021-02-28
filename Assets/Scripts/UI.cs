@@ -12,7 +12,7 @@ public class UI : MonoBehaviour
 	void Awake() {
 		timeText = GameObject.Find("TimeText").GetComponent<Text>();
 		doorOpenText = GameObject.Find("DoorOpenText").GetComponent<Text>();
-
+		
 		doorOpenText.text = "";
 	}
 

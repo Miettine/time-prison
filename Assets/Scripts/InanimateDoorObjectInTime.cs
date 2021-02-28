@@ -6,4 +6,8 @@
 		ObjectType = type;
 		IsOpen = isOpen;
 	}
+
+	public override string ToString() {
+		return $"{Id} ({base.Time}):{IsOpen}";
+	}
 }

@@ -19,6 +19,8 @@ public class TimeTravel : MonoBehaviour
 
 	private List<float> timeTravelAmounts = new List<float>();
 
+	private List<string> trackedInanimateObjectIds = new List<string>();
+
 	[SerializeField]
 	private float snapshotRate = 0.1f;
 
@@ -34,6 +36,11 @@ public class TimeTravel : MonoBehaviour
 		playerController = GameObject.FindObjectOfType<Player>();
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
 		game = FindObjectOfType<Game>();
+
+		var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
+		foreach (var largeDoor in largeDoors) {
+			trackedInanimateObjectIds.Add(largeDoor.name);
+		}
 	}
 
 	// Start is called before the first frame update
@@ -75,10 +82,15 @@ public class TimeTravel : MonoBehaviour
 		if (numberOfPastPlayers == 0) {
 			TimeTravelling = false;
 		}
-		{ 
-			var stateInTime = momentsInTime.GetInanimateObject("LargeDoor", time);
+		foreach (var id in trackedInanimateObjectIds) {
 
-			var largeDoor = GameObject.FindObjectOfType<LargeDoor>();
+			var stateInTime = momentsInTime.GetInanimateObject(id, time);
+			var doorGameObject = GameObject.Find(id);
+			if (doorGameObject == null) {
+				throw new Exception($"Did not find door with name {id}");
+			}
+
+			var largeDoor = doorGameObject.GetComponent<LargeDoor>();
 
 			if (stateInTime != null && largeDoor != null) {
 				if (stateInTime.IsOpen && !largeDoor.IsOpenByPastAction()) {
