@@ -147,7 +147,7 @@ public class TimeTravel : MonoBehaviour
 	}
 
 	private float GetTime() {
-		return UnityEngine.Time.time - timeTravelAmounts.Sum();
+		return UnityEngine.Time.timeSinceLevelLoad - timeTravelAmounts.Sum();
 	}
 	private int GetTimeTravelCount() {
 		return timeTravelAmounts.Count;

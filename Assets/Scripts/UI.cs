@@ -20,8 +20,12 @@ public class UI : MonoBehaviour
 		timeText.text = time.ToString("Time: 0");
 	}
 
+	internal void ShowDoorOpenPermanentNotification(string notificationText) {
+		doorOpenText.text = notificationText;
+	}
+
 	internal void ShowDoorOpenPermanentNotification() {
-		doorOpenText.text = "Door open";
+		ShowDoorOpenPermanentNotification("Door open");
 	}
 
 	internal void ShowDoorClosed() {
@@ -38,7 +42,7 @@ public class UI : MonoBehaviour
 	}
 
 	void ShowDoorOpenText(float seconds) {
-		doorOpenText.text = Math.Ceiling(seconds).ToString("Door open for 0 seconds");
+		doorOpenText.text = Math.Ceiling(seconds).ToString($"Door open for 0 seconds");
 	}
 
 	IEnumerator CountDownShowDoorOpen(float wait) {

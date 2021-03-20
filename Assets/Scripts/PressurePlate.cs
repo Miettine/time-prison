@@ -14,7 +14,12 @@ public class PressurePlate : MonoBehaviour
 
 	private void Awake() {
 		if (door == null) {
-			throw new System.Exception("Reference to door is null. Please set the reference.");
+			var doors = FindObjectsOfType<LargeDoor>();
+			if (doors.Length == 1) {
+				door = doors[0];
+			} else {
+				throw new System.Exception("Please set a reference to a door.");
+			}
 		}
 
 		playerLayer = LayerMask.NameToLayer("Player");
