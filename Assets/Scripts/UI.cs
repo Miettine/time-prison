@@ -9,10 +9,22 @@ public class UI : MonoBehaviour
 	Text timeText;
 	Text doorOpenText;
 
+	GameObject blueKeyCardIndicator;
+	GameObject greenKeyCardIndicator;
+	GameObject yellowKeyCardIndicator;
+
 	void Awake() {
 		timeText = GameObject.Find("TimeText").GetComponent<Text>();
 		doorOpenText = GameObject.Find("DoorOpenText").GetComponent<Text>();
-		
+
+		blueKeyCardIndicator = GameObject.Find("BlueKeyCardIndicator");
+		greenKeyCardIndicator = GameObject.Find("GreenKeyCardIndicator");
+		yellowKeyCardIndicator = GameObject.Find("YellowKeyCardIndicator");
+
+		blueKeyCardIndicator.SetActive(false);
+		greenKeyCardIndicator.SetActive(false);
+		yellowKeyCardIndicator.SetActive(false);
+
 		doorOpenText.text = "";
 	}
 
@@ -58,5 +70,19 @@ public class UI : MonoBehaviour
 		doorOpenText.text = "Door closed";
 		yield return new WaitForSeconds(1.5f);
 		doorOpenText.text = "";
+	}
+
+	internal void ShowKeyCardIndicator(KeyCardType type, bool visible) {
+		switch (type) {
+			case KeyCardType.Blue:
+				blueKeyCardIndicator.SetActive(visible);
+				break;
+			case KeyCardType.Green:
+				greenKeyCardIndicator.SetActive(visible);
+				break;
+			case KeyCardType.Yellow:
+				yellowKeyCardIndicator.SetActive(visible);
+				break;
+		}
 	}
 }

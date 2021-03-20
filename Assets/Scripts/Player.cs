@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using static CharacterInTime;
 
@@ -17,7 +18,11 @@ public class Player : MonoBehaviour
 	[SerializeField]
 	private float lookTowardsRotationModifier = 250f;
 
+	UI ui;
+
 	Quaternion lastLookDirection;
+
+	ISet<KeyCardType> keycards = new HashSet<KeyCardType>();
 
 	internal ActionType LatestAction { get; set; }
 
@@ -27,6 +32,7 @@ public class Player : MonoBehaviour
 		rigidbody = GetComponent<Rigidbody>();
 		timeTracker = FindObjectOfType<TimeTravel>();
 		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
+		ui = FindObjectOfType<UI>();
 	}
 
 	// Start is called before the first frame update
@@ -54,7 +60,17 @@ public class Player : MonoBehaviour
 			InteractWithNearbyObjects();
 		}
 	}
-	
+
+	private void OnTriggerEnter(Collider other) {
+		if (other.gameObject.layer == LayerMask.NameToLayer("KeyCards")) {
+			var card = other.gameObject.GetComponentInChildren<KeyCard>();
+			var type = card.GetKeyCardType();
+			keycards.Add(type);
+			ui.ShowKeyCardIndicator(type, true);
+			Destroy(other.gameObject);
+		}
+	}
+
 	private void InteractWithNearbyObjects() {
 		var interactableObjectsColliders = Physics.OverlapSphere(transform.position, 2f, interactableObjectsLayerMask);
 
