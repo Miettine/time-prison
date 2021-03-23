@@ -11,7 +11,9 @@ GameObject:
   - component: {fileID: 3358016266022405180}
   - component: {fileID: 3358016266022405171}
   - component: {fileID: 3358016266022405170}
-  m_Layer: 8
+  - component: {fileID: 3358016265944842300}
+  - component: {fileID: 3358016265944842302}
+  m_Layer: 7
   m_Name: KeyCardTerminal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3358016266022405183}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.62, z: 0}
+  m_LocalPosition: {x: -1.575, y: 1.62, z: -0.03}
   m_LocalScale: {x: 0.85, y: 1.24, z: 0.7}
   m_Children: []
   m_Father: {fileID: 3358016267498513413}
@@ -81,6 +83,33 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &3358016265944842300
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3358016266022405183}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1.0000001, z: 1}
+  m_Center: {x: 0, y: 0.00000011920929, z: 0}
+--- !u!114 &3358016265944842302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3358016266022405183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8b9471e37b58b24dad728a531c3d623, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  openForTime: 5
 --- !u!1 &3833303831399636422
 GameObject:
   m_ObjectHideFlags: 0
@@ -167,8 +196,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7678391013777235679}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.5, z: 0}
-  m_LocalScale: {x: 4.85, y: 3, z: 0.52}
+  m_LocalPosition: {x: 0, y: 1.5, z: -0}
+  m_LocalScale: {x: 4, y: 3, z: 0.3}
   m_Children: []
   m_Father: {fileID: 3358016267498513413}
   m_RootOrder: 0
