@@ -5,9 +5,7 @@ using UnityEngine;
 
 public class LargeDoor : MonoBehaviour
 {
-	MeshRenderer meshRenderer;
-	//Collider triggerCollider;
-	new Collider collider;
+	GameObject door;
 
 	bool isOpen = false;
 
@@ -16,10 +14,7 @@ public class LargeDoor : MonoBehaviour
 	//TimeTravel timeTravel;
 
 	private void Awake() {
-		//timeTravel = FindObjectOfType<TimeTravel>();
-		meshRenderer = GetComponentInChildren<MeshRenderer>();
-		//triggerCollider = GetComponent<Collider>();
-		collider = transform.GetChild(0).GetComponent<Collider>();
+		door = transform.GetChild(0).gameObject;
 	}
 
 	public void OpenByPastAction() {
@@ -44,8 +39,7 @@ public class LargeDoor : MonoBehaviour
 	}
 
 	private void EnableGraphicsAndCollider(bool enabled) {
-		meshRenderer.enabled = enabled;
-		collider.enabled = enabled;
+		door.SetActive(enabled);
 	}
 
 	internal bool IsOpenByPresentAction() {

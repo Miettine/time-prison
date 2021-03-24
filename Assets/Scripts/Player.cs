@@ -35,6 +35,10 @@ public class Player : MonoBehaviour
 		ui = FindObjectOfType<UI>();
 	}
 
+	internal bool HasKeyCard(KeyCardType type) {
+		return keycards.Contains(type);
+	}
+
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -90,19 +94,7 @@ public class Player : MonoBehaviour
 			var keyCardTerminal = collider.gameObject.GetComponentInParent<KeyCardTerminal>();
 
 			if (keyCardTerminal != null) {
-				if (keycards.Contains(keyCardTerminal.GetKeyCardType())) {
-					/**
-					 * In reality the player would present a keycard to the door and the door would check for permissions.
-					 * Here the permissions check is done within the player-object.
-					 * The way this door's security functions is not realistic nor very "object-oriented". 
-					 * Spending time redesigning this code to be more "realistic" is not worth the time and effort.
-					 * The change would be invisible from the player's perspective and I will rather spend the time 
-					 * doing something else that players will like.
-					*/
-					keyCardTerminal.Interact();
-				} else {
-					Debug.Log("You do not have the correct keycard to open this door");
-				}
+				keyCardTerminal.Interact(this);
 				
 				return;
 			}

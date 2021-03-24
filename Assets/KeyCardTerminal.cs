@@ -21,11 +21,25 @@ public class KeyCardTerminal : MonoBehaviour {
 		return type;
 	}
 
-	public void Interact() {
-		CancelInvoke();
-		door.OpenByPresentAction();
+	private void OnTriggerEnter(Collider other) {
+		if (other.gameObject.layer == LayerMask.NameToLayer("Player")) {
+			Interact(other.gameObject.GetComponentInParent<Player>());
+		}
+	}
 
-		Invoke("CloseDoor", openForTime);
+	/*private void OnTriggerExit(Collider other) {
+		CloseDoor();
+	}*/
+
+	public void Interact(Player player) {
+
+		if (player.HasKeyCard(type)) {
+			CancelInvoke();
+			door.OpenByPresentAction();
+			Invoke("CloseDoor", openForTime);
+		} else {
+			Debug.Log("You do not have the correct keycard to open this door");
+		}
 	}
 	void CloseDoor() {
 		door.CloseByPresentAction();
