@@ -8,20 +8,13 @@ public class CameraControl : MonoBehaviour {
 	private Vector3 relativePositionToPlayer;
 
 	private void Awake() {
-
+		playerTransform = FindObjectOfType<Player>().transform;
+		relativePositionToPlayer = transform.position - playerTransform.position;
 	}
 
-	// Start is called before the first frame update
-	void Start()
-	{
-		var pc = GameObject.Find("Player").GetComponent<Player>();
-		playerTransform = pc.transform;
-		relativePositionToPlayer = playerTransform.position + transform.position;
-	}
-
-	// Update is called once per frame
 	void Update()
 	{
+
 		this.transform.position = playerTransform.position + relativePositionToPlayer;
 	}
 }
