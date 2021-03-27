@@ -24,6 +24,9 @@ public class Player : MonoBehaviour
 	[SerializeField]
 	float runningSoundWaveRadius = 3f;
 
+	[SerializeField]
+	float sneakingSpeedMultiplier = 0.5f;
+
 	UI ui;
 
 	Quaternion lastLookDirection;
@@ -68,7 +71,9 @@ public class Player : MonoBehaviour
 			float v = Input.GetAxisRaw("Vertical");
 			float h = Input.GetAxisRaw("Horizontal");
 
-			ProcessMovementInput(new Vector3(h, 0f, v));
+			bool sneaking = Input.GetKey(KeyCode.C);
+
+			ProcessMovementInput(new Vector3(h, 0f, v), sneaking);
 		}
 		
 		if (Input.GetKeyUp(KeyCode.Space)) {
@@ -117,7 +122,7 @@ public class Player : MonoBehaviour
 		}
 	}
 
-	private void ProcessMovementInput(Vector3 direction){
+	void ProcessMovementInput(Vector3 direction, bool sneaking){
 		// I want the player character to rotate slowly towards the direction that the player pushed the arrow keys in. The following code accomplishes this.
 		
 		Quaternion lookRotation;
@@ -135,10 +140,17 @@ public class Player : MonoBehaviour
 		{
 			lastLookDirection = lookRotation;
 
-			rigidbody.AddForce(direction.normalized * moveSpeed * UnityEngine.Time.deltaTime);
+			float movementForceRunning =  moveSpeed * UnityEngine.Time.deltaTime;
 
-			if (timeTravel.TimeTravelling) {
+			var movementVector = sneaking ? direction.normalized * movementForceRunning * sneakingSpeedMultiplier : direction.normalized * movementForceRunning;
+
+			rigidbody.AddForce(movementVector);
+
+			if (timeTravel.TimeTravelling && !sneaking) {
 				SendSoundWaves();
+			} else if (timeTravel.TimeTravelling && sneaking) {
+				CancelInvoke("HideSoundIndicator");
+				HideSoundIndicator();
 			}
 
 			LatestAction = CharacterInTime.ActionType.Walking;
