@@ -7,6 +7,8 @@ public class Player : MonoBehaviour
 {
 
 	new Rigidbody rigidbody;
+	new Collider physicsCollisionCollider;
+
 	TimeTravel timeTravel;
 
 	[SerializeField]
@@ -37,6 +39,8 @@ public class Player : MonoBehaviour
 
 	int pastPlayerLayer;
 
+	GameObject lockerHiddenIn;
+
 	internal ActionType LatestAction { get; set; }
 
 	int interactableObjectsLayerMask;
@@ -44,6 +48,7 @@ public class Player : MonoBehaviour
 	private void Awake() {
 		pastPlayerLayer = LayerMask.GetMask("PastPlayer");
 
+		physicsCollisionCollider = GetComponentInChildren<Collider>();
 		rigidbody = GetComponent<Rigidbody>();
 		timeTravel = FindObjectOfType<TimeTravel>();
 		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
@@ -67,7 +72,9 @@ public class Player : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		{
+		bool isHiding = IsHiding();
+
+		if (!isHiding) {
 			float v = Input.GetAxisRaw("Vertical");
 			float h = Input.GetAxisRaw("Horizontal");
 
@@ -82,8 +89,32 @@ public class Player : MonoBehaviour
 			return;
 		}
 		if (Input.GetKeyDown(KeyCode.E)) {
-			InteractWithNearbyObjects();
+			if (isHiding) {
+				LeaveLocker(lockerHiddenIn);
+			} else {
+				InteractWithNearbyObjects();
+			}
 		}
+	}
+
+	bool IsHiding() {
+		return lockerHiddenIn != null;
+	}
+	
+	void HideInLocker(GameObject locker) {
+		this.transform.position = locker.transform.position;
+		physicsCollisionCollider.enabled = false;
+		rigidbody.isKinematic = true;
+
+		lockerHiddenIn = locker;
+	}
+
+	void LeaveLocker(GameObject locker) {
+		physicsCollisionCollider.enabled = true;
+		rigidbody.isKinematic = false;
+		this.transform.position = locker.transform.position + new Vector3(0f, 0f, -1.5f);
+
+		lockerHiddenIn = null;
 	}
 
 	private void OnTriggerEnter(Collider other) {
@@ -119,12 +150,20 @@ public class Player : MonoBehaviour
 				
 				return;
 			}
+
+			if (collider.gameObject.tag == "Locker") {
+				HideInLocker(collider.gameObject.transform.parent.gameObject);
+			}
 		}
 	}
 
 	void ProcessMovementInput(Vector3 direction, bool sneaking){
+		if (IsHiding()) {
+			return;
+		}
+
 		// I want the player character to rotate slowly towards the direction that the player pushed the arrow keys in. The following code accomplishes this.
-		
+
 		Quaternion lookRotation;
 		if (direction.magnitude > deadzone) {
 			 lookRotation = Quaternion.LookRotation(direction, Vector3.up);
