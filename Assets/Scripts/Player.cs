@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
 {
 
 	new Rigidbody rigidbody;
-	TimeTravel timeTracker;
+	TimeTravel timeTravel;
 
 	[SerializeField]
 	private float deadzone = 0.1f;
@@ -18,21 +18,37 @@ public class Player : MonoBehaviour
 	[SerializeField]
 	private float lookTowardsRotationModifier = 250f;
 
+	[SerializeField]
+	float hideSoundIndicatorDelay = 0.5f;
+
+	[SerializeField]
+	float runningSoundWaveRadius = 3f;
+
 	UI ui;
 
 	Quaternion lastLookDirection;
 
 	ISet<KeyCardType> keycards = new HashSet<KeyCardType>();
 
+	GameObject soundIndicator;
+
+	int pastPlayerLayer;
+
 	internal ActionType LatestAction { get; set; }
 
 	int interactableObjectsLayerMask;
 
 	private void Awake() {
+		pastPlayerLayer = LayerMask.GetMask("PastPlayer");
+
 		rigidbody = GetComponent<Rigidbody>();
-		timeTracker = FindObjectOfType<TimeTravel>();
+		timeTravel = FindObjectOfType<TimeTravel>();
 		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
 		ui = FindObjectOfType<UI>();
+
+		var soundIndicatorTransform = transform.Find("SoundIndicator");
+		soundIndicatorTransform.localScale = new Vector3(runningSoundWaveRadius*2, 1, runningSoundWaveRadius*2);
+		soundIndicator = soundIndicatorTransform.gameObject;
 	}
 
 	internal bool HasKeyCard(KeyCardType type) {
@@ -42,7 +58,7 @@ public class Player : MonoBehaviour
 	// Start is called before the first frame update
 	void Start()
 	{
-		
+		soundIndicator.SetActive(false);
 	}
 
 	// Update is called once per frame
@@ -57,7 +73,7 @@ public class Player : MonoBehaviour
 		
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			LatestAction = CharacterInTime.ActionType.StartTimeTravel;
-			timeTracker.StartTimeTravelToBeginning();
+			timeTravel.StartTimeTravelToBeginning();
 			return;
 		}
 		if (Input.GetKeyDown(KeyCode.E)) {
@@ -121,9 +137,33 @@ public class Player : MonoBehaviour
 
 			rigidbody.AddForce(direction.normalized * moveSpeed * UnityEngine.Time.deltaTime);
 
+			if (timeTravel.TimeTravelling) {
+				SendSoundWaves();
+			}
+
 			LatestAction = CharacterInTime.ActionType.Walking;
 		} else {
 			LatestAction = CharacterInTime.ActionType.Standing;
 		}
+	}
+
+	void SendSoundWaves() {
+		CancelInvoke("HideSoundIndicator");
+
+		soundIndicator.SetActive(true);
+
+		var soundOverlapSphereColliders = Physics.OverlapSphere(transform.position, runningSoundWaveRadius, pastPlayerLayer, QueryTriggerInteraction.Collide);
+		
+		foreach (var collider in soundOverlapSphereColliders) {
+			if (collider.gameObject.layer == LayerMask.NameToLayer("PastPlayer")) {
+				timeTravel.TimeParadox(TimeParadoxCause.PastPlayerHeardPresentPlayer);
+			}
+		}
+		
+		Invoke("HideSoundIndicator", hideSoundIndicatorDelay);
+	}
+
+	void HideSoundIndicator() {
+		soundIndicator.SetActive(false);
 	}
 }

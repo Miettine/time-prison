@@ -27,7 +27,7 @@ public class TimeTravel : MonoBehaviour
 	[SerializeField]
 	private TimeParadoxBehaviour behaviourOnTimeParadox = TimeParadoxBehaviour.ReloadScene;
 
-	public enum TimeParadoxBehaviour { NoEffect, DebugLog, ReloadScene }
+	private enum TimeParadoxBehaviour { NoEffect, DebugLog, ReloadScene }
 
 	private void Awake() {
 		momentsInTime = new MomentsInTime();
@@ -102,25 +102,23 @@ public class TimeTravel : MonoBehaviour
 		}
 	}
 
-	internal void TimeParadox() {
+	internal void TimeParadox(TimeParadoxCause cause) {
 		switch (behaviourOnTimeParadox) {
 			case TimeParadoxBehaviour.NoEffect:
 				break;
 			case TimeParadoxBehaviour.DebugLog:
-				DebugLogTimeParadox();
+				DebugLogTimeParadox(cause);
 				break;
 			case TimeParadoxBehaviour.ReloadScene:
-				DebugLogTimeParadox();
+				DebugLogTimeParadox(cause);
 				game.ReloadCurrentLevel();
 				break;
 		};
 	}
 
-	void DebugLogTimeParadox() {
-		Debug.Log("Time paradox!");
+	void DebugLogTimeParadox(TimeParadoxCause cause) {
+		Debug.Log($"Time paradox! Cause: {cause}");
 	}
-	
-	//internal void TimeParadox(Transform causeLocation, TimeParadoxReason reason) { }
 	
 	private void TakeSnapshot() {
 		{
