@@ -97,7 +97,7 @@ public class Player : MonoBehaviour
 		}
 	}
 
-	bool IsHiding() {
+	public bool IsHiding() {
 		return lockerHiddenIn != null;
 	}
 	

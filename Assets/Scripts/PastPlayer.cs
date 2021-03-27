@@ -13,6 +13,7 @@ public class PastPlayer : MonoBehaviour
 	int lineOfSightLayerMask;
 	int playerLayer;
 	int doorsLayer;
+	Player player;
 
 	private void Awake() {
 		timeTravel = FindObjectOfType<TimeTravel>();
@@ -29,7 +30,8 @@ public class PastPlayer : MonoBehaviour
 		fieldOfViewDegrees = light.spotAngle;
 		fieldOfViewRange = light.range;
 
-		playerTransform = FindObjectOfType<Player>().transform;
+		player = FindObjectOfType<Player>();
+		playerTransform = player.transform;
 	}
 
 	bool SeesObjectInteractionFromPresentPlayer() {
@@ -102,6 +104,9 @@ public class PastPlayer : MonoBehaviour
 	}
 	
 	private bool SeesPresentPlayer() {
+		if (player.IsHiding()) {
+			return false;
+		}
 
 		var toPlayer = playerTransform.position - this.transform.position;
 
