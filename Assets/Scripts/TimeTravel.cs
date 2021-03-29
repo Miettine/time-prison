@@ -36,16 +36,23 @@ public class TimeTravel : MonoBehaviour
 		playerController = GameObject.FindObjectOfType<Player>();
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
 		game = FindObjectOfType<Game>();
-
-		var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
-		foreach (var largeDoor in largeDoors) {
-			trackedInanimateObjectIds.Add(largeDoor.name);
-		}
 	}
 
 	// Start is called before the first frame update
 	void Start() {
 		InvokeRepeating("TakeSnapshot", snapshotRate, snapshotRate);
+
+		var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
+
+		foreach (var largeDoor in largeDoors) {
+			trackedInanimateObjectIds.Add(largeDoor.name);
+		}
+
+		var lockers = GameObject.FindObjectsOfType<Locker>();
+
+		foreach (var locker in lockers) {
+			trackedInanimateObjectIds.Add(locker.name);
+		}
 	}
 
 	// Update is called once per frame
@@ -84,13 +91,13 @@ public class TimeTravel : MonoBehaviour
 		}
 		foreach (var id in trackedInanimateObjectIds) {
 
-			var stateInTime = momentsInTime.GetInanimateObject(id, time);
-			var doorGameObject = GameObject.Find(id);
-			if (doorGameObject == null) {
-				throw new Exception($"Did not find door with name {id}");
+			var inanimateGameObject = GameObject.Find(id);
+			var stateInTime = momentsInTime.GetDoorObject(id, time);
+			if (inanimateGameObject == null) {
+				throw new Exception($"Did not find an inanimate object with name {id}");
 			}
 
-			var largeDoor = doorGameObject.GetComponent<LargeDoor>();
+			var largeDoor = inanimateGameObject.GetComponent<LargeDoor>();
 
 			if (stateInTime != null && largeDoor != null) {
 				if (stateInTime.IsOpen && !largeDoor.IsOpenByPastAction()) {
@@ -98,8 +105,32 @@ public class TimeTravel : MonoBehaviour
 				} else if ( !stateInTime.IsOpen && largeDoor.IsOpenByPastAction() ) {
 					largeDoor.CloseByPastAction();
 				}
+				return;
+			}
+
+			var stateInTime2 = momentsInTime.GetLockerObject(id, time);
+			Debug.Log(stateInTime2);
+			var locker = inanimateGameObject.GetComponent<Locker>();
+
+			if (stateInTime2 != null && locker != null) {
+				locker.OccupiedByPastPlayer = stateInTime2.occupied;
 			}
 		}
+	}
+
+	internal void PlayerHidesInLocker() {
+		var playerTransform = playerController.transform;
+
+		var stateInTime = new CharacterInTime(
+			$"Player{GetTimeTravelCount() + 1}", 
+			GetTime(), 
+			CharacterType.Player, 
+			new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), 
+			playerTransform.rotation,
+			ActionType.EnterLocker
+		);
+
+		momentsInTime.AddObject(stateInTime);
 	}
 
 	internal void TimeParadox(TimeParadoxCause cause) {
@@ -132,14 +163,22 @@ public class TimeTravel : MonoBehaviour
 		{
 			var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
 			foreach (var largeDoor in largeDoors) {
-				var stateInTime = new InanimateDoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
+				var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
+				momentsInTime.AddObject(stateInTime);
+			}
+		}
+		{
+			var lockers = GameObject.FindObjectsOfType<Locker>();
+			foreach (var locker in lockers) {
+				var stateInTime = new LockerInTime(locker.gameObject.name, GetTime(), locker.OccupiedByPresentPlayer);
+
 				momentsInTime.AddObject(stateInTime);
 			}
 		}
 	}
 
 	internal bool HasStateContradiction(string doorName, LargeDoor door) {
-		var objectPastState = momentsInTime.GetInanimateObject(doorName, GetTime());
+		var objectPastState = momentsInTime.GetDoorObject(doorName, GetTime());
 
 		return objectPastState.IsOpen != door.IsOpenByPresentAction();
 	}

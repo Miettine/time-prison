@@ -24,15 +24,7 @@ public class MomentsInTime
 		AddObject(objectInTime);
 	}
 	private T GetObject<T>(string id, float time) where T : ObjectInTime {
-		/*
-		for (int i = 0; i < statesInTime.Capacity - 1; i++) {
-			var s = statesInTime[i];
-			if (time <= s.Time) {
-				return s;
-			}
-		}
 
-		return null;*/
 		var match = objectsInTime.Find(objectInTime => 
 		id.Equals(objectInTime.Id) && 
 		objectInTime.Time >= time &&
@@ -43,5 +35,7 @@ public class MomentsInTime
 
 	public CharacterInTime GetCharacter(string id, float time) => GetObject<CharacterInTime>(id, time);
 
-	public InanimateDoorObjectInTime GetInanimateObject(string id, float time) => GetObject<InanimateDoorObjectInTime>(id, time);
+	public DoorObjectInTime GetDoorObject(string id, float time) => GetObject<DoorObjectInTime>(id, time);
+
+	public LockerInTime GetLockerObject(string id, float time) => GetObject<LockerInTime>(id, time);
 }

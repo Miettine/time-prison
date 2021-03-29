@@ -8,4 +8,8 @@
 		Id = id;
 		Time = time;
 	}
+
+	new virtual public string ToString() {
+		return $"Id {Id}, Time {Time}";
+	}
 }

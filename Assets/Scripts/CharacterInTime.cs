@@ -27,6 +27,9 @@ public class CharacterInTime : ObjectInTime {
 		Undefined,
 		Standing,
 		Walking,
-		StartTimeTravel
+		StartTimeTravel,
+		EnterLocker,
+		HidingInLocker,
+		ExitLocker
 	}
 }

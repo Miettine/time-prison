@@ -7,7 +7,7 @@ public class Player : MonoBehaviour
 {
 
 	new Rigidbody rigidbody;
-	new Collider physicsCollisionCollider;
+	Collider physicsCollisionCollider;
 
 	TimeTravel timeTravel;
 
@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
 
 	int pastPlayerLayer;
 
-	GameObject lockerHiddenIn;
+	Locker lockerHiddenIn;
 
 	internal ActionType LatestAction { get; set; }
 
@@ -90,6 +90,7 @@ public class Player : MonoBehaviour
 		}
 		if (Input.GetKeyDown(KeyCode.E)) {
 			if (isHiding) {
+				LatestAction = CharacterInTime.ActionType.ExitLocker;
 				LeaveLocker(lockerHiddenIn);
 			} else {
 				InteractWithNearbyObjects();
@@ -101,16 +102,24 @@ public class Player : MonoBehaviour
 		return lockerHiddenIn != null;
 	}
 	
-	void HideInLocker(GameObject locker) {
+	void HideInLocker(Locker locker) {
+		timeTravel.PlayerHidesInLocker();
+		locker.OccupiedByPresentPlayer = true;
+
+		LatestAction = CharacterInTime.ActionType.EnterLocker;
+		//Later there will be animations, so there will be a short delay when the player enters the locker and when they are hidden inside.
+
 		this.transform.position = locker.transform.position;
 		physicsCollisionCollider.enabled = false;
 		rigidbody.isKinematic = true;
 
 		lockerHiddenIn = locker;
+		LatestAction = CharacterInTime.ActionType.HidingInLocker;
 	}
 
-	void LeaveLocker(GameObject locker) {
+	void LeaveLocker(Locker locker) {
 		physicsCollisionCollider.enabled = true;
+		locker.OccupiedByPresentPlayer = false;
 		rigidbody.isKinematic = false;
 		this.transform.position = locker.transform.position + new Vector3(0f, 0f, -1.5f);
 
@@ -152,7 +161,7 @@ public class Player : MonoBehaviour
 			}
 
 			if (collider.gameObject.tag == "Locker") {
-				HideInLocker(collider.gameObject.transform.parent.gameObject);
+				HideInLocker(collider.gameObject.GetComponentInParent<Locker>());
 			}
 		}
 	}
@@ -188,7 +197,6 @@ public class Player : MonoBehaviour
 			if (timeTravel.TimeTravelling && !sneaking) {
 				SendSoundWaves();
 			} else if (timeTravel.TimeTravelling && sneaking) {
-				CancelInvoke("HideSoundIndicator");
 				HideSoundIndicator();
 			}
 
@@ -215,6 +223,7 @@ public class Player : MonoBehaviour
 	}
 
 	void HideSoundIndicator() {
+		CancelInvoke("HideSoundIndicator");
 		soundIndicator.SetActive(false);
 	}
 }

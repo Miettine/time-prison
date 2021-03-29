@@ -3,5 +3,5 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum TimeParadoxCause {
-	PastPlayerSawPresentPlayer, PastPlayerHeardPresentPlayer
+	PastPlayerSawPresentPlayer, PastPlayerHeardPresentPlayer, PastPlayerFoundPresentPlayerHiding
 }
