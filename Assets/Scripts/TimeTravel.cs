@@ -109,6 +109,7 @@ public class TimeTravel : MonoBehaviour
 			}
 
 			var stateInTime2 = momentsInTime.GetLockerObject(id, time);
+
 			Debug.Log(stateInTime2);
 			var locker = inanimateGameObject.GetComponent<Locker>();
 

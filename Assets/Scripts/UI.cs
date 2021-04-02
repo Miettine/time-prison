@@ -41,7 +41,7 @@ public class UI : MonoBehaviour
 	}
 
 	internal void ShowDoorClosed() {
-		StartCoroutine(ShowDoorClosedNotification());
+		StartCoroutine(ShowNotification("Door closed"));
 	}
 
 	internal void ShowDoorOpenForSeconds(float openForTime) {
@@ -66,8 +66,12 @@ public class UI : MonoBehaviour
 		ShowDoorClosed();
 	}
 
-	IEnumerator ShowDoorClosedNotification() {
-		doorOpenText.text = "Door closed";
+	internal void ShowAlarm() {
+		StartCoroutine(ShowNotification("Alarm triggered."));
+	}
+
+	IEnumerator ShowNotification(string text) {
+		doorOpenText.text = text;
 		yield return new WaitForSeconds(1.5f);
 		doorOpenText.text = "";
 	}
