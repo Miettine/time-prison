@@ -67,7 +67,7 @@ public class UI : MonoBehaviour
 	}
 
 	internal void ShowAlarm() {
-		StartCoroutine(ShowNotification("Alarm triggered."));
+		StartCoroutine(ShowNotification("Alarm triggered. Lockdown in effect."));
 	}
 
 	IEnumerator ShowNotification(string text) {

@@ -98,8 +98,10 @@ public class PastPlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if (SeesPresentPlayer() || SeesObjectInteractionFromPresentPlayer()) {
+		if (SeesPresentPlayer()) {
 			timeTravel.TimeParadox(TimeParadoxCause.PastPlayerSawPresentPlayer);
+		} else if (SeesObjectInteractionFromPresentPlayer()) {
+			timeTravel.TimeParadox(TimeParadoxCause.PastPlayerSawObjectInteractionFromPresentPlayer);
 		}
 	}
 	

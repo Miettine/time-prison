@@ -104,13 +104,14 @@ public class TimeTravel : MonoBehaviour
 					largeDoor.OpenByPastAction();
 				} else if ( !stateInTime.IsOpen && largeDoor.IsOpenByPastAction() ) {
 					largeDoor.CloseByPastAction();
+				} else if (stateInTime.IsOpen && largeDoor.IsOpenByPastAction()) {
+					largeDoor.OpenByPastAction();
 				}
 				return;
 			}
 
 			var stateInTime2 = momentsInTime.GetLockerObject(id, time);
 
-			Debug.Log(stateInTime2);
 			var locker = inanimateGameObject.GetComponent<Locker>();
 
 			if (stateInTime2 != null && locker != null) {
@@ -153,6 +154,7 @@ public class TimeTravel : MonoBehaviour
 	}
 	
 	private void TakeSnapshot() {
+
 		{
 			var playerTransform = playerController.transform;
 			var l = (ActionType)(int)playerController.LatestAction;
