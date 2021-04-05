@@ -9,12 +9,14 @@ public class SecuritySystem : MonoBehaviour
 
 	UI ui;
 
-	[SerializeField]
-	LargeDoor[] doors;
+	ISet<LargeDoor> doors = new HashSet<LargeDoor>();
 
 	private void Awake()
 	{
-		if (doors.Length == 0) {
+		foreach( Transform child in transform ) {
+			doors.Add(child.GetComponent<LargeDoor>());
+		}
+		if (doors.Count == 0) {
 			throw new Exception("Security system has no doors set");
 		}
 		ui = FindObjectOfType<UI>();
