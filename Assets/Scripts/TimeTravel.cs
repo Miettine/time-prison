@@ -107,7 +107,7 @@ public class TimeTravel : MonoBehaviour
 				} else if (stateInTime.IsOpen && largeDoor.IsOpenByPastAction()) {
 					largeDoor.OpenByPastAction();
 				}
-				return;
+				continue;
 			}
 
 			var stateInTime2 = momentsInTime.GetLockerObject(id, time);

@@ -37,62 +37,65 @@ public class PastPlayer : MonoBehaviour
 	bool SeesObjectInteractionFromPresentPlayer() {
 		//TODO: Eliminate repeated code between this and SeesPresentPlayer.
 
-		var door = FindObjectOfType<LargeDoor>();
+		var doors = FindObjectsOfType<LargeDoor>();
+		foreach (var door in doors) {
 
-		if (door == null) {
-			return false;
+			if (door == null) {
+				return false;
+			}
+			var targetTransform = door.transform;
+
+			var toTarget = targetTransform.position - this.transform.position;
+
+			bool withinRange = toTarget.magnitude < fieldOfViewRange;
+
+			if (!withinRange) {
+				return false;
+			}
+
+			//The direction where this past player character is pointing
+			Vector3 lookDirection = transform.rotation * Vector3.forward;
+
+			var lookDirectionToTargetAngle = Vector3.Angle(lookDirection, toTarget);
+
+			bool withinFieldOfViewAngle = lookDirectionToTargetAngle < fieldOfViewDegrees / 2;
+
+			if (!withinFieldOfViewAngle) {
+				return false;
+			}
+
+			var pos = this.transform.position;
+
+			var vectorAtEyePoint = new Vector3(pos.x, pos.y + 1.7f - 0.15f, pos.z);
+
+			Ray ray = new Ray(vectorAtEyePoint, toTarget);
+			Debug.DrawRay(vectorAtEyePoint, toTarget, Color.red);
+
+			bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, LayerMask.GetMask("Doors"), QueryTriggerInteraction.Collide);
+
+			if (!hasRaycastHit) {
+				/*
+				Previous checks to withinRange and withinFieldOfViewAngle should have eliminated the possibility of not hitting 
+				anything with the raycast. This is unexpected behaviour so we are logging this as a warning.
+				*/
+				Debug.LogWarning("No raycast hit was detected when determining line of sight occlusion.");
+				return false;
+			}
+
+			var collider = hitInfo.collider;
+
+			if (collider == null) {
+				//Failing to find a collider shouldn't be possible, so I am throwing an error.
+				throw new Exception("Did not find a collider when determining line of sight occlusion.");
+			}
+			//Debug.Log($"{collider.gameObject.layer} != {collider.gameObject.layer}");
+			if (collider.gameObject.layer != doorsLayer) {
+				return false;
+			}
+
+			return timeTravel.HasStateContradiction(door.name, door);
 		}
-		var targetTransform = door.transform;
-
-		var toTarget = targetTransform.position - this.transform.position;
-
-		bool withinRange = toTarget.magnitude < fieldOfViewRange;
-
-		if (!withinRange) {
-			return false;
-		}
-
-		//The direction where this past player character is pointing
-		Vector3 lookDirection = transform.rotation * Vector3.forward;
-
-		var lookDirectionToTargetAngle = Vector3.Angle(lookDirection, toTarget);
-
-		bool withinFieldOfViewAngle = lookDirectionToTargetAngle < fieldOfViewDegrees / 2;
-
-		if (!withinFieldOfViewAngle) {
-			return false;
-		}
-
-		var pos = this.transform.position;
-
-		var vectorAtEyePoint = new Vector3(pos.x, pos.y + 1.7f - 0.15f, pos.z);
-
-		Ray ray = new Ray(vectorAtEyePoint, toTarget);
-		Debug.DrawRay(vectorAtEyePoint, toTarget, Color.red);
-
-		bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, LayerMask.GetMask("Doors"), QueryTriggerInteraction.Collide);
-
-		if (!hasRaycastHit) {
-			/*
-			Previous checks to withinRange and withinFieldOfViewAngle should have eliminated the possibility of not hitting 
-			anything with the raycast. This is unexpected behaviour so we are logging this as a warning.
-			*/
-			Debug.LogWarning("No raycast hit was detected when determining line of sight occlusion.");
-			return false;
-		}
-
-		var collider = hitInfo.collider;
-
-		if (collider == null) {
-			//Failing to find a collider shouldn't be possible, so I am throwing an error.
-			throw new Exception("Did not find a collider when determining line of sight occlusion.");
-		}
-		//Debug.Log($"{collider.gameObject.layer} != {collider.gameObject.layer}");
-		if (collider.gameObject.layer != doorsLayer) {
-			return false;
-		}
-
-		return timeTravel.HasStateContradiction(door.name, door);
+		return false;
 	}
 
 	// Update is called once per frame

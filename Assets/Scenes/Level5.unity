@@ -123,6 +123,64 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &52285459 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4968817356197003526, guid: e87197c45f9d46d419d75f35bf873a0b,
+    type: 3}
+  m_PrefabInstance: {fileID: 363464517}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af6d0a493678fa74a856680f15b41011, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &201681369
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 201681371}
+  - component: {fileID: 201681370}
+  m_Layer: 0
+  m_Name: SecuritySystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &201681370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 201681369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc534c01dee3a114a8dd4dfb34e725a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  doors:
+  - {fileID: 6481183623090005981}
+  - {fileID: 52285459}
+--- !u!4 &201681371
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 201681369}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &347126325
 GameObject:
   m_ObjectHideFlags: 0
@@ -173,12 +231,12 @@ PrefabInstance:
     - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
       propertyPath: m_RootOrder
-      value: 12
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -16.08
+      value: -13.86
       objectReference: {fileID: 0}
     - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
@@ -228,7 +286,7 @@ PrefabInstance:
     - target: {fileID: 4968817356197003545, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
       propertyPath: m_Name
-      value: LockingDoor (1)
+      value: LockingDoor2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e87197c45f9d46d419d75f35bf873a0b, type: 3}
@@ -1887,8 +1945,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.0000002
+      objectReference: {fileID: 0}
+    - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.0000002
+      objectReference: {fileID: 0}
+    - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
+        type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.44
+      value: -5.22
       objectReference: {fileID: 0}
     - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
@@ -1908,7 +1976,7 @@ PrefabInstance:
     - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
@@ -1918,7 +1986,7 @@ PrefabInstance:
     - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4968817356197003527, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
@@ -1938,7 +2006,7 @@ PrefabInstance:
     - target: {fileID: 4968817356197003545, guid: e87197c45f9d46d419d75f35bf873a0b,
         type: 3}
       propertyPath: m_Name
-      value: LockingDoor
+      value: LockingDoor1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e87197c45f9d46d419d75f35bf873a0b, type: 3}
@@ -1962,7 +2030,7 @@ PrefabInstance:
     - target: {fileID: 4644251598251777021, guid: 908868da818930e4eb54d6469942b738,
         type: 3}
       propertyPath: m_RootOrder
-      value: 11
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 4644251598251777021, guid: 908868da818930e4eb54d6469942b738,
         type: 3}
