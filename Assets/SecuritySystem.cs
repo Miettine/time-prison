@@ -23,13 +23,22 @@ public class SecuritySystem : MonoBehaviour
 	}
 
 	void Start() {
-		foreach (var door in doors) {
-			door.OpenByPastAction();
-		}
+		ResetDoors();
+	}
+
+	internal void OnTimeTravelStarted() {
+		alarmByPresentAction = false;
+		ResetDoors();
 	}
 
 	internal void DetectedPlayer() {
 		Lockdown();
+	}
+
+	void ResetDoors() {
+		foreach (var door in doors) {
+			door.OpenByPastAction();
+		}
 	}
 
 	void Lockdown() {

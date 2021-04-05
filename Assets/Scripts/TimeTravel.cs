@@ -224,7 +224,12 @@ public class TimeTravel : MonoBehaviour
 
 			InstantiatePastPlayer(i, state.Position, state.Rotation);
 		}
-		//var recorder = playerController.GetComponent<TimeRecorder>();
+
+		var securitySystem = FindObjectOfType<SecuritySystem>();
+
+		if (securitySystem != null) {
+			securitySystem.OnTimeTravelStarted();
+		}
 	}
 
 	private void InstantiatePastPlayer(int playerId, Vector3 position, Quaternion rotation) {
