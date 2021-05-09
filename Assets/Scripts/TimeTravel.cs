@@ -112,7 +112,8 @@ public class TimeTravel : MonoBehaviour
 
 				//Note: I do not make any checks of largeDoor.IsOpenByPresentAction() here.
 				//This class does not deal with opening things by present action.
-				//The Player-class calls LargeDoor::OpenByPresentAction directly
+				//The Player interacts with objects like ButtonPedestal and PressurePlate.
+				//They call LargeDoor::OpenByPresentAction
 
 				if (wasOpenInTimeStateRecords && isOpenedNowByPastAction) {
 					//No effect.
