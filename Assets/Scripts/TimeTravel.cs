@@ -100,12 +100,28 @@ public class TimeTravel : MonoBehaviour
 			var largeDoor = inanimateGameObject.GetComponent<LargeDoor>();
 
 			if (stateInTime != null && largeDoor != null) {
-				if (stateInTime.IsOpen && !largeDoor.IsOpenByPastAction()) {
+				//Wrapping my head around this logic has been difficult.
+				//Some of these if-clauses and helper variables are redundant.
+
+				bool wasOpenInTimeStateRecords = stateInTime.IsOpen;
+				bool wasClosedInTimeStateRecords = !stateInTime.IsOpen;
+
+				bool isOpenedNowByPastAction = largeDoor.IsOpenByPastAction();
+				
+				bool isClosedNowByPastAction = !largeDoor.IsOpenByPastAction();
+
+				//Note: I do not make any checks of largeDoor.IsOpenByPresentAction() here.
+				//This class does not deal with opening things by present action.
+				//The Player-class calls LargeDoor::OpenByPresentAction directly
+
+				if (wasOpenInTimeStateRecords && isOpenedNowByPastAction) {
+					//No effect.
+				} else if (wasOpenInTimeStateRecords && isClosedNowByPastAction) {
 					largeDoor.OpenByPastAction();
-				} else if ( !stateInTime.IsOpen && largeDoor.IsOpenByPastAction() ) {
+				} else if (wasClosedInTimeStateRecords && isOpenedNowByPastAction) {
 					largeDoor.CloseByPastAction();
-				} else if (stateInTime.IsOpen && largeDoor.IsOpenByPastAction()) {
-					largeDoor.OpenByPastAction();
+				} else if (wasClosedInTimeStateRecords && isClosedNowByPastAction) {
+					//No effect.
 				}
 				continue;
 			}

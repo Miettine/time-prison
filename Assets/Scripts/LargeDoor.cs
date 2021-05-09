@@ -21,21 +21,25 @@ public class LargeDoor : MonoBehaviour
 		pastStateIsOpen = true;
 		isOpen = true;
 		EnableGraphicsAndCollider(false);
+		Debug.Log("OpenByPastAction");
 	}
 
 	public void OpenByPresentAction() {
 		isOpen = true;
 		EnableGraphicsAndCollider(false);
+		Debug.Log("OpenByPresentAction");
 	}
 
 	public void CloseByPastAction() {
 		pastStateIsOpen = false;
 		isOpen = false;
 		EnableGraphicsAndCollider(true);
+		Debug.Log("CloseByPastAction");
 	}
 	public void CloseByPresentAction() {
 		isOpen = false;
 		EnableGraphicsAndCollider(true);
+		Debug.Log("CloseByPresentAction");
 	}
 
 	private void EnableGraphicsAndCollider(bool enabled) {
