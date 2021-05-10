@@ -8,34 +8,43 @@ public class LaserDetector : MonoBehaviour
 
 	LineRenderer laserLine;
 
-	private void Awake() {
+	/// <summary>
+	/// This should never have any real use in an actual level. 
+	/// Thus not making it a serialized variable, changable in the editor
+	/// </summary>
+	float maxDistance = 20f;
+
+	void Awake() {
 		securitySystem = FindObjectOfType<SecuritySystem>();
 	}
 
-	private void Start() {
+	void Start() {
 		laserLine = GetComponent<LineRenderer>();
 	}
 
-	private void Update() {
-		Ray ray = new Ray(this.transform.position, Vector3.right);
-		Debug.DrawRay(this.transform.position, Vector3.right);
-		Physics.Raycast(ray, out RaycastHit hitInfo, 20f, LayerMask.GetMask("Walls", "Player", "PastPlayer"), QueryTriggerInteraction.Ignore);
+	void Update() {
+		Ray ray = new Ray(transform.position, transform.right);
 
-		laserLine.SetPosition(0, this.transform.position);
+		Physics.Raycast(ray, 
+			out RaycastHit hitInfo, 
+			maxDistance, 
+			LayerMask.GetMask("Walls", "Player", "PastPlayer"), 
+			QueryTriggerInteraction.Ignore);
+
+		laserLine.SetPosition(0, transform.position);
+
 		if (hitInfo.collider != null) {
 			laserLine.SetPosition(1, hitInfo.point);
 
 			if (hitInfo.collider.gameObject.layer == LayerMask.NameToLayer("Player")) {
 				securitySystem.DetectedPlayer();
 			}
-
-		}else {
-			laserLine.SetPosition(1, this.transform.position+ Vector3.right *20f);
+		} else {
+			laserLine.SetPosition(1, this.transform.position + transform.right * maxDistance);
 		}
-		
 	}
 
-	private void OnTriggerEnter(Collider other) {
+	void OnTriggerEnter(Collider other) {
 		if (other.gameObject.layer == LayerMask.NameToLayer("Player")) {
 			securitySystem.DetectedPlayer();
 		}
