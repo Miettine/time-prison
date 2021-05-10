@@ -11,6 +11,8 @@ public class SecuritySystem : MonoBehaviour
 
 	ISet<LargeDoor> doors = new HashSet<LargeDoor>();
 
+	public bool AlarmByPastAction { get; internal set; }
+
 	private void Awake()
 	{
 		foreach( Transform child in transform ) {
@@ -32,6 +34,10 @@ public class SecuritySystem : MonoBehaviour
 	}
 
 	internal void DetectedPlayer() {
+		if ( !AlarmByPastAction && !alarmByPresentAction ) {
+			ui.ShowAlarm();
+		}
+		alarmByPresentAction = true;
 		Lockdown();
 	}
 
@@ -44,7 +50,7 @@ public class SecuritySystem : MonoBehaviour
 	void Lockdown() {
 		if (!alarmByPresentAction) {
 			alarmByPresentAction = true;
-			ui.ShowAlarm();
+			
 			foreach (var door in doors) {
 				door.CloseByPresentAction();
 			}

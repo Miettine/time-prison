@@ -20,10 +20,10 @@ public class MomentsInTime
 	/// </summary>
 	/// <param name="time"></param>
 	/// <param name="objectInTime"></param>
-	public void AddObject(float time, ObjectInTime objectInTime) {
+	public void AddObject(float? time, ObjectInTime objectInTime) {
 		AddObject(objectInTime);
 	}
-	private T GetObject<T>(string id, float time) where T : ObjectInTime {
+	public T GetObject<T>(string id, float time) where T : ObjectInTime {
 
 		var match = objectsInTime.Find(objectInTime => 
 		id.Equals(objectInTime.Id) && 
@@ -33,9 +33,12 @@ public class MomentsInTime
 		return (T)match;
 	}
 
-	public CharacterInTime GetCharacter(string id, float time) => GetObject<CharacterInTime>(id, time);
+	public T GetObject<T>(float time) where T : ObjectInTime {
 
-	public DoorObjectInTime GetDoorObject(string id, float time) => GetObject<DoorObjectInTime>(id, time);
+		var match = objectsInTime.Find(objectInTime =>
+		objectInTime.Time >= time &&
+		objectInTime is T);
 
-	public LockerInTime GetLockerObject(string id, float time) => GetObject<LockerInTime>(id, time);
+		return (T)match;
+	}
 }

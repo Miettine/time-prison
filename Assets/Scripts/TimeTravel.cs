@@ -65,7 +65,7 @@ public class TimeTravel : MonoBehaviour
 		int numberOfPastPlayers = 0;
 
 		for (int i = 1; i <= GetTimeTravelCount(); i++) {
-			var stateInTime = momentsInTime.GetCharacter($"Player{i}", time);
+			var stateInTime = momentsInTime.GetObject<CharacterInTime>($"Player{i}", time);
 
 			var pastPlayer = GameObject.Find($"Player{i}");
 
@@ -92,7 +92,7 @@ public class TimeTravel : MonoBehaviour
 		foreach (var id in trackedInanimateObjectIds) {
 
 			var inanimateGameObject = GameObject.Find(id);
-			var stateInTime = momentsInTime.GetDoorObject(id, time);
+			var stateInTime = momentsInTime.GetObject<DoorObjectInTime>(id, time);
 			if (inanimateGameObject == null) {
 				throw new Exception($"Did not find an inanimate object with name {id}");
 			}
@@ -127,12 +127,26 @@ public class TimeTravel : MonoBehaviour
 				continue;
 			}
 
-			var stateInTime2 = momentsInTime.GetLockerObject(id, time);
+			var stateInTime2 = momentsInTime.GetObject<LockerInTime>(id, time);
 
 			var locker = inanimateGameObject.GetComponent<Locker>();
 
 			if (stateInTime2 != null && locker != null) {
 				locker.OccupiedByPastPlayer = stateInTime2.occupied;
+			}
+		}
+		var security = FindObjectOfType<SecuritySystem>();
+
+		if (security != null) {
+			var past = momentsInTime.GetObject<SecuritySystemInTime>(time);
+			if (past == null) {
+				return;
+			}
+			bool hadAlarmInTimeStateRecords = past.Alarm;
+			bool hadNoAlarmInTimeStateRecords = !past.Alarm;
+
+			if (hadAlarmInTimeStateRecords) {
+				security.AlarmByPastAction = true;
 			}
 		}
 	}
@@ -198,7 +212,7 @@ public class TimeTravel : MonoBehaviour
 	}
 
 	internal bool HasStateContradiction(string doorName, LargeDoor door) {
-		var objectPastState = momentsInTime.GetDoorObject(doorName, GetTime());
+		var objectPastState = momentsInTime.GetObject<DoorObjectInTime>(doorName, GetTime());
 
 		return objectPastState.IsOpen != door.IsOpenByPresentAction();
 	}
@@ -237,7 +251,7 @@ public class TimeTravel : MonoBehaviour
 		float currentTime = GetTime();
 
 		for (int i = 1; i <= GetTimeTravelCount(); i++) {
-			var state = momentsInTime.GetCharacter($"Player{i}", currentTime);
+			var state = momentsInTime.GetObject<CharacterInTime>($"Player{i}", currentTime);
 
 			InstantiatePastPlayer(i, state.Position, state.Rotation);
 		}
