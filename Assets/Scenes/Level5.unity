@@ -668,6 +668,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1397892474, guid: 908868da818930e4eb54d6469942b738, type: 3}
+      propertyPath: m_UseWorldSpace
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1397892474, guid: 908868da818930e4eb54d6469942b738, type: 3}
+      propertyPath: m_Parameters.alignment
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1397892474, guid: 908868da818930e4eb54d6469942b738, type: 3}
+      propertyPath: m_Parameters.generateLightingData
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4644251598251777020, guid: 908868da818930e4eb54d6469942b738,
         type: 3}
       propertyPath: m_Name

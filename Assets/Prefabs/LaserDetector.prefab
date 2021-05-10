@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4644251597659524086}
-  - component: {fileID: 4644251597659524084}
   - component: {fileID: 1397892474}
   m_Layer: 0
   m_Name: Laser
@@ -33,18 +32,6 @@ Transform:
   m_Father: {fileID: 4644251598251777021}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4644251597659524084
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4644251597659524081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fdf78a1ae46f3c48a37d0d483f6bee3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!120 &1397892474
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -53,8 +40,8 @@ LineRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4644251597659524081}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 0
@@ -65,7 +52,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 418956f4de0535045a7acc5ce961ff2a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -88,7 +75,7 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 0, z: -1}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -97,7 +84,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.11013222
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -142,7 +129,7 @@ LineRenderer:
     textureMode: 0
     shadowBias: 0.5
     generateLightingData: 0
-  m_UseWorldSpace: 1
+  m_UseWorldSpace: 0
   m_Loop: 0
 --- !u!1 &4644251598251777020
 GameObject:
@@ -153,6 +140,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4644251598251777021}
+  - component: {fileID: 3271757855202676091}
   m_Layer: 0
   m_Name: LaserDetector
   m_TagString: Untagged
@@ -177,6 +165,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &3271757855202676091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4644251598251777020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fdf78a1ae46f3c48a37d0d483f6bee3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4644251598582780012
 GameObject:
   m_ObjectHideFlags: 0

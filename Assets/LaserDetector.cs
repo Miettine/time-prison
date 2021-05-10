@@ -19,11 +19,13 @@ public class LaserDetector : MonoBehaviour
 	}
 
 	void Start() {
-		laserLine = GetComponent<LineRenderer>();
+		laserLine = GetComponentInChildren<LineRenderer>();
 	}
 
 	void Update() {
-		Ray ray = new Ray(transform.position, transform.right);
+		Vector3 laserDirection = transform.forward;
+
+		Ray ray = new Ray(transform.position, laserDirection);
 
 		Physics.Raycast(ray, 
 			out RaycastHit hitInfo, 
@@ -40,7 +42,7 @@ public class LaserDetector : MonoBehaviour
 				securitySystem.DetectedPlayer();
 			}
 		} else {
-			laserLine.SetPosition(1, this.transform.position + transform.right * maxDistance);
+			laserLine.SetPosition(1, this.transform.position + laserDirection * maxDistance);
 		}
 	}
 
