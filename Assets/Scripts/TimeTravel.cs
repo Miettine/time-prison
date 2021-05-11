@@ -139,14 +139,9 @@ public class TimeTravel : MonoBehaviour
 
 		if (security != null) {
 			var past = momentsInTime.GetObject<SecuritySystemInTime>(time);
-			if (past == null) {
-				return;
-			}
-			bool hadAlarmInTimeStateRecords = past.Alarm;
-			bool hadNoAlarmInTimeStateRecords = !past.Alarm;
-
-			if (hadAlarmInTimeStateRecords) {
-				security.AlarmByPastAction = true;
+			Debug.Log(past);
+			if (past != null) {
+				security.AlarmByPastAction = past.Alarm;
 			}
 		}
 	}
@@ -208,6 +203,14 @@ public class TimeTravel : MonoBehaviour
 
 				momentsInTime.AddObject(stateInTime);
 			}
+		}
+
+		var security = FindObjectOfType<SecuritySystem>();
+
+		if (security != null) {
+			var stateInTime = new SecuritySystemInTime(security.gameObject.name, GetTime(), security.AlarmByPresentAction);
+
+			momentsInTime.AddObject(stateInTime);
 		}
 	}
 

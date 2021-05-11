@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SecuritySystem : MonoBehaviour
 {
-	bool alarmByPresentAction = false;
+	public bool AlarmByPresentAction { get; private set; }
 
 	UI ui;
 
@@ -29,17 +29,17 @@ public class SecuritySystem : MonoBehaviour
 	}
 
 	internal void OnTimeTravelStarted() {
-		alarmByPresentAction = false;
+		AlarmByPresentAction = false;
 		ResetDoors();
 	}
 
 	internal void DetectedPresentPlayer() {
-		if (!alarmByPresentAction && !AlarmByPastAction) {
+		if (!AlarmByPresentAction && !AlarmByPastAction) {
 			ui.ShowAlarm();
 		}
 
-		if (!alarmByPresentAction) {
-			alarmByPresentAction = true;
+		if (!AlarmByPresentAction) {
+			AlarmByPresentAction = true;
 			Lockdown();
 		}
 	}
