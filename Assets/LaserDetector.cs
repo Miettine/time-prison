@@ -39,7 +39,7 @@ public class LaserDetector : MonoBehaviour
 			laserLine.SetPosition(1, hitInfo.point);
 
 			if (hitInfo.collider.gameObject.layer == LayerMask.NameToLayer("Player")) {
-				securitySystem.DetectedPlayer();
+				securitySystem.DetectedPresentPlayer();
 			}
 		} else {
 			laserLine.SetPosition(1, this.transform.position + laserDirection * maxDistance);
@@ -48,7 +48,7 @@ public class LaserDetector : MonoBehaviour
 
 	void OnTriggerEnter(Collider other) {
 		if (other.gameObject.layer == LayerMask.NameToLayer("Player")) {
-			securitySystem.DetectedPlayer();
+			securitySystem.DetectedPresentPlayer();
 		}
 	}
 }

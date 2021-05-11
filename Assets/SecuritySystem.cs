@@ -33,12 +33,15 @@ public class SecuritySystem : MonoBehaviour
 		ResetDoors();
 	}
 
-	internal void DetectedPlayer() {
-		if ( !AlarmByPastAction && !alarmByPresentAction ) {
+	internal void DetectedPresentPlayer() {
+		if (!alarmByPresentAction && !AlarmByPastAction) {
 			ui.ShowAlarm();
 		}
-		alarmByPresentAction = true;
-		Lockdown();
+
+		if (!alarmByPresentAction) {
+			alarmByPresentAction = true;
+			Lockdown();
+		}
 	}
 
 	void ResetDoors() {
@@ -48,12 +51,8 @@ public class SecuritySystem : MonoBehaviour
 	}
 
 	void Lockdown() {
-		if (!alarmByPresentAction) {
-			alarmByPresentAction = true;
-			
-			foreach (var door in doors) {
-				door.CloseByPresentAction();
-			}
+		foreach (var door in doors) {
+			door.CloseByPresentAction();
 		}
 	}
 }
