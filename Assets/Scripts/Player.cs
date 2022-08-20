@@ -147,7 +147,7 @@ public class Player : MonoBehaviour
 
 			var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
 
-			if (buttonPedestal != null) {
+			if (buttonPedestal != null && buttonPedestal.IsInteractable() ) {
 				buttonPedestal.Interact();
 				return;
 			}
