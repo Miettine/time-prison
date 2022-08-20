@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SecuritySystem : MonoBehaviour
+public class SecuritySystem : MonoBehaviour, IEffectedByTimeTravel
 {
 	public bool AlarmByPresentAction { get; private set; }
 
@@ -28,7 +28,7 @@ public class SecuritySystem : MonoBehaviour
 		ResetDoors();
 	}
 
-	internal void OnTimeTravelStarted() {
+	public void OnTimeTravelStarted() {
 		AlarmByPresentAction = false;
 		ResetDoors();
 	}

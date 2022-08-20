@@ -264,6 +264,10 @@ public class TimeTravel : MonoBehaviour
 		if (securitySystem != null) {
 			securitySystem.OnTimeTravelStarted();
 		}
+
+		foreach (var buttonPedestal in FindObjectsOfType<ButtonPedestal>()) {
+			buttonPedestal.OnTimeTravelStarted();
+		}
 	}
 
 	private void InstantiatePastPlayer(int playerId, Vector3 position, Quaternion rotation) {
