@@ -23,6 +23,12 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 
 	GameObject pressableButtonObject;
 
+	public void ActivatedByPastPlayer() {
+		if (interactable) {
+			SetButtonActive(false);
+		}
+	}
+
 	private void Awake() {
 		if (door == null) {
 

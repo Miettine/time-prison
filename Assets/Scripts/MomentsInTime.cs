@@ -26,7 +26,7 @@ public class MomentsInTime
 	public T GetObject<T>(string id, float time) where T : ObjectInTime {
 
 		var match = objectsInTime.Find(objectInTime => 
-		id.Equals(objectInTime.Id) && 
+		id.Equals(objectInTime.Name) && 
 		objectInTime.Time >= time &&
 		objectInTime is T);
 

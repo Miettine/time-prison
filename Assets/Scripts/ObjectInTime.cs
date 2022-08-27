@@ -1,15 +1,15 @@
 ﻿public abstract class ObjectInTime {
 
-	public string Id { get; private set; }
+	public string Name { get; private set; }
 
 	public float Time { get; private set; }
 
-	public ObjectInTime(string id, float time) {
-		Id = id;
+	public ObjectInTime(string name, float time) {
+		Name = name;
 		Time = time;
 	}
 
 	new virtual public string ToString() {
-		return $"Id {Id}, Time {Time}";
+		return $"Id {Name}, Time {Time}";
 	}
 }

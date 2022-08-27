@@ -2,12 +2,12 @@
 	public InanimateObjectType ObjectType { get; private set; }
 	public bool IsOpen { get; private set; }
 
-	public DoorObjectInTime(string id, float time, InanimateObjectType type, bool isOpen) : base(id, time) {
+	public DoorObjectInTime(string name, float time, InanimateObjectType type, bool isOpen) : base(name, time) {
 		ObjectType = type;
 		IsOpen = isOpen;
 	}
 
 	public override string ToString() {
-		return $"{Id} ({base.Time}):{IsOpen}";
+		return $"{Name} ({base.Time}):{IsOpen}";
 	}
 }

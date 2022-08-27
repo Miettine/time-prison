@@ -19,7 +19,7 @@ public class TimeTravel : MonoBehaviour
 
 	private List<float> timeTravelAmounts = new List<float>();
 
-	private List<string> trackedInanimateObjectIds = new List<string>();
+	private List<string> trackedInanimateObjectNames = new List<string>();
 
 	[SerializeField]
 	private float snapshotRate = 0.1f;
@@ -45,13 +45,19 @@ public class TimeTravel : MonoBehaviour
 		var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
 
 		foreach (var largeDoor in largeDoors) {
-			trackedInanimateObjectIds.Add(largeDoor.name);
+			trackedInanimateObjectNames.Add(largeDoor.name);
 		}
 
 		var lockers = GameObject.FindObjectsOfType<Locker>();
 
 		foreach (var locker in lockers) {
-			trackedInanimateObjectIds.Add(locker.name);
+			trackedInanimateObjectNames.Add(locker.name);
+		}
+
+		List<ButtonPedestal> oneTimeButtonPedestals = FindOneShotButtonPedestals();
+
+		foreach (var oneTimeButtonPedestal in oneTimeButtonPedestals) {
+			trackedInanimateObjectNames.Add(oneTimeButtonPedestal.name);
 		}
 	}
 
@@ -89,14 +95,15 @@ public class TimeTravel : MonoBehaviour
 		if (numberOfPastPlayers == 0) {
 			TimeTravelling = false;
 		}
-		foreach (var id in trackedInanimateObjectIds) {
+		foreach (var name in trackedInanimateObjectNames) {
 
-			var inanimateGameObject = GameObject.Find(id);
-			var stateInTime = momentsInTime.GetObject<DoorObjectInTime>(id, time);
+			var inanimateGameObject = GameObject.Find(name);
+
 			if (inanimateGameObject == null) {
-				throw new Exception($"Did not find an inanimate object with name {id}");
+				throw new Exception($"Did not find an inanimate object with name {name}");
 			}
 
+			var stateInTime = momentsInTime.GetObject<DoorObjectInTime>(name, time);
 			var largeDoor = inanimateGameObject.GetComponent<LargeDoor>();
 
 			if (stateInTime != null && largeDoor != null) {
@@ -115,24 +122,35 @@ public class TimeTravel : MonoBehaviour
 				//The Player interacts with objects like ButtonPedestal and PressurePlate.
 				//They call LargeDoor::OpenByPresentAction
 
+				/* 
 				if (wasOpenInTimeStateRecords && isOpenedNowByPastAction) {
 					//No effect.
-				} else if (wasOpenInTimeStateRecords && isClosedNowByPastAction) {
+				} else */ if (wasOpenInTimeStateRecords && isClosedNowByPastAction) {
 					largeDoor.OpenByPastAction();
 				} else if (wasClosedInTimeStateRecords && isOpenedNowByPastAction) {
 					largeDoor.CloseByPastAction();
-				} else if (wasClosedInTimeStateRecords && isClosedNowByPastAction) {
+				} /* else if (wasClosedInTimeStateRecords && isClosedNowByPastAction) {
 					//No effect.
 				}
+				*/
 				continue;
 			}
 
-			var stateInTime2 = momentsInTime.GetObject<LockerInTime>(id, time);
+			var buttonPedestal = inanimateGameObject.GetComponent<ButtonPedestal>();
+
+			if (buttonPedestal != null && buttonPedestal.IsOneShot()) {
+				var buttonPedestalTime = momentsInTime.GetObject<ButtonPedestalInTime>(name, time);
+				if (buttonPedestalTime != null && !buttonPedestalTime.IsInteractable) {
+					buttonPedestal.ActivatedByPastPlayer();
+				}
+			}
 
 			var locker = inanimateGameObject.GetComponent<Locker>();
-
-			if (stateInTime2 != null && locker != null) {
-				locker.OccupiedByPastPlayer = stateInTime2.occupied;
+			if (locker != null) {
+				var lockerInTime = momentsInTime.GetObject<LockerInTime>(name, time);
+				if (lockerInTime != null) {
+					locker.OccupiedByPastPlayer = lockerInTime.occupied;
+				}
 			}
 		}
 		var security = FindObjectOfType<SecuritySystem>();
@@ -178,33 +196,28 @@ public class TimeTravel : MonoBehaviour
 	void DebugLogTimeParadox(TimeParadoxCause cause) {
 		Debug.Log($"Time paradox! Cause: {cause}");
 	}
-	
+
 	private void TakeSnapshot() {
+		SnapshotPlayer();
+		SnapshotDoors();
+		
+		SnapshotSecuritySystem();
+		SnapshotOneTimeButtons();
+	}
 
-		{
-			var playerTransform = playerController.transform;
-			var l = (ActionType)(int)playerController.LatestAction;
-
-			var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", GetTime(), CharacterType.Player,  new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
-			//playerController.ResetLatestAction();
+	private void SnapshotOneTimeButtons() {
+		List<ButtonPedestal> oneTimeButtonPedestals = FindOneShotButtonPedestals();
+		foreach (var buttonPedestal in oneTimeButtonPedestals) {
+			var stateInTime = new ButtonPedestalInTime(buttonPedestal.gameObject.name, GetTime(), buttonPedestal.IsInteractable());
 			momentsInTime.AddObject(stateInTime);
 		}
-		{
-			var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
-			foreach (var largeDoor in largeDoors) {
-				var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
-				momentsInTime.AddObject(stateInTime);
-			}
-		}
-		{
-			var lockers = GameObject.FindObjectsOfType<Locker>();
-			foreach (var locker in lockers) {
-				var stateInTime = new LockerInTime(locker.gameObject.name, GetTime(), locker.OccupiedByPresentPlayer);
+	}
 
-				momentsInTime.AddObject(stateInTime);
-			}
-		}
+	private static List<ButtonPedestal> FindOneShotButtonPedestals() {
+		return GameObject.FindObjectsOfType<ButtonPedestal>().ToList().FindAll(e => e.IsOneShot());
+	}
 
+	private void SnapshotSecuritySystem() {
 		var security = FindObjectOfType<SecuritySystem>();
 
 		if (security != null) {
@@ -212,6 +225,32 @@ public class TimeTravel : MonoBehaviour
 
 			momentsInTime.AddObject(stateInTime);
 		}
+	}
+
+	private void SnapshotLockers() {
+		var lockers = GameObject.FindObjectsOfType<Locker>();
+		foreach (var locker in lockers) {
+			var stateInTime = new LockerInTime(locker.gameObject.name, GetTime(), locker.OccupiedByPresentPlayer);
+
+			momentsInTime.AddObject(stateInTime);
+		}
+	}
+
+	private void SnapshotDoors() {
+		var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
+		foreach (var largeDoor in largeDoors) {
+			var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
+			momentsInTime.AddObject(stateInTime);
+		}
+	}
+
+	private void SnapshotPlayer() {
+		var playerTransform = playerController.transform;
+		var l = (ActionType)(int)playerController.LatestAction;
+
+		var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", GetTime(), CharacterType.Player, new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
+		//playerController.ResetLatestAction();
+		momentsInTime.AddObject(stateInTime);
 	}
 
 	internal bool HasStateContradiction(string doorName, LargeDoor door) {
