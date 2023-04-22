@@ -164,6 +164,10 @@ public class TimeTravel : MonoBehaviour
 		}
 	}
 
+	internal void ResetTimeline() {
+		throw new NotImplementedException();
+	}
+
 	internal void PlayerHidesInLocker() {
 		var playerTransform = playerController.transform;
 

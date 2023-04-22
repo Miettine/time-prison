@@ -6,8 +6,16 @@ using UnityEngine.UI;
 
 public class UI : MonoBehaviour
 {
+	Player player;
+
 	Text timeText;
 	Text doorOpenText;
+
+	Button timeTravelButton;
+	Button resetButton;
+
+	GameObject timeTravelHelpText;
+	GameObject resetHelpText;
 
 	GameObject blueKeyCardIndicator;
 	GameObject greenKeyCardIndicator;
@@ -21,11 +29,39 @@ public class UI : MonoBehaviour
 		greenKeyCardIndicator = GameObject.Find("GreenKeyCardIndicator");
 		yellowKeyCardIndicator = GameObject.Find("YellowKeyCardIndicator");
 
+		timeTravelButton = GameObject.Find("TimeTravelButton").GetComponent<Button>();
+		resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
+
+		timeTravelHelpText = GameObject.Find("TimeTravelHelpText");
+		resetHelpText = GameObject.Find("ResetHelpText");
+
+		player = Player.GetInstance();
+
+		timeTravelButton.onClick.AddListener(() => player.OnTimeTravelActivated());
+		resetButton.onClick.AddListener(() => player.OnResetActivated());
+
 		blueKeyCardIndicator.SetActive(false);
 		greenKeyCardIndicator.SetActive(false);
 		yellowKeyCardIndicator.SetActive(false);
 
 		doorOpenText.text = "";
+
+		SetControlMode(ControlMode.Touch);
+	}
+
+	private void SetControlMode(ControlMode controlMode) {
+		bool touchControlsEnabled = controlMode == ControlMode.Touch;
+
+		timeTravelButton.gameObject.SetActive(touchControlsEnabled);
+		resetButton.gameObject.SetActive(touchControlsEnabled);
+
+		timeTravelHelpText.SetActive(!touchControlsEnabled);
+		resetHelpText.SetActive(!touchControlsEnabled);
+	}
+
+	private enum ControlMode {
+		Touch,
+		Keyboard
 	}
 
 	public void SetTimeText(float time) {

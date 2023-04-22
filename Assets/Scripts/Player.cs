@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static CharacterInTime;
 
-public class Player : MonoBehaviour
+public class Player : Singleton<Player>
 {
 
 	new Rigidbody rigidbody;
@@ -85,7 +85,7 @@ public class Player : MonoBehaviour
 		
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			LatestAction = CharacterInTime.ActionType.StartTimeTravel;
-			timeTravel.StartTimeTravelToBeginning();
+			OnTimeTravelActivated();
 			return;
 		}
 		if (Input.GetKeyDown(KeyCode.E)) {
@@ -97,6 +97,15 @@ public class Player : MonoBehaviour
 			}
 		}
 	}
+
+	public void OnTimeTravelActivated() {
+		timeTravel.StartTimeTravelToBeginning();
+	}
+
+	public void OnResetActivated() {
+		timeTravel.ResetTimeline();
+	}
+
 
 	public bool IsHiding() {
 		return lockerHiddenIn != null;
