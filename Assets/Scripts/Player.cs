@@ -73,15 +73,6 @@ public class Player : Singleton<Player>
 	void Update() {
 		bool isHiding = IsHiding();
 
-		if (!isHiding) {
-			float v = Input.GetAxisRaw("Vertical");
-			float h = Input.GetAxisRaw("Horizontal");
-
-			bool sneaking = Input.GetKey(KeyCode.C);
-
-			ProcessMovementInput(new Vector3(h, 0f, v), sneaking);
-		}
-
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			LatestAction = CharacterInTime.ActionType.StartTimeTravel;
 			OnTimeTravelActivated();
@@ -95,6 +86,7 @@ public class Player : Singleton<Player>
 				InteractWithNearbyObjects();
 			}
 		}
+		//There used to be a check if(!isHiding) right about here. The hiding feature has been discontinued.
 
 		if (Input.GetMouseButton(0)) {
 			ui.OnMouseInputUsed();
@@ -124,9 +116,18 @@ public class Player : Singleton<Player>
 				float movementCoordinateZ = moveTowardsMouse ? groundPoint.z - transform.position.z : transform.position.x - groundPoint.x;
 
 				ProcessMovementInput(new Vector3(movementCoordinateX, 0f, movementCoordinateZ).normalized, false);
+				return;
 			}
-		} else if (Input.anyKeyDown) {
+		} else if (Input.anyKey) {
 			ui.OnKeyboardInputUsed();
+
+			float v = Input.GetAxisRaw("Vertical");
+			float h = Input.GetAxisRaw("Horizontal");
+
+			bool sneaking = Input.GetKey(KeyCode.C);
+
+			ProcessMovementInput(new Vector3(h, 0f, v), sneaking);
+			return;
 		}
 	}
 
