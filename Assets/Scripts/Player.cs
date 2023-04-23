@@ -70,8 +70,7 @@ public class Player : Singleton<Player>
 	}
 
 	// Update is called once per frame
-	void Update()
-	{
+	void Update() {
 		bool isHiding = IsHiding();
 
 		if (!isHiding) {
@@ -82,7 +81,7 @@ public class Player : Singleton<Player>
 
 			ProcessMovementInput(new Vector3(h, 0f, v), sneaking);
 		}
-		
+
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			LatestAction = CharacterInTime.ActionType.StartTimeTravel;
 			OnTimeTravelActivated();
@@ -96,6 +95,47 @@ public class Player : Singleton<Player>
 				InteractWithNearbyObjects();
 			}
 		}
+
+		if (Input.GetMouseButton(0)) {
+			ui.OnMouseInputUsed();
+
+			// Some of the code on this block was created with the assistance of ChatGPT!
+			// The following code is not fully AI-generated, but some information was gathered through an AI chat bot instead of Googling.
+			// How exciting! :D
+			// Added "ChatGPT:" on comments and lines that were written by Artificial Intelligence
+
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // ChatGPT: Cast a ray from the camera towards the mouse position
+
+			float rayDistance; // ChatGPT: Declare a variable to store the distance along the ray to the intersection point
+			Plane groundPlane = new Plane(Vector3.up, Vector3.zero); // ChatGPT: Create a plane at y = 0
+
+			if (groundPlane.Raycast(ray, out rayDistance)) // ChatGPT: Check if the ray intersects with the ground plane
+			{
+				Vector3 groundPoint = ray.GetPoint(rayDistance); // ChatGPT: Get the point of intersection between the ray and the ground plane
+
+				/* The player either moves towards the mouse or the player moves to the opposite direction from where the mouse is clicked.
+				 * When this game is played on a phone, some players could complain that they can't see where the character is going because
+				 * their finger is blocking the view. I am making the following variable in preparation of configuring the movement:
+				 * allowing the player to make the character move towards the finger or away from the finger.
+				 */
+				bool moveTowardsMouse = true;
+
+				float movementCoordinateX = moveTowardsMouse ? groundPoint.x - transform.position.x : transform.position.x - groundPoint.x;
+				float movementCoordinateZ = moveTowardsMouse ? groundPoint.z - transform.position.z : transform.position.x - groundPoint.x;
+
+				ProcessMovementInput(new Vector3(movementCoordinateX, 0f, movementCoordinateZ).normalized, false);
+			}
+		} else if (Input.anyKeyDown) {
+			ui.OnKeyboardInputUsed();
+		}
+	}
+
+	private static bool AnyMouseButtonDown() {
+		return LeftMouseButtonDown() || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2);
+	}
+
+	private static bool LeftMouseButtonDown() {
+		return Input.GetMouseButtonDown(0);
 	}
 
 	public void OnTimeTravelActivated() {

@@ -89,6 +89,14 @@ public class UI : MonoBehaviour
 		StartCoroutine(CountDownShowDoorOpen(openForTime));
 	}
 
+	internal void OnKeyboardInputUsed() {
+		SetControlMode(ControlMode.Keyboard);
+	}
+
+	internal void OnMouseInputUsed() {
+		SetControlMode(ControlMode.Touch);
+	}
+
 	void ShowDoorOpenText(float seconds) {
 		doorOpenText.text = Math.Ceiling(seconds).ToString($"Door open for 0 seconds");
 	}
