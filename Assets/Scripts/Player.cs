@@ -71,6 +71,10 @@ public class Player : Singleton<Player>
 
 	// Update is called once per frame
 	void Update() {
+		if (timeTravel.IsTimeParadoxOngoing()) {
+			return;
+		}
+
 		bool isHiding = IsHiding();
 
 		if (Input.GetKeyUp(KeyCode.Space)) {

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CameraControl : Singleton<CameraControl> {
 
-	[SerializeField] private float moveTime = 3f;
+	[SerializeField] private float timeParadoxAnimationCameraPanningTime = 1.5f;
 	private Transform playerTransform;
 	private Vector3 relativePositionToTarget;
 	bool followingPlayer;
@@ -33,9 +33,9 @@ public class CameraControl : Singleton<CameraControl> {
 		Vector3 startPosition = transform.position;
 		float elapsedTime = 0f;
 
-		while (elapsedTime < moveTime) {
+		while (elapsedTime < timeParadoxAnimationCameraPanningTime) {
 			elapsedTime += Time.deltaTime;
-			float t = Mathf.Clamp01(elapsedTime / moveTime);
+			float t = Mathf.Clamp01(elapsedTime / timeParadoxAnimationCameraPanningTime);
 			transform.position = Vector3.Lerp(startPosition, GetCameraLocation(targetTransform), t);
 			yield return null;
 		}
@@ -43,5 +43,9 @@ public class CameraControl : Singleton<CameraControl> {
 
 	internal void OnTimeParadox() {
 		followingPlayer = false;
+	}
+
+	internal float GetTimeParadoxAnimationCameraPanningTime() {
+		return timeParadoxAnimationCameraPanningTime;
 	}
 }
