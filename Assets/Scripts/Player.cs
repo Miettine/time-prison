@@ -265,7 +265,7 @@ public class Player : Singleton<Player>
 		
 		foreach (var collider in soundOverlapSphereColliders) {
 			if (collider.gameObject.layer == LayerMask.NameToLayer("PastPlayer")) {
-				timeTravel.TimeParadox(TimeParadoxCause.PastPlayerHeardPresentPlayer);
+				timeTravel.TimeParadox(TimeParadoxCause.PastPlayerHeardPresentPlayer, collider.transform);
 			}
 		}
 		

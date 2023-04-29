@@ -27,7 +27,10 @@ public class TimeTravel : MonoBehaviour
 	[SerializeField]
 	private TimeParadoxBehaviour behaviourOnTimeParadox = TimeParadoxBehaviour.ReloadScene;
 
-	private enum TimeParadoxBehaviour { NoEffect, DebugLog, ReloadScene }
+	CameraControl cameraControl;
+	private bool ongoingTimeParadox;
+
+	private enum TimeParadoxBehaviour { NoEffect, DebugLog, ReloadScene, TimeParadoxAnimation }
 
 	private void Awake() {
 		momentsInTime = new MomentsInTime();
@@ -35,11 +38,14 @@ public class TimeTravel : MonoBehaviour
 		ui = GameObject.FindObjectOfType<UI>();
 		playerController = GameObject.FindObjectOfType<Player>();
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
+		cameraControl = CameraControl.GetInstance();
 		game = FindObjectOfType<Game>();
 	}
 
 	// Start is called before the first frame update
 	void Start() {
+		ongoingTimeParadox = false;
+
 		InvokeRepeating("TakeSnapshot", snapshotRate, snapshotRate);
 
 		var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
@@ -183,18 +189,42 @@ public class TimeTravel : MonoBehaviour
 		momentsInTime.AddObject(stateInTime);
 	}
 
-	internal void TimeParadox(TimeParadoxCause cause) {
-		switch (behaviourOnTimeParadox) {
-			case TimeParadoxBehaviour.NoEffect:
-				break;
-			case TimeParadoxBehaviour.DebugLog:
-				DebugLogTimeParadox(cause);
-				break;
-			case TimeParadoxBehaviour.ReloadScene:
-				DebugLogTimeParadox(cause);
-				game.ReloadCurrentLevel();
-				break;
-		};
+	[Obsolete("Deprecated, use TimeParadox(TimeParadoxCause, Transform) instead")]
+	internal void TimeParadox(TimeParadoxCause eventThatCausedTimeParadox) {
+		TimeParadox(eventThatCausedTimeParadox, FindObjectOfType<PastPlayer>().transform);
+	}
+
+	internal void TimeParadox(TimeParadoxCause eventThatCausedTimeParadox, Transform entityThatCausedTimeParadox) {
+		if (!ongoingTimeParadox) {
+			ongoingTimeParadox = true;
+			switch (behaviourOnTimeParadox) {
+				case TimeParadoxBehaviour.NoEffect:
+					break;
+				case TimeParadoxBehaviour.DebugLog:
+					DebugLogTimeParadox(eventThatCausedTimeParadox);
+					break;
+				case TimeParadoxBehaviour.ReloadScene:
+					DebugLogTimeParadox(eventThatCausedTimeParadox);
+					game.ReloadCurrentLevel();
+					break;
+				case TimeParadoxBehaviour.TimeParadoxAnimation:
+					DebugLogTimeParadox(eventThatCausedTimeParadox);
+					StartCoroutine(TimeParadoxAnimation(entityThatCausedTimeParadox));
+					break;
+			};
+		}
+	}
+
+	IEnumerator TimeParadoxAnimation(Transform causeOfTimeParadox) {
+		cameraControl.OnTimeParadox();
+
+		yield return new WaitForSeconds(1.5f);
+
+		yield return cameraControl.MoveToTarget(causeOfTimeParadox);
+
+		yield return new WaitForSeconds(1.5f);
+
+		game.ReloadCurrentLevel();
 	}
 
 	void DebugLogTimeParadox(TimeParadoxCause cause) {

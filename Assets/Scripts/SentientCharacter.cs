@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class was made in preparation of making the Guard or the Warden. The purpose was to
+/// re-use some code related to seeing or hearing the player. Development of the Guard enemy characters is discontinued.
+/// </summary>
 public class SentientCharacter : MonoBehaviour
 {
 	Transform playerTransform;
@@ -15,6 +19,7 @@ public class SentientCharacter : MonoBehaviour
 	int playerLayer;
 	int doorsLayer;
 	Player player;
+	public Transform TimeParadoxObject { get; private set; }
 
 	void Awake() {
 		timeTravel = FindObjectOfType<TimeTravel>();
@@ -162,7 +167,13 @@ public class SentientCharacter : MonoBehaviour
 				return false;
 			}
 
-			return timeTravel.HasStateContradiction(door.name, door);
+			bool HasStateContradiction = timeTravel.HasStateContradiction(door.name, door);
+			if (HasStateContradiction) {
+				TimeParadoxObject = door.transform;
+				return true;
+			} else {
+				return false;
+			}
 		}
 		return false;
 	}

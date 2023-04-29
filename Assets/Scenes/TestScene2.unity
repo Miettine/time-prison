@@ -1170,7 +1170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   snapshotRate: 0.017
-  behaviourOnTimeParadox: 1
+  behaviourOnTimeParadox: 3
 --- !u!4 &1217769495
 Transform:
   m_ObjectHideFlags: 0
@@ -1875,6 +1875,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c79d6c793dac0bd44a724127a7e12d18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveTime: 3
 --- !u!81 &2064645780
 AudioListener:
   m_ObjectHideFlags: 0
