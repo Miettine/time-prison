@@ -5,10 +5,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI : MonoBehaviour
+public class UI : Singleton<UI>
 {
 	Player player;
 	CameraControl cameraControl;
+	TimeTravel timeTravel;
 
 	Text timeText;
 	Text doorOpenText;
@@ -27,8 +28,11 @@ public class UI : MonoBehaviour
 
 	TextMeshProUGUI timeParadoxReasonText;
 
+	[SerializeField] private float timeParadoxAnimationLength = 10f;
+
 	void Awake() {
 		cameraControl = CameraControl.GetInstance();
+		timeTravel = TimeTravel.GetInstance();
 
 		timeText = GameObject.Find("TimeText").GetComponent<Text>();
 		doorOpenText = GameObject.Find("DoorOpenText").GetComponent<Text>();
@@ -151,36 +155,53 @@ public class UI : MonoBehaviour
 	}
 
 	/// <summary>
-	/// In order for the player to have time to read all these messages, it it requires 
-	/// a waiting time of timeParadoxAnimationCameraPanningTime*3 seconds for the last message
-	/// to appear. After that the player should be given a bit of time to read the last message
+	/// In order for the player to have time to read all of the messages, it it requires 
+	/// a waiting time of timeParadoxAnimationStepDelay*4 for the last effect to finish playing.
 	/// after which the level may be reset.
 	/// </summary>
 	/// <param name="timeParadoxCause"></param>
-	internal void OnTimeParadox(TimeParadoxCause timeParadoxCause) {
-		StartCoroutine(TimeParadoxAnimation(timeParadoxCause));
+	internal void OnTimeParadoxAnimationStart() {
+		StartCoroutine(TimeParadoxAnimation());
 	}
 
-	IEnumerator TimeParadoxAnimation(TimeParadoxCause timeParadoxCause) {
+	public float GetTimeParadoxAnimationStepDelay() {
+		return timeParadoxAnimationLength / 6;
+	}
+
+	IEnumerator TimeParadoxAnimation() {
+
 		timeParadoxTextGameObject.SetActive(true);
-		yield return new WaitForSeconds(cameraControl.GetTimeParadoxAnimationCameraPanningTime());
+
+		yield return WaitForTimeParadoxAnimationStepDelay();
+
 		timeParadoxTextGameObject.SetActive(false);
-		yield return new WaitForSeconds(cameraControl.GetTimeParadoxAnimationCameraPanningTime());
-		
-		switch (timeParadoxCause) {
+
+		switch (timeTravel.CauseOfTimeParadox) {
 			case TimeParadoxCause.PastPlayerSawPresentPlayer:
 				timeParadoxReasonText.gameObject.SetActive(true);
-				timeParadoxReasonText.text = "Reason:\npast self saw you";
+				timeParadoxReasonText.text = "Cause:\npast self saw you";
 				break;
 			case TimeParadoxCause.PastPlayerHeardPresentPlayer:
 				timeParadoxReasonText.gameObject.SetActive(true);
-				timeParadoxReasonText.text = "Reason:\npast self heard you";
+				timeParadoxReasonText.text = "Cause:\npast self heard you";
 				break;
 		}
 
-		yield return new WaitForSeconds(cameraControl.GetTimeParadoxAnimationCameraPanningTime());
+		yield return cameraControl.MoveToTarget(timeTravel.EntityThatCausedTimeParadox, GetTimeParadoxAnimationStepDelay());
+
+		yield return WaitForTimeParadoxAnimationStepDelay();
 
 		timeParadoxReasonText.gameObject.SetActive(true);
 		timeParadoxReasonText.text = "Resetting timeline";
+
+		yield return cameraControl.MoveToTarget(player.transform, GetTimeParadoxAnimationStepDelay());
+		
+		timeParadoxReasonText.gameObject.SetActive(false);
+
+		cameraControl.StartTimelineResetAnimation(); //lasts 2*TimeParadoxAnimationStepDelay
+	}
+
+	WaitForSeconds WaitForTimeParadoxAnimationStepDelay() {
+		return new WaitForSeconds(GetTimeParadoxAnimationStepDelay());
 	}
 }

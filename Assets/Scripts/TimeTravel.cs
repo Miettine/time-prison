@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static CharacterInTime;
 
-public class TimeTravel : MonoBehaviour
-{
+public class TimeTravel : Singleton<TimeTravel> {
 	private MomentsInTime momentsInTime;
 
 	Player playerController;
@@ -29,6 +28,9 @@ public class TimeTravel : MonoBehaviour
 
 	CameraControl cameraControl;
 	private bool ongoingTimeParadox;
+
+	public TimeParadoxCause CauseOfTimeParadox { get; private set; } = TimeParadoxCause.None;
+	public Transform EntityThatCausedTimeParadox { get; private set; }
 
 	private enum TimeParadoxBehaviour { NoEffect, DebugLog, ReloadScene, TimeParadoxAnimation }
 
@@ -207,39 +209,38 @@ public class TimeTravel : MonoBehaviour
 			return;
 		}
 		ongoingTimeParadox = true;
+
+		CauseOfTimeParadox = eventThatCausedTimeParadox;
+		EntityThatCausedTimeParadox = entityThatCausedTimeParadox;
+
 		switch (behaviourOnTimeParadox) {
 			case TimeParadoxBehaviour.NoEffect:
 				break;
 			case TimeParadoxBehaviour.DebugLog:
-				DebugLogTimeParadox(eventThatCausedTimeParadox);
+				DebugLogTimeParadox(CauseOfTimeParadox);
 				break;
 			case TimeParadoxBehaviour.ReloadScene:
-				DebugLogTimeParadox(eventThatCausedTimeParadox);
+				DebugLogTimeParadox(CauseOfTimeParadox);
 				game.ReloadCurrentLevel();
 				break;
 			case TimeParadoxBehaviour.TimeParadoxAnimation:
-				DebugLogTimeParadox(eventThatCausedTimeParadox);
-				StartCoroutine(TimeParadoxAnimation(eventThatCausedTimeParadox, entityThatCausedTimeParadox));
+				DebugLogTimeParadox(CauseOfTimeParadox);
+				StartTimeParadoxAnimation();
 				break;
 		};
 	}
 
-	IEnumerator TimeParadoxAnimation(TimeParadoxCause eventThatCausedTimeParadox, Transform causeOfTimeParadox) {
+	void StartTimeParadoxAnimation() {
 		StopCoroutine("TakeSnapshot");
 
 		cameraControl.OnTimeParadox();
-		ui.OnTimeParadox(eventThatCausedTimeParadox);
+		ui.OnTimeParadoxAnimationStart();
 
-		yield return new WaitForSeconds(cameraControl.GetTimeParadoxAnimationCameraPanningTime());
+		StartCoroutine(ReloadLevelAfterTimeParadoxAnimation());
+	}
 
-		yield return cameraControl.MoveToTarget(causeOfTimeParadox);
-
-		yield return new WaitForSeconds(cameraControl.GetTimeParadoxAnimationCameraPanningTime());
-
-		yield return cameraControl.MoveToTarget(playerController.transform);
-
-		yield return new WaitForSeconds(cameraControl.GetTimeParadoxAnimationCameraPanningTime());
-
+	private IEnumerator ReloadLevelAfterTimeParadoxAnimation() {
+		yield return new WaitForSeconds(ui.GetTimeParadoxAnimationStepDelay()*5);
 		game.ReloadCurrentLevel();
 	}
 
