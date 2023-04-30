@@ -240,7 +240,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 	}
 
 	private IEnumerator ReloadLevelAfterTimeParadoxAnimation() {
-		yield return new WaitForSeconds(ui.GetTimeParadoxAnimationStepDelay()*5);
+		yield return new WaitForSeconds(ui.GetTimeParadoxAnimationLength());
 		game.ReloadCurrentLevel();
 	}
 

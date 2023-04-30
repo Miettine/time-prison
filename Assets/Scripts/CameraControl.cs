@@ -11,7 +11,7 @@ public class CameraControl : Singleton<CameraControl> {
 	bool followingPlayer;
 	UI ui;
 
-	[SerializeField] private float timeParadoxEffectMaxFieldOfView = 160f;
+	[SerializeField] private float timeParadoxEffectMaxFieldOfView = 179f;
 
 	private void Awake() {
 		ui = UI.GetInstance();
@@ -54,17 +54,21 @@ public class CameraControl : Singleton<CameraControl> {
 	}
 
 	IEnumerator TimelineResetAnimation() {
-
 		float elapsedTime = 0f;
 
 		Camera unityCamera = GetComponent<Camera>();
 		float startFieldOfView = unityCamera.fieldOfView;
-		float warpEffectLength = ui.GetTimeParadoxAnimationStepDelay() * 2;
+		float warpEffectLength = ui.GetTimeParadoxAnimationStepDelay();
+
 		while (elapsedTime < warpEffectLength) {
 			elapsedTime += Time.deltaTime;
 			float t = Mathf.Clamp01(elapsedTime / warpEffectLength);
 
-			unityCamera.fieldOfView = Mathf.Lerp(startFieldOfView, timeParadoxEffectMaxFieldOfView, t);
+			// ChatGPT: Apply exponential function
+			float exponentialT = Mathf.Pow(t, 2f);
+
+			unityCamera.fieldOfView = Mathf.Lerp(startFieldOfView, timeParadoxEffectMaxFieldOfView, exponentialT);
+
 			yield return null;
 		}
 	}

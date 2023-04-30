@@ -164,8 +164,21 @@ public class UI : Singleton<UI>
 		StartCoroutine(TimeParadoxAnimation());
 	}
 
+	/// <summary>
+	/// Currently the time paradox animation has about 5 pauses 
+	/// where we display some text to the player, move the camera around
+	/// or show some graphical effects to the player.
+	/// If the amount of pauses ever changes, remember to update this function
+	/// accordingly so that the player will have enough time to see everything
+	/// we want them to see during the time paradox animation.
+	/// </summary>
+	/// <returns></returns>
 	public float GetTimeParadoxAnimationStepDelay() {
-		return timeParadoxAnimationLength / 6;
+		return GetTimeParadoxAnimationLength() / 5;
+	}
+
+	public float GetTimeParadoxAnimationLength() {
+		return timeParadoxAnimationLength;
 	}
 
 	IEnumerator TimeParadoxAnimation() {
@@ -196,12 +209,19 @@ public class UI : Singleton<UI>
 
 		yield return cameraControl.MoveToTarget(player.transform, GetTimeParadoxAnimationStepDelay());
 		
-		timeParadoxReasonText.gameObject.SetActive(false);
+		cameraControl.StartTimelineResetAnimation(); //lasts one TimeParadoxAnimationStepDelay
 
-		cameraControl.StartTimelineResetAnimation(); //lasts 2*TimeParadoxAnimationStepDelay
+		yield return WaitForSeconds(GetTimeParadoxAnimationStepDelay() / 6);
+		//The camera warping effect and the text "Resetting timeline" are intentionally made to overlap for a moment.
+		//This is to make the time paradox animation seem more visually interesting and organic.
+		timeParadoxReasonText.gameObject.SetActive(false);
 	}
 
 	WaitForSeconds WaitForTimeParadoxAnimationStepDelay() {
-		return new WaitForSeconds(GetTimeParadoxAnimationStepDelay());
+		return WaitForSeconds(GetTimeParadoxAnimationStepDelay());
+	}
+
+	WaitForSeconds WaitForSeconds(float time) {
+		return new WaitForSeconds(time);
 	}
 }
