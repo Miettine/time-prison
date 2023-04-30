@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using static CharacterInTime;
 
 public class Player : Singleton<Player>
@@ -90,10 +90,15 @@ public class Player : Singleton<Player>
 				InteractWithNearbyObjects();
 			}
 		}
+
 		//There used to be a check if(!isHiding) right about here. The hiding feature has been discontinued.
 
 		if (Input.GetMouseButton(0)) {
 			ui.OnMouseInputUsed();
+
+			if (EventSystem.current.IsPointerOverGameObject()) {
+				return;
+			}
 
 			// Some of the code on this block was created with the assistance of ChatGPT!
 			// The following code is not fully AI-generated, but some information was gathered through an AI chat bot instead of Googling.
@@ -144,7 +149,9 @@ public class Player : Singleton<Player>
 	}
 
 	public void OnTimeTravelActivated() {
-		timeTravel.StartTimeTravelToBeginning();
+		if (!timeTravel.IsTimeParadoxOngoing()) {
+			timeTravel.StartTimeTravelToBeginning();
+		}
 	}
 
 	public void OnResetActivated() {
