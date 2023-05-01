@@ -27,6 +27,9 @@ public class Player : Singleton<Player>
 	float runningSoundWaveRadius = 3f;
 
 	[SerializeField]
+	float sneakingRadius = 4f;
+
+	[SerializeField]
 	float sneakingSpeedMultiplier = 0.5f;
 
 	UI ui;
@@ -50,9 +53,9 @@ public class Player : Singleton<Player>
 
 		physicsCollisionCollider = GetComponentInChildren<Collider>();
 		rigidbody = GetComponent<Rigidbody>();
-		timeTravel = FindObjectOfType<TimeTravel>();
+		timeTravel = TimeTravel.GetInstance();
 		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
-		ui = FindObjectOfType<UI>();
+		ui = UI.GetInstance();
 
 		var soundIndicatorTransform = transform.Find("SoundIndicator");
 		soundIndicatorTransform.localScale = new Vector3(runningSoundWaveRadius*2, 1, runningSoundWaveRadius*2);
@@ -124,7 +127,11 @@ public class Player : Singleton<Player>
 				float movementCoordinateX = moveTowardsMouse ? groundPoint.x - transform.position.x : transform.position.x - groundPoint.x;
 				float movementCoordinateZ = moveTowardsMouse ? groundPoint.z - transform.position.z : transform.position.x - groundPoint.x;
 
-				ProcessMovementInput(new Vector3(movementCoordinateX, 0f, movementCoordinateZ).normalized, false);
+				var movementVector = new Vector3(movementCoordinateX, 0f, movementCoordinateZ);
+
+				var sneaking = Vector3.Distance(transform.position, groundPoint) < sneakingRadius;
+
+				ProcessMovementInput(movementVector.normalized, sneaking);
 				return;
 			}
 		} else if (Input.anyKey) {
