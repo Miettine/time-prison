@@ -26,7 +26,7 @@ public class UI : Singleton<UI>
 
 	GameObject timeParadoxTextGameObject;
 
-	TextMeshProUGUI timeParadoxReasonText;
+	TextMeshProUGUI centerNotificationText;
 
 	[SerializeField] private float timeParadoxAnimationLength = 10f;
 
@@ -49,8 +49,8 @@ public class UI : Singleton<UI>
 
 		timeParadoxTextGameObject = GameObject.Find("TimeParadoxTextGameObject");
 
-		timeParadoxReasonText = GameObject.Find("TimeParadoxReasonTextGameObject").GetComponent<TextMeshProUGUI>();
-		timeParadoxReasonText.gameObject.SetActive(false);
+		centerNotificationText = GameObject.Find("CenterNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
+		centerNotificationText.gameObject.SetActive(false);
 
 		player = Player.GetInstance();
 
@@ -79,7 +79,7 @@ public class UI : Singleton<UI>
 		resetHelpText.SetActive(!touchControlsEnabled);
 	}
 
-	private enum ControlMode {
+	public enum ControlMode {
 		Touch,
 		Keyboard
 	}
@@ -140,6 +140,20 @@ public class UI : Singleton<UI>
 		doorOpenText.text = "";
 	}
 
+	internal void ShowTemporaryCenterNotificationText(string text) {
+		ShowCenterNotificationText(text);
+	}
+
+	internal IEnumerator ShowCenterNotificationText(string text) {
+		centerNotificationText.gameObject.SetActive(true);
+		centerNotificationText.text = text;
+
+		yield return WaitForSeconds(3f);
+
+		centerNotificationText.gameObject.SetActive(false);
+		centerNotificationText.text = "";
+	}
+
 	internal void ShowKeyCardIndicator(KeyCardType type, bool visible) {
 		switch (type) {
 			case KeyCardType.Blue:
@@ -191,12 +205,16 @@ public class UI : Singleton<UI>
 
 		switch (timeTravel.CauseOfTimeParadox) {
 			case TimeParadoxCause.PastPlayerSawPresentPlayer:
-				timeParadoxReasonText.gameObject.SetActive(true);
-				timeParadoxReasonText.text = "Cause:\npast self saw you";
+				centerNotificationText.gameObject.SetActive(true);
+				centerNotificationText.text = "Cause:\npast self saw you";
 				break;
 			case TimeParadoxCause.PastPlayerHeardPresentPlayer:
-				timeParadoxReasonText.gameObject.SetActive(true);
-				timeParadoxReasonText.text = "Cause:\npast self heard you";
+				centerNotificationText.gameObject.SetActive(true);
+				centerNotificationText.text = "Cause:\npast self heard you";
+				break;
+			case TimeParadoxCause.PastPlayerSawObjectInteractionFromPresentPlayer:
+				centerNotificationText.gameObject.SetActive(true);
+				centerNotificationText.text = "Cause:\npast self saw an object that you had interacted with";
 				break;
 		}
 
@@ -204,8 +222,8 @@ public class UI : Singleton<UI>
 
 		yield return WaitForTimeParadoxAnimationStepDelay();
 
-		timeParadoxReasonText.gameObject.SetActive(true);
-		timeParadoxReasonText.text = "Resetting timeline";
+		centerNotificationText.gameObject.SetActive(true);
+		centerNotificationText.text = "Resetting timeline";
 
 		yield return cameraControl.MoveToTarget(player.transform, GetTimeParadoxAnimationStepDelay());
 		
@@ -214,7 +232,7 @@ public class UI : Singleton<UI>
 		yield return WaitForSeconds(GetTimeParadoxAnimationStepDelay() / 6);
 		//The camera warping effect and the text "Resetting timeline" are intentionally made to overlap for a moment.
 		//This is to make the time paradox animation seem more visually interesting and organic.
-		timeParadoxReasonText.gameObject.SetActive(false);
+		centerNotificationText.gameObject.SetActive(false);
 	}
 
 	WaitForSeconds WaitForTimeParadoxAnimationStepDelay() {

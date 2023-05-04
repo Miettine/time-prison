@@ -13,6 +13,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	UI ui;
 	Game game;
+	Story story;
 
 	public bool TimeTravelling { get; private set; } = false;
 
@@ -37,11 +38,12 @@ public class TimeTravel : Singleton<TimeTravel> {
 	private void Awake() {
 		momentsInTime = new MomentsInTime();
 
-		ui = GameObject.FindObjectOfType<UI>();
-		playerController = GameObject.FindObjectOfType<Player>();
+		ui = UI.GetInstance();
+		playerController = Player.GetInstance();
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
 		cameraControl = CameraControl.GetInstance();
-		game = FindObjectOfType<Game>();
+		game = Game.GetInstance();
+		story = Story.GetInstance();
 	}
 
 	// Start is called before the first frame update
@@ -209,6 +211,8 @@ public class TimeTravel : Singleton<TimeTravel> {
 			return;
 		}
 		ongoingTimeParadox = true;
+
+		story.OnTimeParadox();
 
 		CauseOfTimeParadox = eventThatCausedTimeParadox;
 		EntityThatCausedTimeParadox = entityThatCausedTimeParadox;

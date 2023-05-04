@@ -145,6 +145,7 @@ public class Player : Singleton<Player>
 			ProcessMovementInput(new Vector3(h, 0f, v), sneaking);
 			return;
 		}
+		//TODO: Add gamepad controls. Can we use gamepad in WebGL?
 	}
 
 	private static bool AnyMouseButtonDown() {

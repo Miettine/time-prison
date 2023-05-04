@@ -1193,12 +1193,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 783334325, guid: 0974643ff93e8f2439999c244044585e, type: 3}
-      propertyPath: m_text
-      value: 'Cause:
-
-        past self saw you'
-      objectReference: {fileID: 0}
     - target: {fileID: 2189560751327537512, guid: 0974643ff93e8f2439999c244044585e,
         type: 3}
       propertyPath: m_Pivot.x

@@ -4,12 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Game : MonoBehaviour
+public class Game : Singleton<Game>
 {
+    Story story;
+
+    void Awake() {
+        story = Story.GetInstance();
+	}
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        //Story is called with DontDestroyOnLoad. This class is destroyed and reloaded whenever a scene is loaded.
+        story.OnLevelLoaded();
     }
 
     // Update is called once per frame

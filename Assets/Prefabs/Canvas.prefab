@@ -142,7 +142,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Reason:
+  m_text: 'Cause:
 
     past self saw you'
   m_isRightToLeft: 0

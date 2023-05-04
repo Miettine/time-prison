@@ -20,13 +20,18 @@ public class TitleScreen : Singleton<TitleScreen> {
 		Button fullScreenButton = GameObject.Find(fullScreenButtonName).GetComponent<Button>();
 		fullScreenButton.onClick.AddListener(() => ToggleFullScreen());
 		fullScreenButtonText = fullScreenButton.transform.GetComponentInChildren<TextMeshProUGUI>();
-		UpdateFullScreenButtonText();
+		
 		GameObject.Find(startButtonName).GetComponent<Button>().onClick.AddListener(() => SceneManager.LoadScene(firstLevelSceneName));
+	}
+
+	void Update() {
+		UpdateFullScreenButtonText();
+		//The player can press the WebGL player's full screen button at any time.
+		//This is why I must update the full screen button's text every frame.
 	}
 
 	public void ToggleFullScreen() {
 		Screen.fullScreen = !Screen.fullScreen;
-		UpdateFullScreenButtonText();
 	}
 
 	private void UpdateFullScreenButtonText() {

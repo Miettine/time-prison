@@ -7,7 +7,7 @@ public class LevelPassedTrigger : MonoBehaviour
 	Game game;
 
 	private void Awake() {
-		game = FindObjectOfType<Game>();
+		game = Game.GetInstance();
 
 		if (game == null) {
 			throw new System.Exception("Did not find instance");
