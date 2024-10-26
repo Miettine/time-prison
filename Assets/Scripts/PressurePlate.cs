@@ -14,7 +14,7 @@ public class PressurePlate : MonoBehaviour
 
 	private void Awake() {
 		if (door == null) {
-			var doors = FindObjectsOfType<LargeDoor>();
+			var doors = FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
 			if (doors.Length == 1) {
 				door = doors[0];
 			} else {
@@ -24,7 +24,8 @@ public class PressurePlate : MonoBehaviour
 
 		playerLayer = LayerMask.NameToLayer("Player");
 
-		ui = FindObjectOfType<UI>();
+		ui = FindFirstObjectByType<UI>();
+		FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
 	}
 	private void OnTriggerEnter(Collider other) {
 		Debug.Log(other.gameObject.layer);

@@ -21,7 +21,7 @@ public class SecuritySystem : MonoBehaviour, IEffectedByTimeTravel
 		if (doors.Count == 0) {
 			throw new Exception("Security system has no doors set");
 		}
-		ui = FindObjectOfType<UI>();
+		ui = FindFirstObjectByType<UI>(FindObjectsInactive.Include);
 	}
 
 	void Start() {

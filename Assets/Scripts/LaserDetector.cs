@@ -15,7 +15,7 @@ public class LaserDetector : MonoBehaviour
 	float maxDistance = 20f;
 
 	void Awake() {
-		securitySystem = FindObjectOfType<SecuritySystem>();
+		securitySystem = FindFirstObjectByType<SecuritySystem>(FindObjectsInactive.Include);
 	}
 
 	void Start() {

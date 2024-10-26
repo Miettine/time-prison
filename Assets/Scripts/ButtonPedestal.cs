@@ -32,7 +32,7 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	private void Awake() {
 		if (door == null) {
 
-			var doors = FindObjectsOfType<LargeDoor>();
+			var doors = FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
 
 			if (doors.Length == 1) {
 				door = doors[0];
@@ -43,7 +43,7 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 
 		pressableButtonObject = transform.Find("PressableButton").gameObject;
 
-		ui = FindObjectOfType<UI>();
+		ui = FindFirstObjectByType<UI>();
 	}
 
 	public bool IsInteractable() {

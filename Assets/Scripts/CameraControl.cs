@@ -15,7 +15,7 @@ public class CameraControl : Singleton<CameraControl> {
 
 	private void Awake() {
 		ui = UI.GetInstance();
-		playerTransform = FindObjectOfType<Player>().transform;
+		playerTransform = FindFirstObjectByType<Player>().transform;
 		relativePositionToTarget = transform.position - playerTransform.position;
 	}
 

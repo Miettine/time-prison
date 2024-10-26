@@ -52,13 +52,13 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 		InvokeRepeating("TakeSnapshot", snapshotRate, snapshotRate);
 
-		var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
+		var largeDoors = GameObject.FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
 
 		foreach (var largeDoor in largeDoors) {
 			trackedInanimateObjectNames.Add(largeDoor.name);
 		}
 
-		var lockers = GameObject.FindObjectsOfType<Locker>();
+		var lockers = GameObject.FindObjectsByType<Locker>(FindObjectsSortMode.None);
 
 		foreach (var locker in lockers) {
 			trackedInanimateObjectNames.Add(locker.name);
@@ -171,7 +171,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 				}
 			}
 		}
-		var security = FindObjectOfType<SecuritySystem>();
+		var security = FindFirstObjectByType<SecuritySystem>(FindObjectsInactive.Include);
 
 		if (security != null) {
 			var past = momentsInTime.GetObject<SecuritySystemInTime>(time);
@@ -269,11 +269,12 @@ public class TimeTravel : Singleton<TimeTravel> {
 	}
 
 	private static List<ButtonPedestal> FindOneShotButtonPedestals() {
-		return GameObject.FindObjectsOfType<ButtonPedestal>().ToList().FindAll(e => e.IsOneShot());
+		return GameObject.FindObjectsByType<ButtonPedestal>(FindObjectsSortMode.None).ToList().FindAll(e => e.IsOneShot());
 	}
 
-	private void SnapshotSecuritySystem() {
-		var security = FindObjectOfType<SecuritySystem>();
+	private void SnapshotSecuritySystem()
+	{
+		var security = FindFirstObjectByType<SecuritySystem>(FindObjectsInactive.Include);
 
 		if (security != null) {
 			var stateInTime = new SecuritySystemInTime(security.gameObject.name, GetTime(), security.AlarmByPresentAction);
@@ -283,7 +284,8 @@ public class TimeTravel : Singleton<TimeTravel> {
 	}
 
 	private void SnapshotLockers() {
-		var lockers = GameObject.FindObjectsOfType<Locker>();
+		var lockers = FindObjectsByType<Locker>(FindObjectsSortMode.None);
+
 		foreach (var locker in lockers) {
 			var stateInTime = new LockerInTime(locker.gameObject.name, GetTime(), locker.OccupiedByPresentPlayer);
 
@@ -292,7 +294,8 @@ public class TimeTravel : Singleton<TimeTravel> {
 	}
 
 	private void SnapshotDoors() {
-		var largeDoors = GameObject.FindObjectsOfType<LargeDoor>();
+		var largeDoors = FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
+		
 		foreach (var largeDoor in largeDoors) {
 			var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
 			momentsInTime.AddObject(stateInTime);
@@ -353,13 +356,13 @@ public class TimeTravel : Singleton<TimeTravel> {
 			InstantiatePastPlayer(i, state.Position, state.Rotation);
 		}
 
-		var securitySystem = FindObjectOfType<SecuritySystem>();
+		var securitySystem = FindFirstObjectByType<SecuritySystem>(FindObjectsInactive.Include);
 
 		if (securitySystem != null) {
 			securitySystem.OnTimeTravelStarted();
 		}
 
-		foreach (var buttonPedestal in FindObjectsOfType<ButtonPedestal>()) {
+		foreach (var buttonPedestal in FindObjectsByType<ButtonPedestal>(FindObjectsSortMode.None)) {
 			buttonPedestal.OnTimeTravelStarted();
 		}
 	}

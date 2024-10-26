@@ -22,7 +22,7 @@ public class SentientCharacter : MonoBehaviour
 	public Transform TimeParadoxObject { get; private set; }
 
 	void Awake() {
-		timeTravel = FindObjectOfType<TimeTravel>();
+		timeTravel = FindFirstObjectByType<TimeTravel>(FindObjectsInactive.Include);
 
 		lineOfSightLayerMask = LayerMask.GetMask("Player", "Walls", "Doors");
 		playerLayer = LayerMask.NameToLayer("Player");
@@ -30,11 +30,11 @@ public class SentientCharacter : MonoBehaviour
 	}
 
 	void Start() {
-		var light = GetComponentInChildren<Light>();
-		fieldOfViewDegrees = light.spotAngle;
-		fieldOfViewRange = light.range;
+		var fieldOfViewLight = GetComponentInChildren<Light>();
+		fieldOfViewDegrees = fieldOfViewLight.spotAngle;
+		fieldOfViewRange = fieldOfViewLight.range;
 
-		player = FindObjectOfType<Player>();
+		player = FindFirstObjectByType<Player>(FindObjectsInactive.Include);
 		playerTransform = player.transform;
 	}
 
@@ -111,7 +111,7 @@ public class SentientCharacter : MonoBehaviour
 	protected bool SeesObjectInteractionFromPresentPlayer() {
 		//TODO: Eliminate repeated code between this and SeesPresentPlayer.
 
-		var doors = FindObjectsOfType<LargeDoor>();
+		var doors = FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
 		foreach (var door in doors) {
 
 			if (door == null) {

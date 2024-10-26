@@ -11,8 +11,9 @@ public class Singleton<T> : MonoBehaviour where T : Object {
 	/// Throws error if there is no instance of the Singleton in the scene or if there is more than one.
 	/// </summary>
 	/// <returns>Instance of the class</returns>
-	public static T GetInstance(){
-		T[] objects = FindObjectsOfType<T>();
+	public static T GetInstance()
+	{
+		T[] objects = Object.FindObjectsByType<T>(FindObjectsSortMode.None);
 		if (objects.Length == 0) {
 			throw new UnityException("Failed to find singleton");
 		}

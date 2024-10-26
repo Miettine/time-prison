@@ -5,11 +5,12 @@ using UnityEngine;
 
 public class Locker : MonoBehaviour
 {
-
+	private Player player;
 	TimeTravel timeTravel;
 
 	private void Awake() {
-		timeTravel = FindObjectOfType<TimeTravel>();
+		player = FindFirstObjectByType<Player>(FindObjectsInactive.Include);
+		timeTravel = FindFirstObjectByType<TimeTravel>(FindObjectsInactive.Include);
 	}
 
 	public bool OccupiedByPresentPlayer { get; set; } = false;
@@ -19,7 +20,7 @@ public class Locker : MonoBehaviour
 	private void Update() {
 		Debug.Log($"Past {OccupiedByPastPlayer}, Present {OccupiedByPresentPlayer}");
 		if (OccupiedByPastPlayer && OccupiedByPresentPlayer) {
-			timeTravel.TimeParadox(TimeParadoxCause.PastPlayerFoundPresentPlayerHiding);
+			timeTravel.TimeParadox(TimeParadoxCause.PastPlayerFoundPresentPlayerHiding, player.transform);
 		}
 	}
 }
