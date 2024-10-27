@@ -13,7 +13,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	UI ui;
 	Game game;
-	Story story;
+	Tutorial tutorial;
 
 	public bool TimeTravelling { get; private set; } = false;
 
@@ -43,7 +43,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
 		cameraControl = CameraControl.GetInstance();
 		game = Game.GetInstance();
-		story = Story.GetInstance();
+		tutorial = Tutorial.GetOrCreateInstance();
 	}
 
 	// Start is called before the first frame update
@@ -212,7 +212,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 		}
 		ongoingTimeParadox = true;
 
-		story.OnTimeParadox();
+		tutorial.OnTimeParadox();
 
 		CauseOfTimeParadox = eventThatCausedTimeParadox;
 		EntityThatCausedTimeParadox = entityThatCausedTimeParadox;

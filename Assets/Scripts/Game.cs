@@ -6,17 +6,17 @@ using UnityEngine.SceneManagement;
 
 public class Game : Singleton<Game>
 {
-    Story story;
+    Tutorial tutorial;
 
     void Awake() {
-        story = Story.GetInstance();
+        tutorial = Tutorial.GetOrCreateInstance();
 	}
 
     // Start is called before the first frame update
     void Start()
     {
         //Story is called with DontDestroyOnLoad. This class is destroyed and reloaded whenever a scene is loaded.
-        story.OnLevelLoaded();
+        tutorial.OnLevelLoaded();
     }
 
     // Update is called once per frame

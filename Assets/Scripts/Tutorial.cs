@@ -3,7 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Story : Singleton<Story> {
+/// <summary>
+/// This class exists to show the player tutorial texts. Keeps track of what tutorials the player has seen.
+/// </summary>
+public class Tutorial : Singleton<Tutorial> {
 
 	bool timeParadoxHasHappenedAtLeastOnceThroughSeeing = false;
 	bool timeParadoxWarningThroughSeeingHasBeenShown = false;
@@ -56,7 +59,7 @@ public class Story : Singleton<Story> {
 
 
 	string GetGoalTutorialText() {
-		return "Walk to that rift to get to the next chamber";
+		return "Proceed to the next chamber";
 	}
 
 	string GetTimePortalTutorialText() {
@@ -70,17 +73,12 @@ public class Story : Singleton<Story> {
 		return "WARNING: Do not be seen or heard by your past self";
 	}
 
-	string GetTimeTimeMachineStoryText() {
-		return "I built that time machine. I hope you like it.";
-	}
-
 	public string GetTimeTimeMachineTutorialText() {
-		return "Press space to time travel";
+		return "Press space bar key to time travel";
 	}
 
 	public string GetTimeTimeMachineTouchControlTutorialText() {
-		return "Press that button to time travel";
+		return "Press the Time Travel button";
 	}
-
-
+	
 }
