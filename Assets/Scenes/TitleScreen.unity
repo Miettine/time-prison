@@ -373,9 +373,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e75e1f1ce2ce9d448769e01b5da018c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fullScreenButtonName: FullScreenButton
-  startButtonName: StartGameButton
-  firstLevelSceneName: Level1
 --- !u!4 &491613316
 Transform:
   m_ObjectHideFlags: 0
@@ -1285,7 +1282,7 @@ GameObject:
   - component: {fileID: 2003076750}
   - component: {fileID: 2003076749}
   m_Layer: 5
-  m_Name: Title
+  m_Name: TitleText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

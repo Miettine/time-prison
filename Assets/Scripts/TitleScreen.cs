@@ -4,41 +4,53 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TitleScreen : Singleton<TitleScreen> {
+	
+	private const string FullScreenButtonName = "FullScreenButton";
 
-	[SerializeField]
-	string fullScreenButtonName = "FullScreenButton";
+	private const string StartButtonName = "StartGameButton";
 
-	[SerializeField]
-	string startButtonName = "StartGameButton";
+	private const string FirstLevelSceneName = "Level1";
+	
+	private const string WizardGameObjectName = "Wizard";
 
-	[SerializeField]
-	string firstLevelSceneName = "Level1";
-
+	private GameObject page1GameObject;
+	
 	private TextMeshProUGUI fullScreenButtonText;
 
-	void Awake() {
-		Button fullScreenButton = GameObject.Find(fullScreenButtonName).GetComponent<Button>();
-		fullScreenButton.onClick.AddListener(() => ToggleFullScreen());
+	private void Awake() {
+		var fullScreenButton = GameObject.Find(FullScreenButtonName).GetComponent<Button>();
+		fullScreenButton.onClick.AddListener(ToggleFullScreen);
 		fullScreenButtonText = fullScreenButton.transform.GetComponentInChildren<TextMeshProUGUI>();
 		
-		GameObject.Find(startButtonName).GetComponent<Button>().onClick.AddListener(() => SceneManager.LoadScene(firstLevelSceneName));
+		var wizardGameObject = GameObject.Find(WizardGameObjectName);
+
+		page1GameObject = wizardGameObject.transform.GetChild(0).gameObject;		
+		
+		GameObject.Find(StartButtonName).GetComponent<Button>().onClick.AddListener(LoadFirstLevelScene);
 	}
 
-	void Update() {
+	private void Start()
+	{
+		page1GameObject.SetActive(true);
+	}
+	
+	private static void LoadFirstLevelScene()
+	{
+		SceneManager.LoadScene(FirstLevelSceneName);
+	}
+	
+	private void Update() {
 		UpdateFullScreenButtonText();
 		//The player can press the WebGL player's full screen button at any time.
 		//This is why I must update the full screen button's text every frame.
 	}
 
-	public void ToggleFullScreen() {
+	private static void ToggleFullScreen() {
 		Screen.fullScreen = !Screen.fullScreen;
 	}
 
-	private void UpdateFullScreenButtonText() {
-		if (Screen.fullScreen) {
-			fullScreenButtonText.text = "Exit full screen";
-		} else {
-			fullScreenButtonText.text = "Go full screen";
-		}
+	private void UpdateFullScreenButtonText()
+	{
+		fullScreenButtonText.text = Screen.fullScreen ? "Exit full screen" : "Go full screen";
 	}
 }
