@@ -141,17 +141,22 @@ public class UI : Singleton<UI>
 	}
 
 	internal void ShowTemporaryCenterNotificationText(string text) {
-		ShowCenterNotificationText(text);
+		ShowPermanentCenterNotificationText(text);
 	}
 
-	internal IEnumerator ShowCenterNotificationText(string text) {
+	private IEnumerator ShowCenterNotificationText(string text, float time = 3f) {
 		centerNotificationText.gameObject.SetActive(true);
 		centerNotificationText.text = text;
 
-		yield return WaitForSeconds(3f);
+		yield return WaitForSeconds(time);
 
 		centerNotificationText.gameObject.SetActive(false);
 		centerNotificationText.text = "";
+	}
+	
+	internal void ShowPermanentCenterNotificationText(string text) {
+		centerNotificationText.gameObject.SetActive(true);
+		centerNotificationText.text = text;
 	}
 
 	internal void ShowKeyCardIndicator(KeyCardType type, bool visible) {
@@ -242,4 +247,6 @@ public class UI : Singleton<UI>
 	WaitForSeconds WaitForSeconds(float time) {
 		return new WaitForSeconds(time);
 	}
+
+
 }

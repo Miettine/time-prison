@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// This class exists to show the player tutorial texts. Keeps track of what tutorials the player has seen.
@@ -13,10 +14,12 @@ public class Tutorial : Singleton<Tutorial> {
 
 	bool timeParadoxHasHappenedAtLeastOnceThroughHearing = false;
 	bool timeParadoxWarningThroughHearingHasBeenShown = false;
-
+	
 	UI ui;
 	TimeTravel timeTravel;
 
+	private 
+	
 	void Awake() {
 
 	}
@@ -44,10 +47,23 @@ public class Tutorial : Singleton<Tutorial> {
 		}
 	}
 
+	private bool IsMobilePlatform()
+	{
+		return Application.platform == RuntimePlatform.WebGLPlayer && Application.isMobilePlatform;
+	}
+
 	public void OnLevelLoaded() {
 		ui = UI.GetInstance();
 		timeTravel = TimeTravel.GetInstance();
 
+		var currentSceneName = SceneManager.GetActiveScene().name;
+		if (currentSceneName.Contains("1"))
+		{
+			var controlsTutorialText = IsMobilePlatform() ? GetPhoneTutorialText() : GetComputerTutorialText();
+			
+			ui.ShowPermanentCenterNotificationText(controlsTutorialText);
+		}
+		
 		if (timeParadoxHasHappenedAtLeastOnceThroughSeeing && !timeParadoxWarningThroughSeeingHasBeenShown) {
 			ui.ShowTemporaryCenterNotificationText(GetFirstTimeParadoxWarningText());
 			timeParadoxWarningThroughSeeingHasBeenShown = true;
@@ -57,6 +73,10 @@ public class Tutorial : Singleton<Tutorial> {
 		}
 	}
 
+	private static string GetComputerTutorialText() => "Move: use ⬆️⬇️⬅️➡️ arrow keys or hold down the left 🖱️ button";
+	
+	private static string GetPhoneTutorialText() => "Move: touch and hold the screen";
+	
 
 	string GetGoalTutorialText() {
 		return "Proceed to the next chamber";
