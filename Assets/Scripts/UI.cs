@@ -7,26 +7,27 @@ using UnityEngine.UI;
 
 public class UI : Singleton<UI>
 {
-	Player player;
-	CameraControl cameraControl;
-	TimeTravel timeTravel;
+	private Player player;
+	private CameraControl cameraControl;
+	private TimeTravel timeTravel;
 
-	Text timeText;
-	Text doorOpenText;
+	private Text timeText;
+	private Text doorOpenText;
 
-	Button timeTravelButton;
-	Button resetButton;
+	private Button timeTravelButton;
+	private Button resetButton;
 
-	GameObject timeTravelHelpText;
-	GameObject resetHelpText;
-
-	GameObject blueKeyCardIndicator;
-	GameObject greenKeyCardIndicator;
-	GameObject yellowKeyCardIndicator;
-
-	GameObject timeParadoxTextGameObject;
-
-	TextMeshProUGUI centerNotificationText;
+	private GameObject timeTravelHelpText;
+	private GameObject resetHelpText;
+	 
+	private GameObject blueKeyCardIndicator;
+	private GameObject greenKeyCardIndicator;
+	private GameObject yellowKeyCardIndicator;
+	 
+	private GameObject timeParadoxTextGameObject;
+ 
+	private TextMeshProUGUI centerImportantNotificationText;
+	private TextMeshProUGUI centerNeutralNotificationText;
 
 	[SerializeField] private float timeParadoxAnimationLength = 10f;
 
@@ -49,8 +50,11 @@ public class UI : Singleton<UI>
 
 		timeParadoxTextGameObject = GameObject.Find("TimeParadoxTextGameObject");
 
-		centerNotificationText = GameObject.Find("CenterNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
-		centerNotificationText.gameObject.SetActive(false);
+		centerImportantNotificationText = GameObject.Find("CenterImportantNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
+		centerImportantNotificationText.gameObject.SetActive(false);
+		
+		centerNeutralNotificationText = GameObject.Find("CenterNeutralNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
+		centerNeutralNotificationText.gameObject.SetActive(false);
 
 		player = Player.GetInstance();
 
@@ -140,25 +144,39 @@ public class UI : Singleton<UI>
 		doorOpenText.text = "";
 	}
 
-	internal void ShowTemporaryCenterNotificationText(string text) {
-		ShowPermanentCenterNotificationText(text);
+	private TextMeshProUGUI GetTextObject(NotificationType type)
+	{
+		return type == NotificationType.Important ? centerImportantNotificationText : centerNeutralNotificationText;
 	}
 
-	private IEnumerator ShowCenterNotificationText(string text, float time = 3f) {
-		centerNotificationText.gameObject.SetActive(true);
-		centerNotificationText.text = text;
+	/// <summary>
+	/// This notification is shown until the level ends.
+	/// </summary>
+	/// <param name="text">The text to show</param>
+	/// <param name="type">Whether to show an important kind of notification in yellow text or a more neutral
+	/// notification in white text.</param>
+	internal void ShowPermanentCenterNotificationText(string text, NotificationType type = NotificationType.Neutral) {
+		var textObject = GetTextObject(type);
+
+		textObject.gameObject.SetActive(true);
+		textObject.text = text;
+	}
+
+	internal void ShowTemporaryCenterNotificationText(string text, NotificationType type = NotificationType.Neutral, float time = 3f) {
+		StartCoroutine(ShowTemporaryCenterNotificationTextAsync(text, type , time));
+	}
+
+	private IEnumerator ShowTemporaryCenterNotificationTextAsync(string text, NotificationType type = NotificationType.Neutral, float time = 3f) {
+		var textObject = GetTextObject(type);
+		textObject.gameObject.SetActive(true);
+		textObject.text = text;
 
 		yield return WaitForSeconds(time);
 
-		centerNotificationText.gameObject.SetActive(false);
-		centerNotificationText.text = "";
+		textObject.gameObject.SetActive(false);
+		textObject.text = "";
 	}
 	
-	internal void ShowPermanentCenterNotificationText(string text) {
-		centerNotificationText.gameObject.SetActive(true);
-		centerNotificationText.text = text;
-	}
-
 	internal void ShowKeyCardIndicator(KeyCardType type, bool visible) {
 		switch (type) {
 			case KeyCardType.Blue:
@@ -210,16 +228,16 @@ public class UI : Singleton<UI>
 
 		switch (timeTravel.CauseOfTimeParadox) {
 			case TimeParadoxCause.PastPlayerSawPresentPlayer:
-				centerNotificationText.gameObject.SetActive(true);
-				centerNotificationText.text = "Cause:\npast self saw you";
+				centerImportantNotificationText.gameObject.SetActive(true);
+				centerImportantNotificationText.text = "Cause:\npast self saw you";
 				break;
 			case TimeParadoxCause.PastPlayerHeardPresentPlayer:
-				centerNotificationText.gameObject.SetActive(true);
-				centerNotificationText.text = "Cause:\npast self heard you";
+				centerImportantNotificationText.gameObject.SetActive(true);
+				centerImportantNotificationText.text = "Cause:\npast self heard you";
 				break;
 			case TimeParadoxCause.PastPlayerSawObjectInteractionFromPresentPlayer:
-				centerNotificationText.gameObject.SetActive(true);
-				centerNotificationText.text = "Cause:\npast self saw an object that you had interacted with";
+				centerImportantNotificationText.gameObject.SetActive(true);
+				centerImportantNotificationText.text = "Cause:\npast self saw an object that you had interacted with";
 				break;
 		}
 
@@ -227,8 +245,8 @@ public class UI : Singleton<UI>
 
 		yield return WaitForTimeParadoxAnimationStepDelay();
 
-		centerNotificationText.gameObject.SetActive(true);
-		centerNotificationText.text = "Resetting timeline";
+		centerImportantNotificationText.gameObject.SetActive(true);
+		centerImportantNotificationText.text = "Resetting timeline";
 
 		yield return cameraControl.MoveToTarget(player.transform, GetTimeParadoxAnimationStepDelay());
 		
@@ -237,7 +255,7 @@ public class UI : Singleton<UI>
 		yield return WaitForSeconds(GetTimeParadoxAnimationStepDelay() / 6);
 		//The camera warping effect and the text "Resetting timeline" are intentionally made to overlap for a moment.
 		//This is to make the time paradox animation seem more visually interesting and organic.
-		centerNotificationText.gameObject.SetActive(false);
+		centerImportantNotificationText.gameObject.SetActive(false);
 	}
 
 	WaitForSeconds WaitForTimeParadoxAnimationStepDelay() {

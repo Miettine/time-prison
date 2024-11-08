@@ -65,15 +65,15 @@ public class Tutorial : Singleton<Tutorial> {
 		}
 		
 		if (timeParadoxHasHappenedAtLeastOnceThroughSeeing && !timeParadoxWarningThroughSeeingHasBeenShown) {
-			ui.ShowTemporaryCenterNotificationText(GetFirstTimeParadoxWarningText());
+			ui.ShowTemporaryCenterNotificationText(GetFirstTimeParadoxWarningText(), NotificationType.Important);
 			timeParadoxWarningThroughSeeingHasBeenShown = true;
 		} else if (timeParadoxHasHappenedAtLeastOnceThroughHearing && !timeParadoxWarningThroughHearingHasBeenShown) {
-			ui.ShowTemporaryCenterNotificationText(GetFirstTimeParadoxWarningText());
+			ui.ShowTemporaryCenterNotificationText(GetFirstTimeParadoxWarningText(), NotificationType.Important);
 			timeParadoxWarningThroughSeeingHasBeenShown = true;
 		}
 	}
 
-	private static string GetComputerTutorialText() => "Move: use ⬆️⬇️⬅️➡️ arrow keys or hold down the left 🖱️ button";
+	private static string GetComputerTutorialText() => "Move: use the arrow keys\nor hold the left mouse button";
 	
 	private static string GetPhoneTutorialText() => "Move: touch and hold the screen";
 	
