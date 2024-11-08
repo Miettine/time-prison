@@ -25,7 +25,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 	private float snapshotRate = 0.1f;
 
 	[SerializeField]
-	private TimeParadoxBehaviour behaviourOnTimeParadox = TimeParadoxBehaviour.ReloadScene;
+	private TimeParadoxBehaviour behaviourOnTimeParadox = TimeParadoxBehaviour.TimeParadoxAnimation;
 
 	CameraControl cameraControl;
 	private bool ongoingTimeParadox;

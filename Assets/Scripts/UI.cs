@@ -148,6 +148,16 @@ public class UI : Singleton<UI>
 	{
 		return type == NotificationType.Important ? centerImportantNotificationText : centerNeutralNotificationText;
 	}
+	
+	/// <summary>
+	/// Get the other center notification text that is NOT the one that the given type parameter asks for.
+	/// </summary>
+	/// <param name="type">The other text that is NOT of this type</param>
+	/// <returns>The text object</returns>
+	private TextMeshProUGUI GetTextObjectNot(NotificationType type)
+	{
+		return type == NotificationType.Important ? centerNeutralNotificationText : centerImportantNotificationText;
+	}
 
 	/// <summary>
 	/// This notification is shown until the level ends.
@@ -156,10 +166,27 @@ public class UI : Singleton<UI>
 	/// <param name="type">Whether to show an important kind of notification in yellow text or a more neutral
 	/// notification in white text.</param>
 	internal void ShowPermanentCenterNotificationText(string text, NotificationType type = NotificationType.Neutral) {
+		ShowCenterNotificationTextHideOther(text, type);
+	}
+
+	private TextMeshProUGUI ShowCenterNotificationTextHideOther(string text, NotificationType type = NotificationType.Neutral) {
 		var textObject = GetTextObject(type);
 
 		textObject.gameObject.SetActive(true);
 		textObject.text = text;
+		
+		var otherTextObject = GetTextObjectNot(type);
+
+		otherTextObject.gameObject.SetActive(false);
+		otherTextObject.text = "";
+		
+		return textObject;
+	}
+
+	private void HideCenterNotificationTexts()
+	{
+		centerImportantNotificationText.gameObject.SetActive(false);
+		centerNeutralNotificationText.gameObject.SetActive(false);
 	}
 
 	internal void ShowTemporaryCenterNotificationText(string text, NotificationType type = NotificationType.Neutral, float time = 3f) {
@@ -167,9 +194,7 @@ public class UI : Singleton<UI>
 	}
 
 	private IEnumerator ShowTemporaryCenterNotificationTextAsync(string text, NotificationType type = NotificationType.Neutral, float time = 3f) {
-		var textObject = GetTextObject(type);
-		textObject.gameObject.SetActive(true);
-		textObject.text = text;
+		var textObject = ShowCenterNotificationTextHideOther(text, type);
 
 		yield return WaitForSeconds(time);
 
@@ -228,25 +253,21 @@ public class UI : Singleton<UI>
 
 		switch (timeTravel.CauseOfTimeParadox) {
 			case TimeParadoxCause.PastPlayerSawPresentPlayer:
-				centerImportantNotificationText.gameObject.SetActive(true);
-				centerImportantNotificationText.text = "Cause:\npast self saw you";
+				ShowCenterNotificationTextHideOther("Cause:\npast self saw you", NotificationType.Important);
 				break;
 			case TimeParadoxCause.PastPlayerHeardPresentPlayer:
-				centerImportantNotificationText.gameObject.SetActive(true);
-				centerImportantNotificationText.text = "Cause:\npast self heard you";
+				ShowCenterNotificationTextHideOther("Cause:\npast self heard you", NotificationType.Important);
 				break;
 			case TimeParadoxCause.PastPlayerSawObjectInteractionFromPresentPlayer:
-				centerImportantNotificationText.gameObject.SetActive(true);
-				centerImportantNotificationText.text = "Cause:\npast self saw an object that you had interacted with";
+				ShowCenterNotificationTextHideOther("Cause:\npast self saw an object that you had interacted with", NotificationType.Important);
 				break;
 		}
 
 		yield return cameraControl.MoveToTarget(timeTravel.EntityThatCausedTimeParadox, GetTimeParadoxAnimationStepDelay());
 
 		yield return WaitForTimeParadoxAnimationStepDelay();
-
-		centerImportantNotificationText.gameObject.SetActive(true);
-		centerImportantNotificationText.text = "Resetting timeline";
+		
+		ShowCenterNotificationTextHideOther("Resetting timeline", NotificationType.Important);
 
 		yield return cameraControl.MoveToTarget(player.transform, GetTimeParadoxAnimationStepDelay());
 		
@@ -255,7 +276,7 @@ public class UI : Singleton<UI>
 		yield return WaitForSeconds(GetTimeParadoxAnimationStepDelay() / 6);
 		//The camera warping effect and the text "Resetting timeline" are intentionally made to overlap for a moment.
 		//This is to make the time paradox animation seem more visually interesting and organic.
-		centerImportantNotificationText.gameObject.SetActive(false);
+		HideCenterNotificationTexts();
 	}
 
 	WaitForSeconds WaitForTimeParadoxAnimationStepDelay() {
