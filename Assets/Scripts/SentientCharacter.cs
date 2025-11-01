@@ -39,9 +39,6 @@ public class SentientCharacter : MonoBehaviour
 	}
 
 	protected bool SeesPresentPlayer() {
-		if (player.IsHiding()) {
-			return false;
-		}
 
 		var toPlayer = playerTransform.position - this.transform.position;
 

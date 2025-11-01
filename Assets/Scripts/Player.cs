@@ -42,8 +42,6 @@ public class Player : Singleton<Player>
 
 	int pastPlayerLayer;
 
-	Locker lockerHiddenIn;
-
 	internal ActionType LatestAction { get; set; }
 
 	int interactableObjectsLayerMask;
@@ -78,20 +76,13 @@ public class Player : Singleton<Player>
 			return;
 		}
 
-		bool isHiding = IsHiding();
-
 		if (Input.GetKeyUp(KeyCode.Space)) {
 			LatestAction = CharacterInTime.ActionType.StartTimeTravel;
 			OnTimeTravelActivated();
 			return;
 		}
 		if (Input.GetKeyDown(KeyCode.E)) {
-			if (isHiding) {
-				LatestAction = CharacterInTime.ActionType.ExitLocker;
-				LeaveLocker(lockerHiddenIn);
-			} else {
-				InteractWithNearbyObjects();
-			}
+			InteractWithNearbyObjects();
 		}
 
 		//There used to be a check if(!isHiding) right about here. The hiding feature has been discontinued.
@@ -166,35 +157,6 @@ public class Player : Singleton<Player>
 		timeTravel.ResetTimeline();
 	}
 
-
-	public bool IsHiding() {
-		return lockerHiddenIn != null;
-	}
-	
-	void HideInLocker(Locker locker) {
-		timeTravel.PlayerHidesInLocker();
-		locker.OccupiedByPresentPlayer = true;
-
-		LatestAction = CharacterInTime.ActionType.EnterLocker;
-		//Later there will be animations, so there will be a short delay when the player enters the locker and when they are hidden inside.
-
-		this.transform.position = locker.transform.position;
-		physicsCollisionCollider.enabled = false;
-		rigidbody.isKinematic = true;
-
-		lockerHiddenIn = locker;
-		LatestAction = CharacterInTime.ActionType.HidingInLocker;
-	}
-
-	void LeaveLocker(Locker locker) {
-		physicsCollisionCollider.enabled = true;
-		locker.OccupiedByPresentPlayer = false;
-		rigidbody.isKinematic = false;
-		this.transform.position = locker.transform.position + new Vector3(0f, 0f, -1.5f);
-
-		lockerHiddenIn = null;
-	}
-
 	private void OnTriggerEnter(Collider other) {
 		if (other.gameObject.layer == LayerMask.NameToLayer("KeyCards")) {
 			var card = other.gameObject.GetComponentInChildren<KeyCard>();
@@ -228,17 +190,10 @@ public class Player : Singleton<Player>
 				
 				return;
 			}
-
-			if (collider.gameObject.tag == "Locker") {
-				HideInLocker(collider.gameObject.GetComponentInParent<Locker>());
-			}
 		}
 	}
 
 	void ProcessMovementInput(Vector3 direction, bool sneaking){
-		if (IsHiding()) {
-			return;
-		}
 
 		// I want the player character to rotate slowly towards the direction that the player pushed the arrow keys in. The following code accomplishes this.
 

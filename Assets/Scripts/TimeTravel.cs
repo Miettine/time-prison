@@ -58,12 +58,6 @@ public class TimeTravel : Singleton<TimeTravel> {
 			trackedInanimateObjectNames.Add(largeDoor.name);
 		}
 
-		var lockers = GameObject.FindObjectsByType<Locker>(FindObjectsSortMode.None);
-
-		foreach (var locker in lockers) {
-			trackedInanimateObjectNames.Add(locker.name);
-		}
-
 		List<ButtonPedestal> oneTimeButtonPedestals = FindOneShotButtonPedestals();
 
 		foreach (var oneTimeButtonPedestal in oneTimeButtonPedestals) {
@@ -162,14 +156,6 @@ public class TimeTravel : Singleton<TimeTravel> {
 					buttonPedestal.ActivatedByPastPlayer();
 				}
 			}
-
-			var locker = inanimateGameObject.GetComponent<Locker>();
-			if (locker != null) {
-				var lockerInTime = momentsInTime.GetObject<LockerInTime>(name, time);
-				if (lockerInTime != null) {
-					locker.OccupiedByPastPlayer = lockerInTime.occupied;
-				}
-			}
 		}
 		var security = FindFirstObjectByType<SecuritySystem>(FindObjectsInactive.Include);
 
@@ -184,21 +170,6 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	internal void ResetTimeline() {
 		throw new NotImplementedException();
-	}
-
-	internal void PlayerHidesInLocker() {
-		var playerTransform = playerController.transform;
-
-		var stateInTime = new CharacterInTime(
-			$"Player{GetTimeTravelCount() + 1}", 
-			GetTime(), 
-			CharacterType.Player, 
-			new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), 
-			playerTransform.rotation,
-			ActionType.EnterLocker
-		);
-
-		momentsInTime.AddObject(stateInTime);
 	}
 
 	[Obsolete("Deprecated, use TimeParadox(TimeParadoxCause, Transform) instead")]
@@ -278,16 +249,6 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 		if (security != null) {
 			var stateInTime = new SecuritySystemInTime(security.gameObject.name, GetTime(), security.AlarmByPresentAction);
-
-			momentsInTime.AddObject(stateInTime);
-		}
-	}
-
-	private void SnapshotLockers() {
-		var lockers = FindObjectsByType<Locker>(FindObjectsSortMode.None);
-
-		foreach (var locker in lockers) {
-			var stateInTime = new LockerInTime(locker.gameObject.name, GetTime(), locker.OccupiedByPresentPlayer);
 
 			momentsInTime.AddObject(stateInTime);
 		}

@@ -6,7 +6,5 @@ public enum TimeParadoxCause {
 	None,
 	PastPlayerSawPresentPlayer, 
 	PastPlayerHeardPresentPlayer, 
-	PastPlayerFoundPresentPlayerHiding,
-	PastPlayerSawObjectInteractionFromPresentPlayer,
-	GuardCaughtPlayer
+	PastPlayerSawObjectInteractionFromPresentPlayer
 }
