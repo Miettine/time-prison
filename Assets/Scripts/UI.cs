@@ -183,7 +183,7 @@ public class UI : Singleton<UI>
 		return textObject;
 	}
 
-	private void HideCenterNotificationTexts()
+	internal void HideCenterNotificationTexts()
 	{
 		centerImportantNotificationText.gameObject.SetActive(false);
 		centerNeutralNotificationText.gameObject.SetActive(false);
@@ -286,6 +286,4 @@ public class UI : Singleton<UI>
 	WaitForSeconds WaitForSeconds(float time) {
 		return new WaitForSeconds(time);
 	}
-
-
 }

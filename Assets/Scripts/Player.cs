@@ -10,8 +10,9 @@ public class Player : Singleton<Player>
 	Collider physicsCollisionCollider;
 
 	TimeTravel timeTravel;
+    Tutorial tutorial;
 
-	[SerializeField]
+    [SerializeField]
 	private float deadzone = 0.1f;
 
 	[SerializeField]
@@ -54,6 +55,7 @@ public class Player : Singleton<Player>
 		timeTravel = TimeTravel.GetInstance();
 		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
 		ui = UI.GetInstance();
+		tutorial = Tutorial.GetInstance();
 
 		var soundIndicatorTransform = transform.Find("SoundIndicator");
 		soundIndicatorTransform.localScale = new Vector3(runningSoundWaveRadius*2, 1, runningSoundWaveRadius*2);
@@ -218,7 +220,7 @@ public class Player : Singleton<Player>
 			} else if (timeTravel.TimeTravelling && sneaking) {
 				HideSoundIndicator();
 			}
-
+			tutorial.OnPlayerHasMoved();
 			LatestAction = CharacterInTime.ActionType.Walking;
 		} else {
 			LatestAction = CharacterInTime.ActionType.Standing;

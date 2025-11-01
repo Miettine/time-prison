@@ -56,8 +56,7 @@ public class Tutorial : Singleton<Tutorial> {
 		ui = UI.GetInstance();
 		timeTravel = TimeTravel.GetInstance();
 
-		var currentSceneName = SceneManager.GetActiveScene().name;
-		if (currentSceneName.Contains("1"))
+		if (IsCurrentLevelFirstLevel())
 		{
 			var controlsTutorialText = IsMobilePlatform() ? GetPhoneTutorialText() : GetComputerTutorialText();
 			
@@ -72,6 +71,8 @@ public class Tutorial : Singleton<Tutorial> {
 			timeParadoxWarningThroughSeeingHasBeenShown = true;
 		}
 	}
+
+	private static bool IsCurrentLevelFirstLevel() => SceneManager.GetActiveScene().name.Contains("1");
 
 	private static string GetComputerTutorialText() => "Move: use the arrow keys\nor hold the left mouse button";
 	
@@ -100,5 +101,15 @@ public class Tutorial : Singleton<Tutorial> {
 	public string GetTimeTimeMachineTouchControlTutorialText() {
 		return "Press the Time Travel button";
 	}
-	
+
+    internal void OnPlayerHasMoved()
+    {
+		// Plan: we will track if the player has moved past a particular invisible area. If the player has, hide the center text.
+		// The following functionality is placeholder:
+
+		if (IsCurrentLevelFirstLevel())
+		{
+            ui.HideCenterNotificationTexts();
+		}
+    }
 }
