@@ -94,19 +94,14 @@ public class Player : Singleton<Player>
 				return;
 			}
 
-			// Some of the code on this block was created with the assistance of ChatGPT!
-			// The following code is not fully AI-generated, but some information was gathered through an AI chat bot instead of Googling.
-			// How exciting! :D
-			// Added "ChatGPT:" on comments and lines that were written by Artificial Intelligence
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Cast a ray from the camera towards the mouse position
 
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // ChatGPT: Cast a ray from the camera towards the mouse position
+			float rayDistance; // Declare a variable to store the distance along the ray to the intersection point
+			Plane groundPlane = new Plane(Vector3.up, Vector3.zero); // Create a plane at y = 0
 
-			float rayDistance; // ChatGPT: Declare a variable to store the distance along the ray to the intersection point
-			Plane groundPlane = new Plane(Vector3.up, Vector3.zero); // ChatGPT: Create a plane at y = 0
-
-			if (groundPlane.Raycast(ray, out rayDistance)) // ChatGPT: Check if the ray intersects with the ground plane
+			if (groundPlane.Raycast(ray, out rayDistance)) // Check if the ray intersects with the ground plane
 			{
-				Vector3 groundPoint = ray.GetPoint(rayDistance); // ChatGPT: Get the point of intersection between the ray and the ground plane
+				Vector3 groundPoint = ray.GetPoint(rayDistance); // Get the point of intersection between the ray and the ground plane
 
 				/* The player either moves towards the mouse or the player moves to the opposite direction from where the mouse is clicked.
 				 * When this game is played on a phone, some players could complain that they can't see where the character is going because
