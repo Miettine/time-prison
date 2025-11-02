@@ -220,7 +220,6 @@ public class Player : Singleton<Player>
 			} else if (timeTravel.TimeTravelling && sneaking) {
 				HideSoundIndicator();
 			}
-			tutorial.OnPlayerHasMoved();
 			LatestAction = CharacterInTime.ActionType.Walking;
 		} else {
 			LatestAction = CharacterInTime.ActionType.Standing;

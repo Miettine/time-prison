@@ -102,14 +102,8 @@ public class Tutorial : Singleton<Tutorial> {
 		return "Press the Time Travel button";
 	}
 
-    internal void OnPlayerHasMoved()
+    internal void PlayerEnteredLevel1GoalTutorialTrigger()
     {
-		// Plan: we will track if the player has moved past a particular invisible area. If the player has, hide the center text.
-		// The following functionality is placeholder:
-
-		if (IsCurrentLevelFirstLevel())
-		{
-            ui.HideCenterNotificationTexts();
-		}
+        ui.ShowPermanentCenterNotificationText(GetGoalTutorialText());
     }
 }
