@@ -16,9 +16,7 @@ public class Tutorial : Singleton<Tutorial> {
 	bool timeParadoxWarningThroughHearingHasBeenShown = false;
 	
 	UI ui;
-	TimeTravel timeTravel;
-
-	private 
+	TimeTravel timeTravel; 
 	
 	void Awake() {
 
@@ -31,7 +29,7 @@ public class Tutorial : Singleton<Tutorial> {
 
 	// Update is called once per frame
 	void Update() {
-
+		
 	}
 
 	public void OnTimeParadox() {
