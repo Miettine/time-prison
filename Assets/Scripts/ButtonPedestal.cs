@@ -21,7 +21,7 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	[SerializeField]
 	float openForTime = 5;
 
-	GameObject pressableButtonObject;
+	GameObject buttonMechanismObject;
 
 	public void ActivatedByPastPlayer() {
 		if (interactable) {
@@ -40,11 +40,18 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 				throw new System.Exception("Reference to door is null. Many doors present in scene. Please set the reference.");
 			}
 		}
+		buttonMechanismObject = transform.Find("ButtonMechanism").gameObject;
 
-		pressableButtonObject = transform.Find("PressableButton").gameObject;
-
-		ui = FindFirstObjectByType<UI>();
+		ui = UI.GetInstance();
 	}
+
+	void Update() {
+        if (interactable) {
+            ui.ShowPressTextAtWorldObject(buttonMechanismObject.transform);
+        } else {
+            ui.HidePressText();
+        }
+    }
 
 	public bool IsInteractable() {
 		return interactable;
@@ -74,8 +81,14 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	}
 
 	void SetButtonActive(bool active) {
-		pressableButtonObject.SetActive(active);
+		buttonMechanismObject.SetActive(active);
 		interactable = active;
+
+		if (active) {
+			ui.ShowPressTextAtWorldObject(buttonMechanismObject.transform);
+		} else {
+			ui.HidePressText();
+		}
 	}
 
 	public void OnTimeTravelStarted() {

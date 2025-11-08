@@ -31,44 +31,77 @@ public class UI : Singleton<UI>
 
 	[SerializeField] private float timeParadoxAnimationLength = 10f;
 
-	void Awake() {
-		cameraControl = CameraControl.GetInstance();
-		timeTravel = TimeTravel.GetInstance();
+	// New fields for the 'Press' UI element
+	private Canvas canvas;
+	private Text pressText;
+	private RectTransform pressTextRect;
 
-		timeText = GameObject.Find("TimeText").GetComponent<Text>();
-		doorOpenText = GameObject.Find("DoorOpenText").GetComponent<Text>();
+	void Awake()
+    {
+        cameraControl = CameraControl.GetInstance();
+        timeTravel = TimeTravel.GetInstance();
 
-		blueKeyCardIndicator = GameObject.Find("BlueKeyCardIndicator");
-		greenKeyCardIndicator = GameObject.Find("GreenKeyCardIndicator");
-		yellowKeyCardIndicator = GameObject.Find("YellowKeyCardIndicator");
+        timeText = GameObject.Find("TimeText").GetComponent<Text>();
+        doorOpenText = GameObject.Find("DoorOpenText").GetComponent<Text>();
 
-		timeTravelButton = GameObject.Find("TimeTravelButton").GetComponent<Button>();
-		resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
+        blueKeyCardIndicator = GameObject.Find("BlueKeyCardIndicator");
+        greenKeyCardIndicator = GameObject.Find("GreenKeyCardIndicator");
+        yellowKeyCardIndicator = GameObject.Find("YellowKeyCardIndicator");
 
-		timeTravelHelpText = GameObject.Find("TimeTravelHelpText");
-		resetHelpText = GameObject.Find("ResetHelpText");
+        timeTravelButton = GameObject.Find("TimeTravelButton").GetComponent<Button>();
+        resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
 
-		timeParadoxTextGameObject = GameObject.Find("TimeParadoxTextGameObject");
+        timeTravelHelpText = GameObject.Find("TimeTravelHelpText");
+        resetHelpText = GameObject.Find("ResetHelpText");
 
-		centerImportantNotificationText = GameObject.Find("CenterImportantNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
-		centerImportantNotificationText.gameObject.SetActive(false);
-		
-		centerNeutralNotificationText = GameObject.Find("CenterNeutralNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
-		centerNeutralNotificationText.gameObject.SetActive(false);
+        timeParadoxTextGameObject = GameObject.Find("TimeParadoxTextGameObject");
 
-		player = Player.GetInstance();
+        centerImportantNotificationText = GameObject.Find("CenterImportantNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
+        centerImportantNotificationText.gameObject.SetActive(false);
 
-		timeTravelButton.onClick.AddListener(() => player.OnTimeTravelActivated());
-		resetButton.onClick.AddListener(() => player.OnResetActivated());
+        centerNeutralNotificationText = GameObject.Find("CenterNeutralNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
+        centerNeutralNotificationText.gameObject.SetActive(false);
 
-		blueKeyCardIndicator.SetActive(false);
-		greenKeyCardIndicator.SetActive(false);
-		yellowKeyCardIndicator.SetActive(false);
+        InitPressButtonPromptPlaceholder();
 
-		doorOpenText.text = "";
-	}
+        player = Player.GetInstance();
 
-	void Start() {
+        timeTravelButton.onClick.AddListener(() => player.OnTimeTravelActivated());
+        resetButton.onClick.AddListener(() => player.OnResetActivated());
+
+        blueKeyCardIndicator.SetActive(false);
+        greenKeyCardIndicator.SetActive(false);
+        yellowKeyCardIndicator.SetActive(false);
+
+        doorOpenText.text = "";
+    }
+
+    /// <summary>
+    /// Creates a placeholder 'Press' button prompt UI element. This functionality is placeholder, improve code in the future!
+    /// </summary>
+    private void InitPressButtonPromptPlaceholder()
+    {
+        canvas = FindAnyObjectByType<Canvas>();
+		if (canvas == null)
+		{
+			throw new Exception("No Canvas found in the scene. Please add a Canvas to the scene for the UI to work.");
+        }
+        // Create a Text object for the 'Press' label
+        GameObject pressGO = new GameObject("PressText");
+        pressGO.transform.SetParent(canvas.transform, false);
+        pressText = pressGO.AddComponent<Text>();
+        pressText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        pressText.text = "Press E";
+        pressText.alignment = TextAnchor.LowerCenter;
+        pressText.fontSize = 24;
+        pressText.color = Color.white;
+        pressText.raycastTarget = false;
+        pressTextRect = pressText.GetComponent<RectTransform>();
+        pressTextRect.sizeDelta = new Vector2(120f, 30f);
+		pressGO.SetActive(false);
+    }
+
+    void Start() {
 		timeParadoxTextGameObject.SetActive(false);
 		SetControlMode(ControlMode.Touch);
 	}
@@ -285,5 +318,24 @@ public class UI : Singleton<UI>
 
 	WaitForSeconds WaitForSeconds(float time) {
 		return new WaitForSeconds(time);
+	}
+
+	/// <summary>
+	/// Show a UI text that will be positioned on the Canvas where the specified world position is.
+	/// Useful for showing small contextual hints above world objects.
+	/// </summary>
+	/// <param name="targetTransform">The world position to place the text above.</param>
+	public void ShowPressTextAtWorldObject(Transform targetTransform)
+	{
+		// For ScreenSpaceOverlay canvases the camera parameter must be null
+		Camera cam = Camera.main;
+
+		pressTextRect.position = cam.WorldToScreenPoint(targetTransform.position);
+		pressText.gameObject.SetActive(true);
+	}
+
+	public void HidePressText()
+	{
+		if (pressText != null) pressText.gameObject.SetActive(false);
 	}
 }
