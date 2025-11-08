@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +8,9 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	[SerializeField]
 	LargeDoor door;
 
-	UI ui;
+    public Transform ButtonMechanismTransform { get; private set; }
+
+    UI ui;
 
 	/// <summary>
 	/// Whether this is a one-shot button. A one-shot button can be pressed only once. Buttons that
@@ -23,37 +26,59 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 
 	GameObject buttonMechanismObject;
 
-	public void ActivatedByPastPlayer() {
-		if (interactable) {
-			SetButtonActive(false);
+    // Backing field for the linked interact prompt. Can only be set once.
+    private InteractPrompt _linkedInteractPrompt;
+
+    // Public getter, internal setter that only allows a single assignment.
+    public InteractPrompt LinkedInteractPrompt
+    {
+        get => _linkedInteractPrompt;
+        private set
+        {
+            if (_linkedInteractPrompt != null)
+            {
+                throw new InvalidOperationException("LinkedInteractPrompt can only be set once.");
+            }
+
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value), "LinkedInteractPrompt cannot be set to null.");
+            }
+
+            _linkedInteractPrompt = value;
+        }
+    }
+
+	 public void ActivatedByPastPlayer() {
+			if (interactable) {
+				SetButtonActive(false);
+			}
 		}
-	}
 
-	private void Awake() {
+	 private void Awake() {
+
+        ButtonMechanismTransform = transform.Find("ButtonMechanism");
+		
+		ui = UI.GetInstance();
+
 		if (door == null) {
-
 			var doors = FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
 
 			if (doors.Length == 1) {
 				door = doors[0];
 			} else {
-				throw new System.Exception("Reference to door is null. Many doors present in scene. Please set the reference.");
+				throw new Exception("Reference to door is null. Many doors present in scene. Please set the reference.");
 			}
 		}
-		buttonMechanismObject = transform.Find("ButtonMechanism").gameObject;
-
-		ui = UI.GetInstance();
 	}
 
-	void Update() {
-        if (interactable) {
-            ui.ShowPressTextAtWorldObject(buttonMechanismObject.transform);
-        } else {
-            ui.HidePressText();
-        }
+	void Start(){
+        // Create and link an InteractPrompt for this pedestal. Must be done on Start to ensure UI instance is ready.
+        LinkedInteractPrompt = ui.OnButtonPedestalCreated(this);
+
     }
 
-	public bool IsInteractable() {
+    public bool IsInteractable() {
 		return interactable;
 	}
 
@@ -83,12 +108,6 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	void SetButtonActive(bool active) {
 		buttonMechanismObject.SetActive(active);
 		interactable = active;
-
-		if (active) {
-			ui.ShowPressTextAtWorldObject(buttonMechanismObject.transform);
-		} else {
-			ui.HidePressText();
-		}
 	}
 
 	public void OnTimeTravelStarted() {

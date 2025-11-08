@@ -891,6 +891,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeParadoxAnimationLength: 10
+  interactUIPromptPrefab: {fileID: 0}
 --- !u!4 &980353225
 Transform:
   m_ObjectHideFlags: 0

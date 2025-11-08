@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Player;
 
 public class UI : Singleton<UI>
 {
@@ -31,20 +32,32 @@ public class UI : Singleton<UI>
 
 	[SerializeField] private float timeParadoxAnimationLength = 10f;
 
-	// New fields for the 'Press' UI element
 	private Canvas canvas;
-	private Text pressText;
-	private RectTransform pressTextRect;
 
+    [SerializeField]
+    GameObject interactUIPromptPrefab;
+    
 	void Awake()
     {
         cameraControl = CameraControl.GetInstance();
         timeTravel = TimeTravel.GetInstance();
 
+        canvas = FindAnyObjectByType<Canvas>();
+        if (canvas == null)
+        {
+            throw new Exception("No Canvas found in the scene. Please add a Canvas to the scene for the UI to work.");
+        }
+
         timeText = GameObject.Find("TimeText").GetComponent<Text>();
         doorOpenText = GameObject.Find("DoorOpenText").GetComponent<Text>();
 
-        blueKeyCardIndicator = GameObject.Find("BlueKeyCardIndicator");
+        interactUIPromptPrefab = (GameObject) Resources.Load("InteractUIPrompt");
+
+		if (interactUIPromptPrefab == null)
+		{
+			throw new Exception("Could not load InteractUIPrompt prefab from Resources folder. Please ensure it exists at Resources/InteractUIPrompt.prefab");
+        }
+		blueKeyCardIndicator = GameObject.Find("BlueKeyCardIndicator");
         greenKeyCardIndicator = GameObject.Find("GreenKeyCardIndicator");
         yellowKeyCardIndicator = GameObject.Find("YellowKeyCardIndicator");
 
@@ -62,8 +75,6 @@ public class UI : Singleton<UI>
         centerNeutralNotificationText = GameObject.Find("CenterNeutralNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
         centerNeutralNotificationText.gameObject.SetActive(false);
 
-        InitPressButtonPromptPlaceholder();
-
         player = Player.GetInstance();
 
         timeTravelButton.onClick.AddListener(() => player.OnTimeTravelActivated());
@@ -76,49 +87,9 @@ public class UI : Singleton<UI>
         doorOpenText.text = "";
     }
 
-    /// <summary>
-    /// Creates a placeholder 'Press' button prompt UI element. This functionality is placeholder, improve code in the future!
-    /// </summary>
-    private void InitPressButtonPromptPlaceholder()
-    {
-        canvas = FindAnyObjectByType<Canvas>();
-		if (canvas == null)
-		{
-			throw new Exception("No Canvas found in the scene. Please add a Canvas to the scene for the UI to work.");
-        }
-        // Create a Text object for the 'Press' label
-        GameObject pressGO = new GameObject("PressText");
-        pressGO.transform.SetParent(canvas.transform, false);
-        pressText = pressGO.AddComponent<Text>();
-        pressText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        pressText.text = "Press E";
-        pressText.alignment = TextAnchor.LowerCenter;
-        pressText.fontSize = 24;
-        pressText.color = Color.white;
-        pressText.raycastTarget = false;
-        pressTextRect = pressText.GetComponent<RectTransform>();
-        pressTextRect.sizeDelta = new Vector2(120f, 30f);
-		pressGO.SetActive(false);
-    }
-
     void Start() {
 		timeParadoxTextGameObject.SetActive(false);
-		SetControlMode(ControlMode.Touch);
-	}
-
-	private void SetControlMode(ControlMode controlMode) {
-		bool touchControlsEnabled = controlMode == ControlMode.Touch;
-
-		timeTravelButton.gameObject.SetActive(touchControlsEnabled);
-		resetButton.gameObject.SetActive(touchControlsEnabled);
-
-		timeTravelHelpText.SetActive(!touchControlsEnabled);
-		resetHelpText.SetActive(!touchControlsEnabled);
-	}
-
-	public enum ControlMode {
-		Touch,
-		Keyboard
+		UpdateControlModeUI(ControlMode.Touch);
 	}
 
 	public void SetTimeText(float time) {
@@ -147,12 +118,23 @@ public class UI : Singleton<UI>
 	}
 
 	internal void OnKeyboardInputUsed() {
-		SetControlMode(ControlMode.Keyboard);
-	}
+        UpdateControlModeUI(ControlMode.Keyboard);
+    }
 
-	internal void OnMouseInputUsed() {
-		SetControlMode(ControlMode.Touch);
-	}
+    internal void OnMouseInputUsed()
+    {
+        UpdateControlModeUI(ControlMode.Touch);
+    }
+
+	private void UpdateControlModeUI(ControlMode controlMode)
+	{
+        var touchControlsEnabled = controlMode == ControlMode.Touch;
+        timeTravelButton.gameObject.SetActive(touchControlsEnabled);
+        resetButton.gameObject.SetActive(touchControlsEnabled);
+
+        timeTravelHelpText.SetActive(!touchControlsEnabled);
+        resetHelpText.SetActive(!touchControlsEnabled);
+    }
 
 	void ShowDoorOpenText(float seconds) {
 		doorOpenText.text = Math.Ceiling(seconds).ToString($"Door open for 0 seconds");
@@ -320,22 +302,12 @@ public class UI : Singleton<UI>
 		return new WaitForSeconds(time);
 	}
 
-	/// <summary>
-	/// Show a UI text that will be positioned on the Canvas where the specified world position is.
-	/// Useful for showing small contextual hints above world objects.
-	/// </summary>
-	/// <param name="targetTransform">The world position to place the text above.</param>
-	public void ShowPressTextAtWorldObject(Transform targetTransform)
-	{
-		// For ScreenSpaceOverlay canvases the camera parameter must be null
-		Camera cam = Camera.main;
+    internal InteractPrompt OnButtonPedestalCreated(ButtonPedestal buttonPedestal)
+    {
+		var promptGameObject = Instantiate(interactUIPromptPrefab, canvas.transform);
+		var interactPrompt = promptGameObject.GetComponent<InteractPrompt>();
 
-		pressTextRect.position = cam.WorldToScreenPoint(targetTransform.position);
-		pressText.gameObject.SetActive(true);
-	}
-
-	public void HidePressText()
-	{
-		if (pressText != null) pressText.gameObject.SetActive(false);
-	}
+		interactPrompt.LinkedButtonPedestal = buttonPedestal;
+        return interactPrompt;
+    }
 }

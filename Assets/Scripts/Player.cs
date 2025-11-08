@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 using static CharacterInTime;
+using static UI;
 
 public class Player : Singleton<Player>
 {
@@ -47,7 +49,24 @@ public class Player : Singleton<Player>
 
 	int interactableObjectsLayerMask;
 
-	private void Awake() {
+    private ControlMode controlMode;
+
+    public ControlMode _ControlMode
+    {
+        get => controlMode; private set
+        {
+            controlMode = value;
+        }
+    }
+
+    public enum ControlMode
+    {
+        Touch,
+        Keyboard
+    }
+
+
+    private void Awake() {
 		pastPlayerLayer = LayerMask.GetMask("PastPlayer");
 
 		physicsCollisionCollider = GetComponentInChildren<Collider>();
@@ -119,7 +138,9 @@ public class Player : Singleton<Player>
 
 				var sneaking = Vector3.Distance(transform.position, groundPoint) < sneakingRadius;
 
-				ProcessMovementInput(movementVector.normalized, sneaking);
+				_ControlMode = ControlMode.Touch;
+
+                ProcessMovementInput(movementVector.normalized, sneaking);
 				return;
 			}
 		} else if (Input.anyKey) {
@@ -131,7 +152,9 @@ public class Player : Singleton<Player>
 			bool sneaking = Input.GetKey(KeyCode.C);
 
 			ProcessMovementInput(new Vector3(h, 0f, v), sneaking);
-			return;
+
+			_ControlMode = ControlMode.Keyboard;
+            return;
 		}
 		//TODO: Add gamepad controls. Can we use gamepad in WebGL?
 	}
