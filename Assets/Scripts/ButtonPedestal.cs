@@ -11,6 +11,7 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
     public Transform ButtonMechanismTransform { get; private set; }
 
     UI ui;
+	Player player;
 
 	/// <summary>
 	/// Whether this is a one-shot button. A one-shot button can be pressed only once. Buttons that
@@ -60,8 +61,9 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
         ButtonMechanismTransform = transform.Find("ButtonMechanism");
 		
 		ui = UI.GetInstance();
+		player = Player.GetInstance();
 
-		if (door == null) {
+        if (door == null) {
 			var doors = FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
 
 			if (doors.Length == 1) {
@@ -75,7 +77,19 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	void Start(){
         // Create and link an InteractPrompt for this pedestal. Must be done on Start to ensure UI instance is ready.
         LinkedInteractPrompt = ui.OnButtonPedestalCreated(this);
+    }
 
+	void Update() {
+		if (player.FocusedInteractableObject == this)
+		{
+            LinkedInteractPrompt.gameObject.SetActive(true);
+            LinkedInteractPrompt.ShowInteractPromptAtWorldObject(ButtonMechanismTransform);
+        }
+		else
+		{
+			LinkedInteractPrompt.gameObject.SetActive(false);
+            LinkedInteractPrompt.HideInteractPrompt();
+        }
     }
 
     public bool IsInteractable() {

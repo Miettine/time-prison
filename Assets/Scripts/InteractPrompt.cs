@@ -41,8 +41,17 @@ public class InteractPrompt : MonoBehaviour
         keyboardPrompt = transform.Find("InteractPromptKeyboard").gameObject;
     }
 
+    private void Start()
+    {
+        // Initially hide both prompts until we know which to show.
+        ShowTouchPrompt(false);
+        ShowKeyboardPrompt(false);
+    }
+
     private void Update()
     {
+        // Don't type code for showing or hiding the prompt here. That is in ButtonPedestal.
+
         var touchControlsEnabled = player._ControlMode == Player.ControlMode.Touch;
 
         touchPrompt.SetActive(touchControlsEnabled);
@@ -58,7 +67,7 @@ public class InteractPrompt : MonoBehaviour
     /// Useful for showing small contextual hints above world objects.
     /// </summary>
     /// <param name="targetTransform">The world position to place the text above.</param>
-    public void ShowPressTextAtWorldObject(Transform targetTransform)
+    public void ShowInteractPromptAtWorldObject(Transform targetTransform)
     {
         // For ScreenSpaceOverlay canvases the camera parameter must be null
         Camera cam = Camera.main;
@@ -67,13 +76,24 @@ public class InteractPrompt : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    public void ShowTouchPrompt(bool show)
+    private void ShowTouchPrompt(bool show)
     {
-        if (touchPrompt != null) touchPrompt.SetActive(show);
+        keyboardPrompt.SetActive(!show);
+        touchPrompt.SetActive(show);
     }
 
-    public void ShowKeyboardPrompt(bool show)
+    private void ShowKeyboardPrompt(bool show)
     {
-        if (keyboardPrompt != null) keyboardPrompt.SetActive(show);
+        keyboardPrompt.SetActive(show);
+        touchPrompt.SetActive(!show);
+    }
+
+    internal void HideInteractPrompt()
+    {
+        gameObject.SetActive(false);
+
+        // In some situations we could see both prompts briefly. Ensure both are hidden.
+        ShowTouchPrompt(false);
+        ShowKeyboardPrompt(false);
     }
 }

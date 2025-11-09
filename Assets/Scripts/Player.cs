@@ -35,7 +35,10 @@ public class Player : Singleton<Player>
 	[SerializeField]
 	float sneakingSpeedMultiplier = 0.5f;
 
-	UI ui;
+    [SerializeField]
+    float interactionRadius = 2f;
+
+    UI ui;
 
 	Quaternion lastLookDirection;
 
@@ -58,6 +61,12 @@ public class Player : Singleton<Player>
             controlMode = value;
         }
     }
+
+    /// <summary>
+    /// An object that is within the player character's arms reach and can be interacted with. Null if there is no such object.
+	/// Currently this can only be a ButtonPedestal. It would be better design to make this a more general interface like IInteractableObject.
+    /// </summary>
+    public ButtonPedestal FocusedInteractableObject { get; private set; }
 
     public enum ControlMode
     {
@@ -102,8 +111,11 @@ public class Player : Singleton<Player>
 			OnTimeTravelActivated();
 			return;
 		}
-		if (Input.GetKeyDown(KeyCode.E)) {
-			InteractWithNearbyObjects();
+
+		FindNearbyFocusedObject();
+
+        if (Input.GetKeyDown(KeyCode.E) && FocusedInteractableObject != null) {
+			InteractWithFocusedObject();
 		}
 
 		//There used to be a check if(!isHiding) right about here. The hiding feature has been discontinued.
@@ -187,31 +199,31 @@ public class Player : Singleton<Player>
 		}
 	}
 
-	private void InteractWithNearbyObjects() {
-		var interactableObjectsColliders = Physics.OverlapSphere(transform.position, 2f, interactableObjectsLayerMask);
+	private void InteractWithFocusedObject() {
+		FocusedInteractableObject.Interact();
+    }
 
-		if (interactableObjectsColliders.Length == 0) {
-			return;
-		}
+	void FindNearbyFocusedObject()
+	{
+        var interactableObjectsColliders = Physics.OverlapSphere(transform.position, interactionRadius, interactableObjectsLayerMask);
 
-		foreach (var collider in interactableObjectsColliders) {
+        if (interactableObjectsColliders.Length == 0)
+        {
+			FocusedInteractableObject = null;
+            return;
+        }
 
-			var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
+        foreach (var collider in interactableObjectsColliders)
+        {
+            var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
 
-			if (buttonPedestal != null && buttonPedestal.IsInteractable() ) {
-				buttonPedestal.Interact();
-				return;
-			}
-
-			var keyCardTerminal = collider.gameObject.GetComponentInParent<KeyCardTerminal>();
-
-			if (keyCardTerminal != null) {
-				keyCardTerminal.Interact(this);
-				
-				return;
-			}
-		}
-	}
+            if (buttonPedestal != null && buttonPedestal.IsInteractable())
+            {
+                FocusedInteractableObject = buttonPedestal;
+                return;
+            }
+        }
+    }
 
 	void ProcessMovementInput(Vector3 direction, bool sneaking){
 
