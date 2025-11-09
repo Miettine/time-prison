@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InteractPrompt : MonoBehaviour
 {
@@ -44,18 +45,31 @@ public class InteractPrompt : MonoBehaviour
     private void Start()
     {
         // Initially hide both prompts until we know which to show.
-        ShowTouchPrompt(false);
-        ShowKeyboardPrompt(false);
+        HideInteractPrompt();
+
+        if (LinkedButtonPedestal == null)
+        {
+            throw new Exception("LinkedButtonPedestal is not set on InteractPrompt. Please ensure it is set before Start is called.");
+        }
+
+        // Add an onClick listener to the Button component on this GameObject (if present).
+        var btn = GetComponentInChildren<Button>();
+
+        if (btn == null)
+        {
+            throw new Exception("No Button component found in children of InteractPrompt. Please ensure there is a Button component present.");
+        }
+        btn.onClick.AddListener(() =>
+        {
+            LinkedButtonPedestal.Interact();
+        });
     }
 
     private void Update()
     {
-        // Don't type code for showing or hiding the prompt here. That is in ButtonPedestal.
+        // Don't type code for comparing what is the player's focused interactable object. That is in ButtonPedestal.
 
-        var touchControlsEnabled = player._ControlMode == Player.ControlMode.Touch;
-
-        touchPrompt.SetActive(touchControlsEnabled);
-        keyboardPrompt.SetActive(!touchControlsEnabled);
+        UpdateControlMode();
 
         Camera cam = Camera.main;
 
@@ -74,6 +88,16 @@ public class InteractPrompt : MonoBehaviour
 
         transform.position = cam.WorldToScreenPoint(targetTransform.position);
         gameObject.SetActive(true);
+
+        // Making a lot of calls to UpdateControlMode to ensure correct prompt is shown.
+        // It tends to flash the incorrect one sometimes.
+        UpdateControlMode(); 
+    }
+    private void UpdateControlMode()
+    {
+        var touchControlsEnabled = player._ControlMode == Player.ControlMode.Touch;
+        touchPrompt.SetActive(touchControlsEnabled);
+        keyboardPrompt.SetActive(!touchControlsEnabled);
     }
 
     private void ShowTouchPrompt(bool show)

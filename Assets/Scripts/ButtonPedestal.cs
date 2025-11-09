@@ -80,14 +80,15 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
     }
 
 	void Update() {
-		if (player.FocusedInteractableObject == this)
+        // It's hard to say where this code belongs. It could go to Player::Update or InteractPrompt::Update.
+        // A reference to the button mechanism's world position is needed to position the prompt.
+		// This is the best place.
+        if (player.FocusedInteractableObject == this)
 		{
-            LinkedInteractPrompt.gameObject.SetActive(true);
             LinkedInteractPrompt.ShowInteractPromptAtWorldObject(ButtonMechanismTransform);
         }
 		else
 		{
-			LinkedInteractPrompt.gameObject.SetActive(false);
             LinkedInteractPrompt.HideInteractPrompt();
         }
     }
