@@ -152,8 +152,6 @@ public class Player : Singleton<Player>
 
 				var sneaking = Vector3.Distance(transform.position, groundPoint) < sneakingRadius;
 
-				_ControlMode = ControlMode.Touch;
-
                 ProcessMovementInput(movementVector.normalized, sneaking);
 				return;
 			}
