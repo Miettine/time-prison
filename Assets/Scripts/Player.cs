@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -115,13 +116,14 @@ public class Player : Singleton<Player>
 		FindNearbyFocusedObject();
 
         if (Input.GetKeyDown(KeyCode.E) && FocusedInteractableObject != null) {
-			InteractWithFocusedObject();
+            OnKeyboardInputUsed();
+            InteractWithFocusedObject();
 		}
 
 		//There used to be a check if(!isHiding) right about here. The hiding feature has been discontinued.
 
 		if (Input.GetMouseButton(0)) {
-			ui.OnMouseInputUsed();
+            OnMouseInputUsed();
 
 			if (EventSystem.current.IsPointerOverGameObject()) {
 				return;
@@ -156,7 +158,7 @@ public class Player : Singleton<Player>
 				return;
 			}
 		} else if (Input.anyKey) {
-			ui.OnKeyboardInputUsed();
+			OnKeyboardInputUsed();
 
 			float v = Input.GetAxisRaw("Vertical");
 			float h = Input.GetAxisRaw("Horizontal");
@@ -165,13 +167,24 @@ public class Player : Singleton<Player>
 
 			ProcessMovementInput(new Vector3(h, 0f, v), sneaking);
 
-			_ControlMode = ControlMode.Keyboard;
             return;
 		}
 		//TODO: Add gamepad controls. Can we use gamepad in WebGL?
 	}
 
-	private static bool AnyMouseButtonDown() {
+    private void OnKeyboardInputUsed()
+    {
+        _ControlMode = ControlMode.Keyboard;
+        ui.OnKeyboardInputUsed();
+    }
+
+    private void OnMouseInputUsed()
+    {
+		_ControlMode = ControlMode.Touch;
+        ui.OnMouseInputUsed();
+    }
+
+    private static bool AnyMouseButtonDown() {
 		return LeftMouseButtonDown() || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2);
 	}
 
