@@ -8,8 +8,9 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	[SerializeField]
 	LargeDoor door;
 
-    public Transform ButtonMechanismTransform { get; private set; }
+	public Transform ButtonMechanismTransform { get; private set; }
 
+    private Vector3 buttonMechanismStartPosition;
     UI ui;
 	Player player;
 
@@ -27,43 +28,50 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 
 	GameObject buttonMechanismObject;
 
-    // Backing field for the linked interact prompt. Can only be set once.
-    private InteractPrompt _linkedInteractPrompt;
+	// Backing field for the linked interact prompt. Can only be set once.
+	private InteractPrompt _linkedInteractPrompt;
 
-    // Public getter, internal setter that only allows a single assignment.
-    public InteractPrompt LinkedInteractPrompt
-    {
-        get => _linkedInteractPrompt;
-        private set
-        {
-            if (_linkedInteractPrompt != null)
-            {
-                throw new InvalidOperationException("LinkedInteractPrompt can only be set once.");
-            }
-
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value), "LinkedInteractPrompt cannot be set to null.");
-            }
-
-            _linkedInteractPrompt = value;
-        }
-    }
-
-	 public void ActivatedByPastPlayer() {
-			if (interactable) {
-				SetButtonActive(false);
+	// Public getter, internal setter that only allows a single assignment.
+	public InteractPrompt LinkedInteractPrompt
+	{
+		get => _linkedInteractPrompt;
+		private set
+		{
+			if (_linkedInteractPrompt != null)
+			{
+				throw new InvalidOperationException("LinkedInteractPrompt can only be set once.");
 			}
+
+			if (value == null)
+			{
+				throw new ArgumentNullException(nameof(value), "LinkedInteractPrompt cannot be set to null.");
+			}
+
+			_linkedInteractPrompt = value;
+		}
+	}
+
+	Coroutine pushCoroutine;
+
+	public void ActivatedByPastPlayer() {
+		if (interactable) {
+			SetButtonActive(false);
+		}
+	}
+
+	private void Awake() {
+
+		ButtonMechanismTransform = transform.Find("ButtonMechanism");
+		if (ButtonMechanismTransform == null) {
+			throw new Exception("ButtonMechanism child not found on ButtonPedestal");
 		}
 
-	 private void Awake() {
+        buttonMechanismStartPosition = ButtonMechanismTransform.localPosition;
 
-        ButtonMechanismTransform = transform.Find("ButtonMechanism");
-		
-		ui = UI.GetInstance();
+        ui = UI.GetInstance();
 		player = Player.GetInstance();
 
-        if (door == null) {
+		if (door == null) {
 			var doors = FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
 
 			if (doors.Length == 1) {
@@ -75,25 +83,25 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	}
 
 	void Start(){
-        // Create and link an InteractPrompt for this pedestal. Must be done on Start to ensure UI instance is ready.
-        LinkedInteractPrompt = ui.OnButtonPedestalCreated(this);
-    }
+		// Create and link an InteractPrompt for this pedestal. Must be done on Start to ensure UI instance is ready.
+		LinkedInteractPrompt = ui.OnButtonPedestalCreated(this);
+	}
 
 	void Update() {
-        // It's hard to say where this code belongs. It could go to Player::Update or InteractPrompt::Update.
-        // A reference to the button mechanism's world position is needed to position the prompt.
+		// It's hard to say where this code belongs. It could go to Player::Update or InteractPrompt::Update.
+		// A reference to the button mechanism's world position is needed to position the prompt.
 		// This is the best place.
-        if (player.FocusedInteractableObject == this)
+		if (player.FocusedInteractableObject == this)
 		{
-            LinkedInteractPrompt.ShowInteractPromptAtWorldObject(ButtonMechanismTransform);
-        }
+			LinkedInteractPrompt.ShowInteractPromptAtWorldObject(ButtonMechanismTransform);
+		}
 		else
 		{
-            LinkedInteractPrompt.HideInteractPrompt();
-        }
-    }
+			LinkedInteractPrompt.HideInteractPrompt();
+		}
+	}
 
-    public bool IsInteractable() {
+	public bool IsInteractable() {
 		return interactable;
 	}
 
@@ -105,6 +113,13 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 		if (!interactable) {
 			return;
 		}
+
+		// play push animation
+		if (pushCoroutine != null) {
+			StopCoroutine(pushCoroutine);
+		}
+		pushCoroutine = StartCoroutine(PushButtonAnimation());
+
 		CancelInvoke();
 		door.OpenByPresentAction();
 
@@ -121,11 +136,49 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	}
 
 	void SetButtonActive(bool active) {
-		buttonMechanismObject.SetActive(active);
+		// Ensure we toggle the mechanism gameobject via the transform reference
+		if (ButtonMechanismTransform != null) {
+			ButtonMechanismTransform.gameObject.SetActive(active);
+		}
 		interactable = active;
 	}
 
 	public void OnTimeTravelStarted() {
 		SetButtonActive(true);
+	}
+
+	IEnumerator PushButtonAnimation()
+	{
+		// Animate localPosition Y to target 1.3 and back
+
+		Transform rt = ButtonMechanismTransform;
+        Vector3 start = buttonMechanismStartPosition;
+        Vector3 down = new Vector3(start.x,1.3f, start.z);
+
+		float downTime =0.08f;
+		float upTime =0.12f;
+
+		float t =0f;
+		while (t < downTime)
+		{
+			t += Time.deltaTime;
+			rt.localPosition = Vector3.Lerp(start, down, Mathf.Clamp01(t / downTime));
+			yield return null;
+		}
+		rt.localPosition = down;
+
+		// small hold at bottom
+		yield return new WaitForSeconds(0.05f);
+
+		t =0f;
+		while (t < upTime)
+		{
+			t += Time.deltaTime;
+			rt.localPosition = Vector3.Lerp(down, start, Mathf.Clamp01(t / upTime));
+			yield return null;
+		}
+		rt.localPosition = start;
+
+		pushCoroutine = null;
 	}
 }
