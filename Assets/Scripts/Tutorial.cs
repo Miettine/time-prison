@@ -82,7 +82,7 @@ public class Tutorial : Singleton<Tutorial> {
 	}
 
 	string GetTimePortalTutorialText() {
-		return "Approach that portal to time travel";
+		return "Enter that portal to time travel";
 	}
 
 	string GetTimeFirstTimeTravelTutorialText() {
@@ -92,11 +92,11 @@ public class Tutorial : Singleton<Tutorial> {
 		return "WARNING: Do not be seen or heard by your past self";
 	}
 
-	public string GetTimeTimeMachineTutorialText() {
+	public string GetTimeMachineTutorialText() {
 		return "Press space bar key to time travel";
 	}
 
-	public string GetTimeTimeMachineTouchControlTutorialText() {
+	public string GetTimeMachineTouchControlTutorialText() {
 		return "Press the Time Travel button";
 	}
 

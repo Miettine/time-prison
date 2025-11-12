@@ -53,7 +53,7 @@ public class InteractPrompt : MonoBehaviour
         }
 
         // Add an onClick listener to the Button component on this GameObject (if present).
-        var btn = GetComponentInChildren<Button>();
+        var btn = GetComponentInChildren<Button>(includeInactive: true);
 
         if (btn == null)
         {
