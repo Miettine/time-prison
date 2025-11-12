@@ -1,19 +1,14 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
 using static CharacterInTime;
-using static UI;
 
 public class Player : Singleton<Player>
 {
 
 	new Rigidbody rigidbody;
-	Collider physicsCollisionCollider;
 
 	TimeTravel timeTravel;
-    Tutorial tutorial;
 
     [SerializeField]
 	private float deadzone = 0.1f;
@@ -79,12 +74,10 @@ public class Player : Singleton<Player>
     private void Awake() {
 		pastPlayerLayer = LayerMask.GetMask("PastPlayer");
 
-		physicsCollisionCollider = GetComponentInChildren<Collider>();
 		rigidbody = GetComponent<Rigidbody>();
 		timeTravel = TimeTravel.GetInstance();
 		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
 		ui = UI.GetInstance();
-		tutorial = Tutorial.GetInstance();
 
 		var soundIndicatorTransform = transform.Find("SoundIndicator");
 		soundIndicatorTransform.localScale = new Vector3(runningSoundWaveRadius*2, 1, runningSoundWaveRadius*2);

@@ -93,15 +93,19 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 		// This is the best place.
 		if (player.FocusedInteractableObject == this)
 		{
-			LinkedInteractPrompt.ShowInteractPromptAtWorldObject(ButtonMechanismTransform);
+			LinkedInteractPrompt.ShowAtWorldObject(ButtonMechanismTransform);
 		}
 		else
 		{
-			LinkedInteractPrompt.HideInteractPrompt();
+			LinkedInteractPrompt.Hide();
 		}
 	}
 
-	public bool IsInteractable() {
+	void OnDestroy() {
+		Destroy(LinkedInteractPrompt.gameObject);
+    }
+
+    public bool IsInteractable() {
 		return interactable;
 	}
 

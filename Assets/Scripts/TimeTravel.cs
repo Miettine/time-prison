@@ -24,8 +24,10 @@ public class TimeTravel : Singleton<TimeTravel> {
 	[SerializeField]
 	private float snapshotRate = 0.1f;
 
-	[SerializeField]
-	private TimeParadoxBehaviour behaviourOnTimeParadox = TimeParadoxBehaviour.TimeParadoxAnimation;
+    /// <summary>
+    /// Choose the behaviour of the game when a time paradox occurs. Only need to change for testing purposes.
+    /// </summary>
+    private TimeParadoxBehaviour behaviourOnTimeParadox = TimeParadoxBehaviour.TimeParadoxAnimation;
 
 	CameraControl cameraControl;
 	private bool ongoingTimeParadox;

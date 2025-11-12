@@ -15,10 +15,10 @@ public class Singleton<T> : MonoBehaviour where T : Component {
 	{
 		var objects = Object.FindObjectsByType<T>(FindObjectsSortMode.None);
 		if (objects.Length == 0) {
-			throw new UnityException("Failed to find singleton");
+			throw new UnityException($"Failed to find singleton of type {typeof(T).FullName}");
 		}
 		if (objects.Length > 1) {
-			throw new UnityException("Found more than one singleton");
+			throw new UnityException($"Found more than one singleton of type {typeof(T).FullName}");
 		}
 		return objects[0];
 	}
@@ -31,7 +31,7 @@ public class Singleton<T> : MonoBehaviour where T : Component {
 	{
 		var objects = Object.FindObjectsByType<T>(FindObjectsSortMode.None);
 		if (objects.Length > 1) {
-			throw new UnityException("Found more than one singleton");
+			throw new UnityException($"Found more than one singleton of type {typeof(T).FullName}");
 		}
 
 		if (objects.Length == 0) {
