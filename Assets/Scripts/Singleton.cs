@@ -27,7 +27,7 @@ public class Singleton<T> : MonoBehaviour where T : Component {
 	/// looks for the instance. If it is not found, an instance is created.
 	/// </summary>
 	/// <returns>The instance</returns>
-	protected static T GetOrCreateInstance()
+	public static T GetOrCreateInstance()
 	{
 		var objects = Object.FindObjectsByType<T>(FindObjectsSortMode.None);
 		if (objects.Length > 1) {

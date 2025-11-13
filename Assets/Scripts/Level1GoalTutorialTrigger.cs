@@ -12,7 +12,7 @@ public class Level1GoalTutorialTrigger : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            tutorial.PlayerEnteredLevel1GoalTutorialTrigger();
+            tutorial.OnPlayerEnteredLevel1GoalTutorialTrigger();
             Debug.Log("Player entered Level 1 Goal Tutorial Trigger");
             // Disable this trigger so it only happens once
             gameObject.SetActive(false);

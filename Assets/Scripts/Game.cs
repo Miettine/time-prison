@@ -9,12 +9,13 @@ public class Game : Singleton<Game>
     Tutorial tutorial;
 
     void Awake() {
-        tutorial = Tutorial.GetOrCreateInstance();
+        
 	}
 
     // Start is called before the first frame update
     void Start()
     {
+        tutorial = Tutorial.GetOrCreateInstance();
         //Story is called with DontDestroyOnLoad. This class is destroyed and reloaded whenever a scene is loaded.
         tutorial.OnLevelLoaded();
     }

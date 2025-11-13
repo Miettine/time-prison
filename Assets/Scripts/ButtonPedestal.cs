@@ -8,7 +8,14 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	[SerializeField]
 	LargeDoor door;
 
-	public Transform ButtonMechanismTransform { get; private set; }
+    /// <summary>
+    /// We want there to be a specific point on the button mechanism where the interact prompt appears.
+	/// The button mechanism could do but that might be offset or rotated in some way.
+	/// This empty game object is used as the target point for the prompt.
+    /// </summary>
+    public Transform InteractPromptTargetTransform { get; private set; }
+
+	private Transform buttonMechanismGameObject;
 
     private Vector3 buttonMechanismStartPosition;
     UI ui;
@@ -61,12 +68,18 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 
 	private void Awake() {
 
-		ButtonMechanismTransform = transform.Find("ButtonMechanism");
-		if (ButtonMechanismTransform == null) {
-			throw new Exception("ButtonMechanism child not found on ButtonPedestal");
+		InteractPromptTargetTransform = transform.Find("InteractPromptTarget");
+		if (InteractPromptTargetTransform == null) {
+			throw new Exception("InteractPromptTarget child not found on ButtonPedestal");
 		}
 
-        buttonMechanismStartPosition = ButtonMechanismTransform.localPosition;
+        buttonMechanismGameObject = transform.Find("ButtonMechanism");
+        if (buttonMechanismGameObject == null)
+        {
+            throw new Exception("ButtonMechanism child not found on ButtonPedestal");
+        }
+
+        buttonMechanismStartPosition = buttonMechanismGameObject.localPosition;
 
         ui = UI.GetInstance();
 		player = Player.GetInstance();
@@ -93,7 +106,7 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 		// This is the best place.
 		if (player.FocusedInteractableObject == this)
 		{
-			LinkedInteractPrompt.ShowAtWorldObject(ButtonMechanismTransform);
+			LinkedInteractPrompt.ShowAtWorldObject(InteractPromptTargetTransform);
 		}
 		else
 		{
@@ -141,9 +154,7 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 
 	void SetButtonActive(bool active) {
 		// Ensure we toggle the mechanism gameobject via the transform reference
-		if (ButtonMechanismTransform != null) {
-			ButtonMechanismTransform.gameObject.SetActive(active);
-		}
+		buttonMechanismGameObject.gameObject.SetActive(active);
 		interactable = active;
 	}
 
@@ -155,7 +166,7 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	{
 		// Animate localPosition Y to target 1.3 and back
 
-		Transform rt = ButtonMechanismTransform;
+		Transform rt = InteractPromptTargetTransform;
         Vector3 start = buttonMechanismStartPosition;
         Vector3 down = new Vector3(start.x,1.3f, start.z);
 

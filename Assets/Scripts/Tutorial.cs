@@ -19,7 +19,16 @@ public class Tutorial : Singleton<Tutorial> {
 	TimeTravel timeTravel; 
 	
 	void Awake() {
-
+		// Ensure only a single Tutorial instance exists in the scene.
+		var tutorials = FindObjectsByType<Tutorial>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        if (tutorials.Length >1) {
+			foreach (var t in tutorials) {
+				if (t != this) {
+					// Destroy the entire GameObject that holds the duplicate Tutorial.
+					Destroy(t.gameObject);
+				}
+			}
+		}
 	}
 
 	// Start is called before the first frame update
@@ -85,8 +94,9 @@ public class Tutorial : Singleton<Tutorial> {
 		return "Enter that portal to time travel";
 	}
 
-	string GetTimeFirstTimeTravelTutorialText() {
-		return "You have travelled XX seconds to the past";
+	string GetFirstTimeTravelTutorialText(float secondsToPast) {
+		int secs = Mathf.FloorToInt(secondsToPast);
+		return $"You have travelled {secs} seconds to the past";
 	}
 	string GetFirstTimeParadoxWarningText() {
 		return "WARNING: Do not be seen or heard by your past self";
@@ -100,8 +110,13 @@ public class Tutorial : Singleton<Tutorial> {
 		return "Press the Time Travel button";
 	}
 
-    internal void PlayerEnteredLevel1GoalTutorialTrigger()
+    internal void OnPlayerEnteredLevel1GoalTutorialTrigger()
     {
         ui.ShowPermanentCenterNotificationText(GetGoalTutorialText());
+    }
+
+    public void OnTimePortalEntered()
+    {
+        ui.ShowTemporaryCenterNotificationText(GetFirstTimeTravelTutorialText(timeTravel.GetTime()), NotificationType.Neutral);
     }
 }

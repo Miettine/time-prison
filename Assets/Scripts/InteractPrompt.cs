@@ -73,7 +73,7 @@ public class InteractPrompt : MonoBehaviour
 
         Camera cam = Camera.main;
 
-        transform.position = cam.WorldToScreenPoint(LinkedButtonPedestal.ButtonMechanismTransform.position);
+        transform.position = cam.WorldToScreenPoint(LinkedButtonPedestal.InteractPromptTargetTransform.position);
     }
 
     /// <summary>

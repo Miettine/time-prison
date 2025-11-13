@@ -280,10 +280,10 @@ public class TimeTravel : Singleton<TimeTravel> {
 		return objectPastState.IsOpen != door.IsOpenByPresentAction();
 	}
 
-	private float GetTime() {
+	public float GetTime() {
 		return UnityEngine.Time.timeSinceLevelLoad - timeTravelAmounts.Sum();
 	}
-	private int GetTimeTravelCount() {
+	public int GetTimeTravelCount() {
 		return timeTravelAmounts.Count;
 	}
 
