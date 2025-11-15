@@ -169,7 +169,7 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	{
 		// Animate localPosition Y to target 1.3 and back
 
-		Transform rt = InteractPromptTargetTransform;
+		Transform rt = buttonMechanismGameObject.transform;
         Vector3 start = buttonMechanismStartPosition;
         Vector3 down = new Vector3(start.x,1.3f, start.z);
 
