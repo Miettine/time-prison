@@ -237,7 +237,7 @@ public class UI : Singleton<UI>
 	/// after which the level may be reset.
 	/// </summary>
 	/// <param name="timeParadoxCause"></param>
-	internal void OnTimeParadoxAnimationStart() {
+	internal void OnTimeParadox() {
 		StartCoroutine(TimeParadoxAnimation());
 	}
 

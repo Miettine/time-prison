@@ -144,7 +144,7 @@ public class SentientCharacter : MonoBehaviour
 			Ray ray = new Ray(vectorAtEyePoint, toTarget);
 			Debug.DrawRay(vectorAtEyePoint, toTarget, Color.red);
 
-			bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, LayerMask.GetMask("Doors"), QueryTriggerInteraction.Collide);
+			bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, LayerMask.GetMask("Doors", "Walls"), QueryTriggerInteraction.Collide);
 
 			if (!hasRaycastHit) {
 				/*

@@ -211,7 +211,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 		StopCoroutine("TakeSnapshot");
 
 		cameraControl.OnTimeParadox();
-		ui.OnTimeParadoxAnimationStart();
+		ui.OnTimeParadox();
 
 		StartCoroutine(ReloadLevelAfterTimeParadoxAnimation());
 	}

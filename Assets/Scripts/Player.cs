@@ -202,7 +202,7 @@ public class Player : Singleton<Player>
 		if (FocusedInteractableObject == null)
 		{
 			throw new Exception("FocusedInteractableObject is null when trying to interact with it.");
-        }
+		}
 		FocusedInteractableObject.Interact();
 	}
 
@@ -220,8 +220,8 @@ public class Player : Singleton<Player>
 	{
 		if (IsOccludedByWall(collider.transform))
 		{
-            FocusedInteractableObject = null;
-            continue;
+			FocusedInteractableObject = null;
+			continue;
 		}
 
 		var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
@@ -242,9 +242,9 @@ public class Player : Singleton<Player>
 		if (direction.magnitude > Deadzone) {
 			lookRotation = Quaternion.LookRotation(direction, Vector3.up);
 		} else if (lastLookDirection != null) {
-		lookRotation = lastLookDirection;
+			lookRotation = lastLookDirection;
 		} else {
-		lookRotation = Quaternion.identity;
+			lookRotation = Quaternion.identity;
 		}
 
 		transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, UnityEngine.Time.deltaTime * LookTowardsRotationModifier);
@@ -280,10 +280,10 @@ public class Player : Singleton<Player>
 		foreach (var collider in soundOverlapSphereColliders) {
 			if (collider.gameObject.layer == LayerMask.NameToLayer("PastPlayer")) {
 				// If there is a wall or door between the present player and the past player, treat as occluded and do not trigger paradox.
-				if (IsOccludedByWall(collider.transform)) {
-					continue;
+				if (!IsOccludedByWall(collider.transform))
+				{
+					timeTravel.TimeParadox(TimeParadoxCause.PastPlayerHeardPresentPlayer, collider.transform);
 				}
-				timeTravel.TimeParadox(TimeParadoxCause.PastPlayerHeardPresentPlayer, collider.transform);
 			}
 		}
 	 	
@@ -309,11 +309,21 @@ public class Player : Singleton<Player>
 		if (dist <= 0f) return false;
 
 		int occlusionMask = LayerMask.GetMask("Walls", "Doors");
+
+		// draw the attempted LOS attempt
+		Debug.DrawLine(origin, target.position, Color.cyan,0.05f);
+
 		// If the ray hits any wall/door between origin and target, the sound or sight is occluded.
 		if (Physics.Raycast(origin, toTarget, out RaycastHit hit, dist, occlusionMask, QueryTriggerInteraction.Collide))
 		{
+			// draw hit
+			Debug.DrawLine(origin, hit.point, Color.red,0.1f);
+			Debug.DrawLine(hit.point, target.position, Color.gray,0.1f);
 			return true;
 		}
+
+		// no hit -> visible
+		Debug.DrawLine(origin, target.position, Color.green,0.1f);
 		return false;
 	}
 }
