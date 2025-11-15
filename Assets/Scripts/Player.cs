@@ -10,31 +10,10 @@ public class Player : Singleton<Player>
 
 	TimeTravel timeTravel;
 
-    [SerializeField]
-	private float deadzone = 0.1f;
-
 	[SerializeField]
-	private float moveSpeed = 1000f;
+    PlayerVariables playerVariables;
 
-	[SerializeField]
-	private float lookTowardsRotationModifier = 250f;
-
-	[SerializeField]
-	float hideSoundIndicatorDelay = 0.5f;
-
-	[SerializeField]
-	float runningSoundWaveRadius = 3f;
-
-	[SerializeField]
-	float sneakingRadius = 4f;
-
-	[SerializeField]
-	float sneakingSpeedMultiplier = 0.5f;
-
-    [SerializeField]
-    float interactionRadius = 2f;
-
-    UI ui;
+	UI ui;
 
 	Quaternion lastLookDirection;
 
@@ -48,30 +27,40 @@ public class Player : Singleton<Player>
 
 	int interactableObjectsLayerMask;
 
-    private ControlMode controlMode;
+	 private ControlMode controlMode;
 
-    public ControlMode _ControlMode
-    {
-        get => controlMode; private set
-        {
-            controlMode = value;
-        }
-    }
+	 public ControlMode _ControlMode
+	 {
+		 get => controlMode; private set
+		 {
+			controlMode = value;
+		 }
+	 }
+
+    // Made these properties to make the code more readable.
+    float Deadzone => playerVariables.Deadzone;
+    float MoveSpeed => playerVariables.MoveSpeed;
+    float LookTowardsRotationModifier => playerVariables.LookTowardsRotationModifier;
+    float HideSoundIndicatorDelay => playerVariables.HideSoundIndicatorDelay;
+    float RunningSoundWaveRadius => playerVariables.RunningSoundWaveRadius;
+    float SneakingRadius => playerVariables.SneakingRadius;
+    float SneakingSpeedMultiplier => playerVariables.SneakingSpeedMultiplier;
+    float InteractionRadius => playerVariables.InteractionRadius;
 
     /// <summary>
     /// An object that is within the player character's arms reach and can be interacted with. Null if there is no such object.
-	/// Currently this can only be a ButtonPedestal. It would be better design to make this a more general interface like IInteractableObject.
+    /// Currently this can only be a ButtonPedestal. It would be better design to make this a more general interface like IInteractableObject.
     /// </summary>
     public ButtonPedestal FocusedInteractableObject { get; private set; }
 
-    public enum ControlMode
-    {
-        Touch,
-        Keyboard
-    }
+	 public enum ControlMode
+	 {
+	 Touch,
+	 Keyboard
+	 }
 
 
-    private void Awake() {
+	private void Awake() {
 		pastPlayerLayer = LayerMask.GetMask("PastPlayer");
 
 		rigidbody = GetComponent<Rigidbody>();
@@ -80,7 +69,8 @@ public class Player : Singleton<Player>
 		ui = UI.GetInstance();
 
 		var soundIndicatorTransform = transform.Find("SoundIndicator");
-		soundIndicatorTransform.localScale = new Vector3(runningSoundWaveRadius*2, 1, runningSoundWaveRadius*2);
+		// use values from the scriptable object
+		soundIndicatorTransform.localScale = new Vector3(RunningSoundWaveRadius *2,1, RunningSoundWaveRadius *2);
 		soundIndicator = soundIndicatorTransform.gameObject;
 	}
 
@@ -108,15 +98,15 @@ public class Player : Singleton<Player>
 
 		FindNearbyFocusedObject();
 
-        if (Input.GetKeyDown(KeyCode.E) && FocusedInteractableObject != null) {
-            OnKeyboardInputUsed();
-            InteractWithFocusedObject();
+		if (Input.GetKeyDown(KeyCode.E) && FocusedInteractableObject != null) {
+			OnKeyboardInputUsed();
+			InteractWithFocusedObject();
 		}
 
 		//There used to be a check if(!isHiding) right about here. The hiding feature has been discontinued.
 
 		if (Input.GetMouseButton(0)) {
-            OnMouseInputUsed();
+			OnMouseInputUsed();
 
 			if (EventSystem.current.IsPointerOverGameObject()) {
 				return;
@@ -143,9 +133,9 @@ public class Player : Singleton<Player>
 
 				var movementVector = new Vector3(movementCoordinateX, 0f, movementCoordinateZ);
 
-				var sneaking = Vector3.Distance(transform.position, groundPoint) < sneakingRadius;
+				var sneaking = Vector3.Distance(transform.position, groundPoint) < SneakingRadius;
 
-                ProcessMovementInput(movementVector.normalized, sneaking);
+				ProcessMovementInput(movementVector.normalized, sneaking);
 				return;
 			}
 		} else if (Input.anyKey) {
@@ -158,24 +148,24 @@ public class Player : Singleton<Player>
 
 			ProcessMovementInput(new Vector3(h, 0f, v), sneaking);
 
-            return;
+			return;
 		}
 		//TODO: Add gamepad controls. Can we use gamepad in WebGL?
 	}
 
-    private void OnKeyboardInputUsed()
-    {
-        _ControlMode = ControlMode.Keyboard;
-        ui.OnKeyboardInputUsed();
-    }
+	private void OnKeyboardInputUsed()
+	{
+		_ControlMode = ControlMode.Keyboard;
+		ui.OnKeyboardInputUsed();
+	}
 
-    private void OnMouseInputUsed()
-    {
+	private void OnMouseInputUsed()
+	{
 		_ControlMode = ControlMode.Touch;
-        ui.OnMouseInputUsed();
-    }
+		ui.OnMouseInputUsed();
+	}
 
-    private static bool AnyMouseButtonDown() {
+	private static bool AnyMouseButtonDown() {
 		return LeftMouseButtonDown() || Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(2);
 	}
 
@@ -205,36 +195,36 @@ public class Player : Singleton<Player>
 
 	private void InteractWithFocusedObject() {
 		FocusedInteractableObject.Interact();
-    }
+ }
 
 	void FindNearbyFocusedObject()
 	{
-        var interactableObjectsColliders = Physics.OverlapSphere(transform.position, interactionRadius, interactableObjectsLayerMask);
+		var interactableObjectsColliders = Physics.OverlapSphere(transform.position, InteractionRadius, interactableObjectsLayerMask);
 
         if (interactableObjectsColliders.Length == 0)
-        {
+		{
 			FocusedInteractableObject = null;
-            return;
-        }
+			return;
+		}
 
-        foreach (var collider in interactableObjectsColliders)
-        {
-            var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
+		foreach (var collider in interactableObjectsColliders)
+		{
+		var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
 
-            if (buttonPedestal != null && buttonPedestal.IsInteractable())
-            {
-                FocusedInteractableObject = buttonPedestal;
-                return;
-            }
-        }
-    }
+		if (buttonPedestal != null && buttonPedestal.IsInteractable())
+			{
+				FocusedInteractableObject = buttonPedestal;
+				return;
+			}
+		}
+ }
 
 	void ProcessMovementInput(Vector3 direction, bool sneaking){
 
 		// I want the player character to rotate slowly towards the direction that the player pushed the arrow keys in. The following code accomplishes this.
 
 		Quaternion lookRotation;
-		if (direction.magnitude > deadzone) {
+		if (direction.magnitude > Deadzone) {
 			 lookRotation = Quaternion.LookRotation(direction, Vector3.up);
 		} else if (lastLookDirection != null) {
 			lookRotation = lastLookDirection;
@@ -242,15 +232,15 @@ public class Player : Singleton<Player>
 			lookRotation = Quaternion.identity;
 		}
 
-		transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, UnityEngine.Time.deltaTime * lookTowardsRotationModifier);
+		transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, UnityEngine.Time.deltaTime * LookTowardsRotationModifier);
 
-		if (direction.magnitude > deadzone) 
+		if (direction.magnitude > Deadzone) 
 		{
 			lastLookDirection = lookRotation;
 
-			float movementForceRunning =  moveSpeed * UnityEngine.Time.deltaTime;
+			float movementForceRunning = MoveSpeed * UnityEngine.Time.deltaTime;
 
-			var movementVector = sneaking ? direction.normalized * movementForceRunning * sneakingSpeedMultiplier : direction.normalized * movementForceRunning;
+			var movementVector = sneaking ? direction.normalized * movementForceRunning * SneakingSpeedMultiplier : direction.normalized * movementForceRunning;
 
 			rigidbody.AddForce(movementVector);
 
@@ -270,7 +260,7 @@ public class Player : Singleton<Player>
 
 		soundIndicator.SetActive(true);
 
-		var soundOverlapSphereColliders = Physics.OverlapSphere(transform.position, runningSoundWaveRadius, pastPlayerLayer, QueryTriggerInteraction.Collide);
+		var soundOverlapSphereColliders = Physics.OverlapSphere(transform.position, RunningSoundWaveRadius, pastPlayerLayer, QueryTriggerInteraction.Collide);
 		
 		foreach (var collider in soundOverlapSphereColliders) {
 			if (collider.gameObject.layer == LayerMask.NameToLayer("PastPlayer")) {
@@ -278,7 +268,7 @@ public class Player : Singleton<Player>
 			}
 		}
 		
-		Invoke("HideSoundIndicator", hideSoundIndicatorDelay);
+		Invoke("HideSoundIndicator", HideSoundIndicatorDelay);
 	}
 
 	void HideSoundIndicator() {

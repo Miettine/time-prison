@@ -225,13 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e164c4372489e4b4fac0f1ddd0ff352e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deadzone: 0.1
-  moveSpeed: 200000
-  lookTowardsRotationModifier: 500
-  hideSoundIndicatorDelay: 0.5
-  runningSoundWaveRadius: 4.5
-  sneakingRadius: 4
-  sneakingSpeedMultiplier: 0.5
+  playerVariables: {fileID: 11400000, guid: ec08898343b9c35439742856545892e8, type: 2}
 --- !u!54 &4313315276467540863
 Rigidbody:
   m_ObjectHideFlags: 0
