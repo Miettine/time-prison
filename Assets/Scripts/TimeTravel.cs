@@ -45,12 +45,13 @@ public class TimeTravel : Singleton<TimeTravel> {
 		pastPlayerPrefab = (GameObject)Resources.Load("PastPlayer");
 		cameraControl = CameraControl.GetInstance();
 		game = Game.GetInstance();
-		tutorial = Tutorial.GetOrCreateInstance();
 	}
 
 	// Start is called before the first frame update
 	void Start() {
-		ongoingTimeParadox = false;
+        tutorial = Tutorial.GetOrCreateInstance();
+
+        ongoingTimeParadox = false;
 
 		InvokeRepeating("TakeSnapshot", snapshotRate, snapshotRate);
 
