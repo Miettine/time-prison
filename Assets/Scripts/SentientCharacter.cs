@@ -69,7 +69,9 @@ public class SentientCharacter : MonoBehaviour
 
 		var pos = this.transform.position;
 
-		var vectorAtEyePoint = new Vector3(pos.x, pos.y + 1.7f - 0.15f, pos.z);
+        // We raise the ray's origin to approximately eye level. 1.55m above the ground is a common estimate for common human eye height.
+		// (1.7m height minus a small offset of 15cm which is the distance from the eyes to the top of the head)
+        var vectorAtEyePoint = new Vector3(pos.x, pos.y + 1.55f, pos.z);
 
 		Ray ray = new Ray(vectorAtEyePoint, toPlayer);
 		Debug.DrawRay(vectorAtEyePoint, toPlayer, Color.red);

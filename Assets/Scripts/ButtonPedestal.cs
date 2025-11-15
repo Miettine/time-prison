@@ -115,7 +115,10 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	}
 
 	void OnDestroy() {
-		Destroy(LinkedInteractPrompt.gameObject);
+		if (LinkedInteractPrompt != null&& LinkedInteractPrompt.gameObject != null)
+		{
+            Destroy(LinkedInteractPrompt.gameObject);
+        }
     }
 
     public bool IsInteractable() {

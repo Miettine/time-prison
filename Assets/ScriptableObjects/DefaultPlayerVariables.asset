@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: DefaultPlayerVariables
   m_EditorClassIdentifier: Assembly-CSharp::PlayerVariables
   deadzone: 0.1
-  moveSpeed: 1000
-  lookTowardsRotationModifier: 250
+  moveSpeed: 200000
+  lookTowardsRotationModifier: 500
   hideSoundIndicatorDelay: 0.5
-  runningSoundWaveRadius: 3
+  runningSoundWaveRadius: 4.5
   sneakingRadius: 4
-  sneakingSpeedMultiplier: 0.5
+  sneakingSpeedMultiplier: 0.6
   interactionRadius: 2

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,7 +11,10 @@ public class Player : Singleton<Player>
 
 	TimeTravel timeTravel;
 
-	[SerializeField]
+	/// <summary>
+    /// The player variables scriptable object that contains various configuration values for the player character.
+    /// </summary>
+    [SerializeField]
     PlayerVariables playerVariables;
 
 	UI ui;
@@ -50,6 +54,7 @@ public class Player : Singleton<Player>
     /// <summary>
     /// An object that is within the player character's arms reach and can be interacted with. Null if there is no such object.
     /// Currently this can only be a ButtonPedestal. It would be better design to make this a more general interface like IInteractableObject.
+	/// Though this is the only kind of object that the player can presently interact with.
     /// </summary>
     public ButtonPedestal FocusedInteractableObject { get; private set; }
 
@@ -122,10 +127,10 @@ public class Player : Singleton<Player>
 				Vector3 groundPoint = ray.GetPoint(rayDistance); // Get the point of intersection between the ray and the ground plane
 
 				/* The player either moves towards the mouse or the player moves to the opposite direction from where the mouse is clicked.
-				 * When this game is played on a phone, some players could complain that they can't see where the character is going because
-				 * their finger is blocking the view. I am making the following variable in preparation of configuring the movement:
-				 * allowing the player to make the character move towards the finger or away from the finger.
-				 */
+			 	* When this game is played on a phone, some players could complain that they can't see where the character is going because
+			 	* their finger is blocking the view. I am making the following variable in preparation of configuring the movement:
+			 	* allowing the player to make the character move towards the finger or away from the finger.
+			 	*/
 				bool moveTowardsMouse = true;
 
 				float movementCoordinateX = moveTowardsMouse ? groundPoint.x - transform.position.x : transform.position.x - groundPoint.x;
@@ -194,30 +199,40 @@ public class Player : Singleton<Player>
 	}
 
 	private void InteractWithFocusedObject() {
+		if (FocusedInteractableObject == null)
+		{
+			throw new Exception("FocusedInteractableObject is null when trying to interact with it.");
+        }
 		FocusedInteractableObject.Interact();
- }
+	}
 
 	void FindNearbyFocusedObject()
 	{
 		var interactableObjectsColliders = Physics.OverlapSphere(transform.position, InteractionRadius, interactableObjectsLayerMask);
 
-        if (interactableObjectsColliders.Length == 0)
+	if (interactableObjectsColliders.Length == 0)
+	{
+		FocusedInteractableObject = null;
+		return;
+	}
+
+	foreach (var collider in interactableObjectsColliders)
+	{
+		if (IsOccludedByWall(collider.transform))
 		{
-			FocusedInteractableObject = null;
-			return;
+            FocusedInteractableObject = null;
+            continue;
 		}
 
-		foreach (var collider in interactableObjectsColliders)
-		{
 		var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
 
 		if (buttonPedestal != null && buttonPedestal.IsInteractable())
-			{
-				FocusedInteractableObject = buttonPedestal;
-				return;
-			}
+		{
+			FocusedInteractableObject = buttonPedestal;
+			return;
 		}
- }
+	}
+	}
 
 	void ProcessMovementInput(Vector3 direction, bool sneaking){
 
@@ -225,11 +240,11 @@ public class Player : Singleton<Player>
 
 		Quaternion lookRotation;
 		if (direction.magnitude > Deadzone) {
-			 lookRotation = Quaternion.LookRotation(direction, Vector3.up);
+			lookRotation = Quaternion.LookRotation(direction, Vector3.up);
 		} else if (lastLookDirection != null) {
-			lookRotation = lastLookDirection;
+		lookRotation = lastLookDirection;
 		} else {
-			lookRotation = Quaternion.identity;
+		lookRotation = Quaternion.identity;
 		}
 
 		transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, UnityEngine.Time.deltaTime * LookTowardsRotationModifier);
@@ -261,18 +276,44 @@ public class Player : Singleton<Player>
 		soundIndicator.SetActive(true);
 
 		var soundOverlapSphereColliders = Physics.OverlapSphere(transform.position, RunningSoundWaveRadius, pastPlayerLayer, QueryTriggerInteraction.Collide);
-		
+	 	
 		foreach (var collider in soundOverlapSphereColliders) {
 			if (collider.gameObject.layer == LayerMask.NameToLayer("PastPlayer")) {
+				// If there is a wall or door between the present player and the past player, treat as occluded and do not trigger paradox.
+				if (IsOccludedByWall(collider.transform)) {
+					continue;
+				}
 				timeTravel.TimeParadox(TimeParadoxCause.PastPlayerHeardPresentPlayer, collider.transform);
 			}
 		}
-		
+	 	
 		Invoke("HideSoundIndicator", HideSoundIndicatorDelay);
 	}
 
 	void HideSoundIndicator() {
 		CancelInvoke("HideSoundIndicator");
 		soundIndicator.SetActive(false);
+	}
+
+	/// <summary>
+	/// Returns true if there is a wall or door between the present player and the specified target transform.
+	/// Uses a raycast from present player's approximate eye or ear height to the target's position and checks for hits on the "Walls" or "Doors" layers.
+	/// </summary>
+	private bool IsOccludedByWall(Transform target)
+	{
+		if (target == null) return true;
+
+		Vector3 origin = transform.position + Vector3.up *1.55f; // approximate eye or ear height
+		Vector3 toTarget = target.position - origin;
+		float dist = toTarget.magnitude;
+		if (dist <= 0f) return false;
+
+		int occlusionMask = LayerMask.GetMask("Walls", "Doors");
+		// If the ray hits any wall/door between origin and target, the sound or sight is occluded.
+		if (Physics.Raycast(origin, toTarget, out RaycastHit hit, dist, occlusionMask, QueryTriggerInteraction.Collide))
+		{
+			return true;
+		}
+		return false;
 	}
 }

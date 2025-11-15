@@ -2077,6 +2077,11 @@ PrefabInstance:
       propertyPath: door
       value: 
       objectReference: {fileID: 636075047}
+    - target: {fileID: 5979496700882697595, guid: 9111be5a8961630408681600a51a4af9,
+        type: 3}
+      propertyPath: openForTime
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 5979496700882697596, guid: 9111be5a8961630408681600a51a4af9,
         type: 3}
       propertyPath: m_Name

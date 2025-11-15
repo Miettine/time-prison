@@ -80,7 +80,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   door: {fileID: 0}
   oneShot: 0
-  openForTime: 5
+  openForTime: 3
 --- !u!1 &5979496701410125744
 GameObject:
   m_ObjectHideFlags: 0

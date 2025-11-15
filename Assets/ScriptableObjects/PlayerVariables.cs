@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// The player variables scriptable object that contains various configuration values for the player character.
+/// Changing these values will radically affect the gameplay experience.
+/// </summary>
 [CreateAssetMenu(fileName = "PlayerVariables", menuName = "Scriptable Objects/PlayerVariables")]
 public class PlayerVariables : ScriptableObject
 {
