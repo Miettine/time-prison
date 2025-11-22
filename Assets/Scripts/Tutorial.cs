@@ -17,18 +17,18 @@ public class Tutorial : Singleton<Tutorial> {
 	
 	bool fullyInitialized = false;
 
-    UI ui;
+	UI ui;
 	TimeTravel timeTravel; 
 	
 	void Awake() {
-        // Ensure only a single Tutorial instance exists in the scene.
-        // If there are multiple, destroy the uninitialized ones. This way only the oldest and original one remains.
-        var tutorials = FindObjectsByType<Tutorial>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        if (tutorials.Length >1) {
+		// Ensure only a single Tutorial instance exists in the scene.
+		// If there are multiple, destroy the uninitialized ones. This way only the oldest and original one remains.
+		var tutorials = FindObjectsByType<Tutorial>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+		if (tutorials.Length >1) {
 			foreach (var t in tutorials) {
 				if (t.fullyInitialized != true) {
 					var gameObject = t.gameObject;
-                    DestroyImmediate(t);
+					DestroyImmediate(t);
 					Destroy(gameObject);
 				}
 			}
@@ -39,7 +39,7 @@ public class Tutorial : Singleton<Tutorial> {
 	void Start() {
 		DontDestroyOnLoad(this);
 		fullyInitialized = true;
-    }
+	}
 
 	// Update is called once per frame
 	void Update() {
@@ -115,13 +115,13 @@ public class Tutorial : Singleton<Tutorial> {
 		return "Press the Time Travel button";
 	}
 
-    internal void OnPlayerEnteredLevel1GoalTutorialTrigger()
-    {
-        ui.ShowPermanentCenterNotificationText(GetGoalTutorialText());
-    }
+	internal void OnPlayerEnteredLevel1GoalTutorialTrigger()
+	{
+		ui.ShowPermanentCenterNotificationText(GetGoalTutorialText());
+	}
 
-    public void OnTimePortalEntered()
-    {
-        ui.ShowTemporaryCenterNotificationText(GetFirstTimeTravelTutorialText(timeTravel.GetTime()), NotificationType.Neutral);
-    }
+	public void OnTimePortalEntered()
+	{
+		ui.ShowTemporaryCenterNotificationText(GetFirstTimeTravelTutorialText(timeTravel.GetTime()), NotificationType.Neutral);
+	}
 }

@@ -19,7 +19,7 @@ public class LargeDoor : MonoBehaviour
 		public bool ClosedInPast => !OpenInPast;
 		public bool ClosedInPresent => !OpenInPresent;
 	}
-    private void Awake() {
+	private void Awake() {
 		door = transform.GetChild(0).gameObject;
 	}
 

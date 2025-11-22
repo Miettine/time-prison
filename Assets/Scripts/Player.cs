@@ -12,10 +12,10 @@ public class Player : Singleton<Player>
 	TimeTravel timeTravel;
 
 	/// <summary>
-    /// The player variables scriptable object that contains various configuration values for the player character.
-    /// </summary>
-    [SerializeField]
-    PlayerVariables playerVariables;
+	/// The player variables scriptable object that contains various configuration values for the player character.
+	/// </summary>
+	[SerializeField]
+	PlayerVariables playerVariables;
 
 	UI ui;
 
@@ -41,22 +41,22 @@ public class Player : Singleton<Player>
 		 }
 	 }
 
-    // Made these properties to make the code more readable.
-    float Deadzone => playerVariables.Deadzone;
-    float MoveSpeed => playerVariables.MoveSpeed;
-    float LookTowardsRotationModifier => playerVariables.LookTowardsRotationModifier;
-    float HideSoundIndicatorDelay => playerVariables.HideSoundIndicatorDelay;
-    float RunningSoundWaveRadius => playerVariables.RunningSoundWaveRadius;
-    float SneakingRadius => playerVariables.SneakingRadius;
-    float SneakingSpeedMultiplier => playerVariables.SneakingSpeedMultiplier;
-    float InteractionRadius => playerVariables.InteractionRadius;
+	// Made these properties to make the code more readable.
+	float Deadzone => playerVariables.Deadzone;
+	float MoveSpeed => playerVariables.MoveSpeed;
+	float LookTowardsRotationModifier => playerVariables.LookTowardsRotationModifier;
+	float HideSoundIndicatorDelay => playerVariables.HideSoundIndicatorDelay;
+	float RunningSoundWaveRadius => playerVariables.RunningSoundWaveRadius;
+	float SneakingRadius => playerVariables.SneakingRadius;
+	float SneakingSpeedMultiplier => playerVariables.SneakingSpeedMultiplier;
+	float InteractionRadius => playerVariables.InteractionRadius;
 
-    /// <summary>
-    /// An object that is within the player character's arms reach and can be interacted with. Null if there is no such object.
-    /// Currently this can only be a ButtonPedestal. It would be better design to make this a more general interface like IInteractableObject.
+	/// <summary>
+	/// An object that is within the player character's arms reach and can be interacted with. Null if there is no such object.
+	/// Currently this can only be a ButtonPedestal. It would be better design to make this a more general interface like IInteractableObject.
 	/// Though this is the only kind of object that the player can presently interact with.
-    /// </summary>
-    public ButtonPedestal FocusedInteractableObject { get; private set; }
+	/// </summary>
+	public ButtonPedestal FocusedInteractableObject { get; private set; }
 
 	 public enum ControlMode
 	 {
@@ -127,10 +127,10 @@ public class Player : Singleton<Player>
 				Vector3 groundPoint = ray.GetPoint(rayDistance); // Get the point of intersection between the ray and the ground plane
 
 				/* The player either moves towards the mouse or the player moves to the opposite direction from where the mouse is clicked.
-			 	* When this game is played on a phone, some players could complain that they can't see where the character is going because
-			 	* their finger is blocking the view. I am making the following variable in preparation of configuring the movement:
-			 	* allowing the player to make the character move towards the finger or away from the finger.
-			 	*/
+				* When this game is played on a phone, some players could complain that they can't see where the character is going because
+				* their finger is blocking the view. I am making the following variable in preparation of configuring the movement:
+				* allowing the player to make the character move towards the finger or away from the finger.
+				*/
 				bool moveTowardsMouse = true;
 
 				float movementCoordinateX = moveTowardsMouse ? groundPoint.x - transform.position.x : transform.position.x - groundPoint.x;
@@ -276,7 +276,7 @@ public class Player : Singleton<Player>
 		soundIndicator.SetActive(true);
 
 		var soundOverlapSphereColliders = Physics.OverlapSphere(transform.position, RunningSoundWaveRadius, pastPlayerLayer, QueryTriggerInteraction.Collide);
-	 	
+		
 		foreach (var collider in soundOverlapSphereColliders) {
 			if (collider.gameObject.layer == LayerMask.NameToLayer("PastPlayer")) {
 				// If there is a wall or door between the present player and the past player, treat as occluded and do not trigger paradox.
@@ -286,7 +286,7 @@ public class Player : Singleton<Player>
 				}
 			}
 		}
-	 	
+		
 		Invoke("HideSoundIndicator", HideSoundIndicatorDelay);
 	}
 
