@@ -143,15 +143,19 @@ public class Player : Singleton<Player>
 				ProcessMovementInput(movementVector.normalized, sneaking);
 				return;
 			}
-		} else if (Input.anyKey) {
-			OnKeyboardInputUsed();
+			return;
+		}
 
-			float v = Input.GetAxisRaw("Vertical");
-			float h = Input.GetAxisRaw("Horizontal");
+		float v = Input.GetAxisRaw("Vertical");
+		float h = Input.GetAxisRaw("Horizontal");
+		var direction = new Vector3(h, 0f, v);
+
+		if (direction.magnitude > Deadzone) {
+			OnKeyboardInputUsed();
 
 			bool sneaking = Input.GetKey(KeyCode.C);
 
-			ProcessMovementInput(new Vector3(h, 0f, v), sneaking);
+			ProcessMovementInput(direction, sneaking);
 
 			return;
 		}
