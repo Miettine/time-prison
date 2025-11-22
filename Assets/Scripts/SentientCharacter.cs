@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static LargeDoor;
 
 /// <summary>
 /// This class was made in preparation of making the Guard or the Warden. The purpose was to
@@ -18,6 +19,7 @@ public class SentientCharacter : MonoBehaviour
 	int lineOfSightLayerMask;
 	int playerLayer;
 	int doorsLayer;
+	int doorsAndWallsLayer;
 	Player player;
 	public Transform TimeParadoxObject { get; private set; }
 
@@ -27,6 +29,7 @@ public class SentientCharacter : MonoBehaviour
 		lineOfSightLayerMask = LayerMask.GetMask("Player", "Walls", "Doors");
 		playerLayer = LayerMask.NameToLayer("Player");
 		doorsLayer = LayerMask.NameToLayer("Doors");
+		doorsAndWallsLayer = LayerMask.GetMask("Doors", "Walls");
 	}
 
 	void Start() {
@@ -69,9 +72,9 @@ public class SentientCharacter : MonoBehaviour
 
 		var pos = this.transform.position;
 
-        // We raise the ray's origin to approximately eye level. 1.55m above the ground is a common estimate for common human eye height.
+		// We raise the ray's origin to approximately eye level. 1.55m above the ground is a common estimate for human eye height.
 		// (1.7m height minus a small offset of 15cm which is the distance from the eyes to the top of the head)
-        var vectorAtEyePoint = new Vector3(pos.x, pos.y + 1.55f, pos.z);
+		var vectorAtEyePoint = new Vector3(pos.x, pos.y + 1.55f, pos.z);
 
 		Ray ray = new Ray(vectorAtEyePoint, toPlayer);
 		Debug.DrawRay(vectorAtEyePoint, toPlayer, Color.red);
@@ -103,17 +106,14 @@ public class SentientCharacter : MonoBehaviour
 		return transformParent.name == "Player";*/
 	}
 
-	public bool HeardPresentPlayer() {
-		throw new Exception("Not supported yet");
-	}
-
-	protected bool SeesObjectInteractionFromPresentPlayer() {
+	protected bool SeesDoorPresentPlayerInteractedWith(out DoorTimeTravelState? doorTimeTravelState) {
 		//TODO: Eliminate repeated code between this and SeesPresentPlayer.
 
 		var doors = FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
 		foreach (var door in doors) {
 
 			if (door == null) {
+				doorTimeTravelState = null;
 				return false;
 			}
 			var targetTransform = door.transform;
@@ -123,6 +123,7 @@ public class SentientCharacter : MonoBehaviour
 			bool withinRange = toTarget.magnitude < fieldOfViewRange;
 
 			if (!withinRange) {
+				doorTimeTravelState = null;
 				return false;
 			}
 
@@ -134,6 +135,7 @@ public class SentientCharacter : MonoBehaviour
 			bool withinFieldOfViewAngle = lookDirectionToTargetAngle < fieldOfViewDegrees / 2;
 
 			if (!withinFieldOfViewAngle) {
+				doorTimeTravelState = null;
 				return false;
 			}
 
@@ -144,7 +146,7 @@ public class SentientCharacter : MonoBehaviour
 			Ray ray = new Ray(vectorAtEyePoint, toTarget);
 			Debug.DrawRay(vectorAtEyePoint, toTarget, Color.red);
 
-			bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, LayerMask.GetMask("Doors", "Walls"), QueryTriggerInteraction.Collide);
+			bool hasRaycastHit = Physics.Raycast(ray, out var hitInfo, fieldOfViewRange, doorsAndWallsLayer, QueryTriggerInteraction.Collide);
 
 			if (!hasRaycastHit) {
 				/*
@@ -152,6 +154,7 @@ public class SentientCharacter : MonoBehaviour
 				anything with the raycast. This is unexpected behaviour so we are logging this as a warning.
 				*/
 				Debug.LogWarning("No raycast hit was detected when determining line of sight occlusion.");
+				doorTimeTravelState = null;
 				return false;
 			}
 
@@ -163,17 +166,21 @@ public class SentientCharacter : MonoBehaviour
 			}
 			//Debug.Log($"{collider.gameObject.layer} != {collider.gameObject.layer}");
 			if (collider.gameObject.layer != doorsLayer) {
+				doorTimeTravelState = null;
 				return false;
 			}
 
-			bool HasStateContradiction = timeTravel.HasStateContradiction(door.name, door);
+			bool HasStateContradiction = timeTravel.HasStateContradiction(door.name, door, out DoorTimeTravelState doorTimeTravelState2);
 			if (HasStateContradiction) {
 				TimeParadoxObject = door.transform;
+				doorTimeTravelState = doorTimeTravelState2;
 				return true;
 			} else {
+				doorTimeTravelState = doorTimeTravelState2;
 				return false;
 			}
 		}
+		doorTimeTravelState = null;
 		return false;
 	}
 }

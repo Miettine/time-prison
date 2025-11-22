@@ -13,7 +13,13 @@ public class LargeDoor : MonoBehaviour
 
 	//TimeTravel timeTravel;
 
-	private void Awake() {
+	public struct DoorTimeTravelState {
+		public bool OpenInPast;
+		public bool OpenInPresent;
+		public bool ClosedInPast => !OpenInPast;
+		public bool ClosedInPresent => !OpenInPresent;
+	}
+    private void Awake() {
 		door = transform.GetChild(0).gameObject;
 	}
 

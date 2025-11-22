@@ -5,6 +5,7 @@ using UnityEngine;
 public enum TimeParadoxCause {
 	None,
 	PastPlayerSawPresentPlayer, 
-	PastPlayerHeardPresentPlayer, 
-	PastPlayerSawObjectInteractionFromPresentPlayer
+	PastPlayerHeardPresentPlayer,
+	PastPlayerSawDoorClosedByPresentPlayer,
+	PastPlayerSawDoorOpenedByPresentPlayer
 }

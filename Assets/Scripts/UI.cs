@@ -18,8 +18,8 @@ public class UI : Singleton<UI>
 	private Button timeTravelButton;
 	private Button resetButton;
 
-	private GameObject timeTravelHelpText;
-	private GameObject resetHelpText;
+	private GameObject timeTravelHelpTextGameObject;
+	private GameObject resetHelpTextGameObject;
 	 
 	private GameObject blueKeyCardIndicator;
 	private GameObject greenKeyCardIndicator;
@@ -34,60 +34,60 @@ public class UI : Singleton<UI>
 
 	private Canvas canvas;
 
-    [SerializeField]
-    GameObject interactUIPromptPrefab;
-    
+	[SerializeField]
+	GameObject interactUIPromptPrefab;
+	
 	void Awake()
-    {
-        cameraControl = CameraControl.GetInstance();
-        timeTravel = TimeTravel.GetInstance();
+	{
+		cameraControl = CameraControl.GetInstance();
+		timeTravel = TimeTravel.GetInstance();
 
-        canvas = FindAnyObjectByType<Canvas>();
-        if (canvas == null)
-        {
-            throw new Exception("No Canvas found in the scene. Please add a Canvas to the scene for the UI to work.");
-        }
+		canvas = FindAnyObjectByType<Canvas>();
+		if (canvas == null)
+		{
+			throw new Exception("No Canvas found in the scene. Please add a Canvas to the scene for the UI to work.");
+		}
 
-        timeText = GameObject.Find("TimeText").GetComponent<Text>();
-        doorOpenText = GameObject.Find("DoorOpenText").GetComponent<Text>();
+		timeText = GameObject.Find("TimeText").GetComponent<Text>();
+		doorOpenText = GameObject.Find("DoorOpenText").GetComponent<Text>();
 
-        interactUIPromptPrefab = (GameObject) Resources.Load("InteractUIPrompt");
+		interactUIPromptPrefab = (GameObject) Resources.Load("InteractUIPrompt");
 
 		if (interactUIPromptPrefab == null)
 		{
 			throw new Exception("Could not load InteractUIPrompt prefab from Resources folder. Please ensure it exists at Resources/InteractUIPrompt.prefab");
-        }
+		}
 		blueKeyCardIndicator = GameObject.Find("BlueKeyCardIndicator");
-        greenKeyCardIndicator = GameObject.Find("GreenKeyCardIndicator");
-        yellowKeyCardIndicator = GameObject.Find("YellowKeyCardIndicator");
+		greenKeyCardIndicator = GameObject.Find("GreenKeyCardIndicator");
+		yellowKeyCardIndicator = GameObject.Find("YellowKeyCardIndicator");
 
-        timeTravelButton = GameObject.Find("TimeTravelButton").GetComponent<Button>();
-        resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
+		timeTravelButton = GameObject.Find("TimeTravelButton").GetComponent<Button>();
+		resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
 
-        timeTravelHelpText = GameObject.Find("TimeTravelHelpText");
-        resetHelpText = GameObject.Find("ResetHelpText");
+		timeTravelHelpTextGameObject = GameObject.Find("TimeTravelHelpText");
+		resetHelpTextGameObject = GameObject.Find("ResetHelpText");
 
-        timeParadoxTextGameObject = GameObject.Find("TimeParadoxTextGameObject");
+		timeParadoxTextGameObject = GameObject.Find("TimeParadoxTextGameObject");
 
-        centerImportantNotificationText = GameObject.Find("CenterImportantNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
-        centerImportantNotificationText.gameObject.SetActive(false);
+		centerImportantNotificationText = GameObject.Find("CenterImportantNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
+		centerImportantNotificationText.gameObject.SetActive(false);
 
-        centerNeutralNotificationText = GameObject.Find("CenterNeutralNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
-        centerNeutralNotificationText.gameObject.SetActive(false);
+		centerNeutralNotificationText = GameObject.Find("CenterNeutralNotificationTextGameObject").GetComponent<TextMeshProUGUI>();
+		centerNeutralNotificationText.gameObject.SetActive(false);
 
-        player = Player.GetInstance();
+		player = Player.GetInstance();
 
-        timeTravelButton.onClick.AddListener(() => player.OnTimeTravelActivated());
-        resetButton.onClick.AddListener(() => player.OnResetActivated());
+		timeTravelButton.onClick.AddListener(() => player.OnTimeTravelActivated());
+		resetButton.onClick.AddListener(() => player.OnResetActivated());
 
-        blueKeyCardIndicator.SetActive(false);
-        greenKeyCardIndicator.SetActive(false);
-        yellowKeyCardIndicator.SetActive(false);
+		blueKeyCardIndicator.SetActive(false);
+		greenKeyCardIndicator.SetActive(false);
+		yellowKeyCardIndicator.SetActive(false);
 
-        doorOpenText.text = "";
-    }
+		doorOpenText.text = "";
+	}
 
-    void Start() {
+	void Start() {
 		timeParadoxTextGameObject.SetActive(false);
 		UpdateControlModeUI(ControlMode.Touch);
 	}
@@ -118,23 +118,23 @@ public class UI : Singleton<UI>
 	}
 
 	internal void OnKeyboardInputUsed() {
-        UpdateControlModeUI(ControlMode.Keyboard);
-    }
+		UpdateControlModeUI(ControlMode.Keyboard);
+	}
 
-    internal void OnMouseInputUsed()
-    {
-        UpdateControlModeUI(ControlMode.Touch);
-    }
+	internal void OnMouseInputUsed()
+	{
+		UpdateControlModeUI(ControlMode.Touch);
+	}
 
 	private void UpdateControlModeUI(ControlMode controlMode)
 	{
-        var touchControlsEnabled = controlMode == ControlMode.Touch;
-        timeTravelButton.gameObject.SetActive(touchControlsEnabled);
-        resetButton.gameObject.SetActive(touchControlsEnabled);
+		var touchControlsEnabled = controlMode == ControlMode.Touch;
+		timeTravelButton.gameObject.SetActive(touchControlsEnabled);
+		resetButton.gameObject.SetActive(touchControlsEnabled);
 
-        timeTravelHelpText.SetActive(!touchControlsEnabled);
-        resetHelpText.SetActive(!touchControlsEnabled);
-    }
+		timeTravelHelpTextGameObject.SetActive(!touchControlsEnabled);
+		resetHelpTextGameObject.SetActive(!touchControlsEnabled);
+	}
 
 	void ShowDoorOpenText(float seconds) {
 		doorOpenText.text = Math.Ceiling(seconds).ToString($"Door open for 0 seconds");
@@ -238,6 +238,25 @@ public class UI : Singleton<UI>
 	/// </summary>
 	/// <param name="timeParadoxCause"></param>
 	internal void OnTimeParadox() {
+
+		timeText.gameObject.SetActive(false);
+		doorOpenText.gameObject.SetActive(false);
+
+		timeTravelButton.gameObject.SetActive(false);
+		resetButton.gameObject.SetActive(false);
+
+		timeTravelHelpTextGameObject.SetActive(false);
+		resetHelpTextGameObject.SetActive(false);
+
+		blueKeyCardIndicator.SetActive(false);
+		greenKeyCardIndicator.SetActive(false);
+		yellowKeyCardIndicator.SetActive(false);
+
+		timeParadoxTextGameObject.SetActive(false);
+
+		centerImportantNotificationText.gameObject.SetActive(false);
+		centerNeutralNotificationText.gameObject.SetActive(false);
+
 		StartCoroutine(TimeParadoxAnimation());
 	}
 
@@ -276,6 +295,15 @@ public class UI : Singleton<UI>
 			case TimeParadoxCause.PastPlayerSawObjectInteractionFromPresentPlayer:
 				ShowCenterNotificationTextHideOther("Cause:\npast self saw an object that you had interacted with", NotificationType.Important);
 				break;
+			case TimeParadoxCause.PastPlayerSawDoorOpenedByPresentPlayer:
+				ShowCenterNotificationTextHideOther("Cause:\npast self saw a door opened by you", NotificationType.Important);
+				break;
+			case TimeParadoxCause.PastPlayerSawDoorClosedByPresentPlayer:
+				ShowCenterNotificationTextHideOther("Cause:\npast self saw a door closed by you", NotificationType.Important);
+				break;
+			default:
+				ShowCenterNotificationTextHideOther("Cause:\n404 cause not found", NotificationType.Important);
+				break;
 		}
 
 		yield return cameraControl.MoveToTarget(timeTravel.EntityThatCausedTimeParadox, GetTimeParadoxAnimationStepDelay());
@@ -302,12 +330,12 @@ public class UI : Singleton<UI>
 		return new WaitForSeconds(time);
 	}
 
-    internal InteractPrompt OnButtonPedestalCreated(ButtonPedestal buttonPedestal)
-    {
+	internal InteractPrompt OnButtonPedestalCreated(ButtonPedestal buttonPedestal)
+	{
 		var promptGameObject = Instantiate(interactUIPromptPrefab, canvas.transform);
 		var interactPrompt = promptGameObject.GetComponent<InteractPrompt>();
 
 		interactPrompt.LinkedButtonPedestal = buttonPedestal;
-        return interactPrompt;
-    }
+		return interactPrompt;
+	}
 }

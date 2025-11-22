@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using static CharacterInTime;
+using static LargeDoor;
 
 public class TimeTravel : Singleton<TimeTravel> {
 	private MomentsInTime momentsInTime;
@@ -24,10 +25,10 @@ public class TimeTravel : Singleton<TimeTravel> {
 	[SerializeField]
 	private float snapshotRate = 0.1f;
 
-    /// <summary>
-    /// Choose the behaviour of the game when a time paradox occurs. Only need to change for testing purposes.
-    /// </summary>
-    private TimeParadoxBehaviour behaviourOnTimeParadox = TimeParadoxBehaviour.TimeParadoxAnimation;
+	/// <summary>
+	/// Choose the behaviour of the game when a time paradox occurs. Only need to change for testing purposes.
+	/// </summary>
+	private TimeParadoxBehaviour behaviourOnTimeParadox = TimeParadoxBehaviour.TimeParadoxAnimation;
 
 	CameraControl cameraControl;
 	private bool ongoingTimeParadox;
@@ -49,9 +50,9 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	// Start is called before the first frame update
 	void Start() {
-        tutorial = Tutorial.GetOrCreateInstance();
+		tutorial = Tutorial.GetOrCreateInstance();
 
-        ongoingTimeParadox = false;
+		ongoingTimeParadox = false;
 
 		InvokeRepeating("TakeSnapshot", snapshotRate, snapshotRate);
 
@@ -275,10 +276,18 @@ public class TimeTravel : Singleton<TimeTravel> {
 		momentsInTime.AddObject(stateInTime);
 	}
 
-	internal bool HasStateContradiction(string doorName, LargeDoor door) {
+	internal bool HasStateContradiction(string doorName, LargeDoor door, out DoorTimeTravelState doorTimeTravelState) {
 		var objectPastState = momentsInTime.GetObject<DoorObjectInTime>(doorName, GetTime());
 
-		return objectPastState.IsOpen != door.IsOpenByPresentAction();
+		bool openInPast = objectPastState.IsOpen;
+		bool openInPresent = door.IsOpenByPresentAction();
+
+		doorTimeTravelState = new DoorTimeTravelState {
+			OpenInPast = openInPast,
+			OpenInPresent = openInPresent
+		};
+
+		return openInPast != openInPresent;
 	}
 
 	public float GetTime() {
