@@ -19,8 +19,6 @@ public class PastPlayer : SentientCharacter {
 					}
 				}
 			}
-			
 		}
 	}
-
 }
