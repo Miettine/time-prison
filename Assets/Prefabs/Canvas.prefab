@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 873621804}
   - component: {fileID: 873621803}
   m_Layer: 5
-  m_Name: TimeTravelHelpText
+  m_Name: TimeTravelKeyboardPromptText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -754,7 +754,7 @@ GameObject:
   - component: {fileID: 1220856924}
   - component: {fileID: 1220856923}
   m_Layer: 5
-  m_Name: ResetHelpText
+  m_Name: ResetKeyboardPromptText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1353,7 +1353,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 1
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0

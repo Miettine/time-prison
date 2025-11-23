@@ -6,37 +6,37 @@ using UnityEngine.SceneManagement;
 
 public class Game : Singleton<Game>
 {
-    Tutorial tutorial;
+	Tutorial tutorial;
 
-    void Awake() {
-        
+	void Awake() {
+		
 	}
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        tutorial = Tutorial.GetOrCreateInstance();
-        //Story is called with DontDestroyOnLoad. This class is destroyed and reloaded whenever a scene is loaded.
-        tutorial.OnLevelLoaded();
-    }
+	// Start is called before the first frame update
+	void Start()
+	{
+		tutorial = Tutorial.GetOrCreateInstance();
+		//Tutorial is called with DontDestroyOnLoad. This class is destroyed and reloaded whenever a scene is loaded.
+		tutorial.OnLevelLoaded();
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	// Update is called once per frame
+	void Update()
+	{
+		
+	}
 	
 	public void ReloadCurrentLevel(){
 		 LoadSceneWithIndex(GetActiveSceneIndex());
 	}
 
 	internal void OnLevelPassedTriggerEnter() {
-        LoadNextScene();
-    }
+		LoadNextScene();
+	}
 
-    void LoadNextScene() {
-        LoadSceneWithIndex(GetActiveSceneIndex() + 1);
-    }
+	void LoadNextScene() {
+		LoadSceneWithIndex(GetActiveSceneIndex() + 1);
+	}
 	
 	void LoadSceneWithIndex(int index){
 		SceneManager.LoadScene(index);

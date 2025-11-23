@@ -31,14 +31,16 @@ public class Player : Singleton<Player>
 
 	int interactableObjectsLayerMask;
 
-	 private ControlMode controlMode;
+	private ControlMode controlMode;
 
-	 public ControlMode _ControlMode
-	 {
-		 get => controlMode; private set
-		 {
+	public bool HasObtainedTimeMachine { get; private set; } = false;
+
+	public ControlMode _ControlMode
+	{
+		get => controlMode; private set
+		{
 			controlMode = value;
-		 }
+		}
 	 }
 
 	// Made these properties to make the code more readable.
@@ -87,6 +89,7 @@ public class Player : Singleton<Player>
 	void Start()
 	{
 		soundIndicator.SetActive(false);
+		HasObtainedTimeMachine = Tutorial.LevelStartsWithTimeMachine();
 	}
 
 	// Update is called once per frame
@@ -96,8 +99,7 @@ public class Player : Singleton<Player>
 		}
 
 		if (Input.GetKeyUp(KeyCode.Space)) {
-			LatestAction = CharacterInTime.ActionType.StartTimeTravel;
-			OnTimeTravelActivated();
+			OnPlayerWantsToActivateTimeMachine();
 			return;
 		}
 
@@ -162,6 +164,19 @@ public class Player : Singleton<Player>
 		//TODO: Add gamepad controls. Can we use gamepad in WebGL?
 	}
 
+	public void OnPlayerWantsToActivateTimeMachine()
+	{
+		if (HasObtainedTimeMachine)
+		{
+			OnTimeTravelActivated();
+		}
+	}
+
+	public void OnTimeMachinePickedUp(){
+		HasObtainedTimeMachine = true;
+		ui.OnTimeMachineObtained();
+	}
+
 	private void OnKeyboardInputUsed()
 	{
 		_ControlMode = ControlMode.Keyboard;
@@ -184,6 +199,7 @@ public class Player : Singleton<Player>
 
 	public void OnTimeTravelActivated() {
 		if (!timeTravel.IsTimeParadoxOngoing()) {
+			LatestAction = CharacterInTime.ActionType.StartTimeTravel;
 			timeTravel.StartTimeTravelToBeginning();
 		}
 	}
@@ -214,28 +230,28 @@ public class Player : Singleton<Player>
 	{
 		var interactableObjectsColliders = Physics.OverlapSphere(transform.position, InteractionRadius, interactableObjectsLayerMask);
 
-	if (interactableObjectsColliders.Length == 0)
-	{
-		FocusedInteractableObject = null;
-		return;
-	}
-
-	foreach (var collider in interactableObjectsColliders)
-	{
-		if (IsOccludedByWall(collider.transform))
+		if (interactableObjectsColliders.Length == 0)
 		{
 			FocusedInteractableObject = null;
-			continue;
-		}
-
-		var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
-
-		if (buttonPedestal != null && buttonPedestal.IsInteractable())
-		{
-			FocusedInteractableObject = buttonPedestal;
 			return;
 		}
-	}
+
+		foreach (var collider in interactableObjectsColliders)
+		{
+			if (IsOccludedByWall(collider.transform))
+			{
+				FocusedInteractableObject = null;
+				continue;
+			}
+
+			var buttonPedestal = collider.gameObject.GetComponentInParent<ButtonPedestal>();
+
+			if (buttonPedestal != null && buttonPedestal.IsInteractable())
+			{
+				FocusedInteractableObject = buttonPedestal;
+				return;
+			}
+		}
 	}
 
 	void ProcessMovementInput(Vector3 direction, bool sneaking){

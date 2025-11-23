@@ -14,17 +14,17 @@ public class Tutorial : Singleton<Tutorial> {
 
 	bool timeParadoxHasHappenedAtLeastOnceThroughHearing = false;
 	bool timeParadoxWarningThroughHearingHasBeenShown = false;
-	
+
 	bool fullyInitialized = false;
 
 	UI ui;
-	TimeTravel timeTravel; 
-	
+	TimeTravel timeTravel;
+
 	void Awake() {
 		// Ensure only a single Tutorial instance exists in the scene.
 		// If there are multiple, destroy the uninitialized ones. This way only the oldest and original one remains.
 		var tutorials = FindObjectsByType<Tutorial>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-		if (tutorials.Length >1) {
+		if (tutorials.Length > 1) {
 			foreach (var t in tutorials) {
 				if (t.fullyInitialized != true) {
 					var gameObject = t.gameObject;
@@ -43,7 +43,7 @@ public class Tutorial : Singleton<Tutorial> {
 
 	// Update is called once per frame
 	void Update() {
-		
+
 	}
 
 	public void OnTimeParadox() {
@@ -71,10 +71,10 @@ public class Tutorial : Singleton<Tutorial> {
 		if (IsCurrentLevelFirstLevel())
 		{
 			var controlsTutorialText = IsMobilePlatform() ? GetPhoneTutorialText() : GetComputerTutorialText();
-			
+
 			ui.ShowPermanentCenterNotificationText(controlsTutorialText);
 		}
-		
+
 		if (timeParadoxHasHappenedAtLeastOnceThroughSeeing && !timeParadoxWarningThroughSeeingHasBeenShown) {
 			ui.ShowTemporaryCenterNotificationText(GetFirstTimeParadoxWarningText(), NotificationType.Important);
 			timeParadoxWarningThroughSeeingHasBeenShown = true;
@@ -84,7 +84,26 @@ public class Tutorial : Singleton<Tutorial> {
 		}
 	}
 
-	private static bool IsCurrentLevelFirstLevel() => SceneManager.GetActiveScene().name.Contains("1");
+	private static bool IsCurrentLevelFirstLevel() => CurrentLevelIsNumber(1);
+
+	private static bool CurrentLevelIsNumber(int levelNumber)
+	{
+		return SceneManager.GetActiveScene().name.Contains(levelNumber.ToString());
+	}
+
+	public static bool LevelStartsWithTimeMachine() {
+		return GetCurrentLevelNumber() >= 6;
+	 }
+
+	private static int GetCurrentLevelNumber(){
+		var sceneName = SceneManager.GetActiveScene().name;
+		var digits = System.Text.RegularExpressions.Regex.Match(sceneName, @"\d+").Value;
+		if (int.TryParse(digits, out int levelNumber))
+		{
+			return levelNumber;
+		}
+		return -1; // Return -1 if no valid level number is found
+	}
 
 	private static string GetComputerTutorialText() => "Move: use the arrow keys\nor hold the left mouse button";
 	

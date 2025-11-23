@@ -1,5 +1,6 @@
 
 
+using UnityEngine;
 using static LargeDoor;
 
 public class PastPlayer : SentientCharacter {
@@ -14,11 +15,14 @@ public class PastPlayer : SentientCharacter {
 				if (doorState.Value.OpenInPast != doorState.Value.OpenInPresent) {
 					if (doorState.Value.ClosedInPast && doorState.Value.OpenInPresent) {
 						timeTravel.TimeParadox(TimeParadoxCause.PastPlayerSawDoorOpenedByPresentPlayer, TimeParadoxObject);
+						return;
 					} else if (doorState.Value.OpenInPast && doorState.Value.ClosedInPresent) {
 						timeTravel.TimeParadox(TimeParadoxCause.PastPlayerSawDoorClosedByPresentPlayer, TimeParadoxObject);
+						return;
 					}
 				}
 			}
+			Debug.LogWarning("Past player saw door interaction but could not determine state correctly.");
 		}
 	}
 }

@@ -15,11 +15,11 @@ public class UI : Singleton<UI>
 	private Text timeText;
 	private Text doorOpenText;
 
-	private Button timeTravelButton;
-	private Button resetButton;
+	private Button timeTravelTouchButton;
+	private Button resetTouchButton;
 
-	private GameObject timeTravelHelpTextGameObject;
-	private GameObject resetHelpTextGameObject;
+	private GameObject timeTravelKeyboardPromptTextGameObject;
+	private GameObject resetPromptTextGameObject;
 	 
 	private GameObject blueKeyCardIndicator;
 	private GameObject greenKeyCardIndicator;
@@ -29,6 +29,8 @@ public class UI : Singleton<UI>
  
 	private TextMeshProUGUI centerImportantNotificationText;
 	private TextMeshProUGUI centerNeutralNotificationText;
+
+	ControlMode currentControlMode;
 
 	[SerializeField] private float timeParadoxAnimationLength = 10f;
 
@@ -61,11 +63,11 @@ public class UI : Singleton<UI>
 		greenKeyCardIndicator = GameObject.Find("GreenKeyCardIndicator");
 		yellowKeyCardIndicator = GameObject.Find("YellowKeyCardIndicator");
 
-		timeTravelButton = GameObject.Find("TimeTravelButton").GetComponent<Button>();
-		resetButton = GameObject.Find("ResetButton").GetComponent<Button>();
+		timeTravelTouchButton = GameObject.Find("TimeTravelButton").GetComponent<Button>();
+		resetTouchButton = GameObject.Find("ResetButton").GetComponent<Button>();
 
-		timeTravelHelpTextGameObject = GameObject.Find("TimeTravelHelpText");
-		resetHelpTextGameObject = GameObject.Find("ResetHelpText");
+		timeTravelKeyboardPromptTextGameObject = GameObject.Find("TimeTravelKeyboardPromptText");
+		resetPromptTextGameObject = GameObject.Find("ResetKeyboardPromptText");
 
 		timeParadoxTextGameObject = GameObject.Find("TimeParadoxTextGameObject");
 
@@ -77,8 +79,8 @@ public class UI : Singleton<UI>
 
 		player = Player.GetInstance();
 
-		timeTravelButton.onClick.AddListener(() => player.OnTimeTravelActivated());
-		resetButton.onClick.AddListener(() => player.OnResetActivated());
+		timeTravelTouchButton.onClick.AddListener(() => player.OnPlayerWantsToActivateTimeMachine());
+		resetTouchButton.onClick.AddListener(() => player.OnResetActivated());
 
 		blueKeyCardIndicator.SetActive(false);
 		greenKeyCardIndicator.SetActive(false);
@@ -118,22 +120,31 @@ public class UI : Singleton<UI>
 	}
 
 	internal void OnKeyboardInputUsed() {
-		UpdateControlModeUI(ControlMode.Keyboard);
+		SetControlMode(ControlMode.Keyboard);
 	}
 
 	internal void OnMouseInputUsed()
 	{
-		UpdateControlModeUI(ControlMode.Touch);
+		SetControlMode(ControlMode.Touch);
+	}
+
+	void SetControlMode(ControlMode controlMode)
+	{
+		this.currentControlMode = controlMode;
+		UpdateControlModeUI(controlMode);
 	}
 
 	private void UpdateControlModeUI(ControlMode controlMode)
 	{
-		var touchControlsEnabled = controlMode == ControlMode.Touch;
-		timeTravelButton.gameObject.SetActive(touchControlsEnabled);
-		resetButton.gameObject.SetActive(touchControlsEnabled);
+		if (player.HasObtainedTimeMachine){ 
+			var touchControlsEnabled = controlMode == ControlMode.Touch;
 
-		timeTravelHelpTextGameObject.SetActive(!touchControlsEnabled);
-		resetHelpTextGameObject.SetActive(!touchControlsEnabled);
+			ShowTouchControlButtons(touchControlsEnabled);
+			ShowKeyboardControlPrompts(!touchControlsEnabled);
+		} else {
+			ShowTouchControlButtons(false);
+			ShowKeyboardControlPrompts(false);
+		}
 	}
 
 	void ShowDoorOpenText(float seconds) {
@@ -242,11 +253,8 @@ public class UI : Singleton<UI>
 		timeText.gameObject.SetActive(false);
 		doorOpenText.gameObject.SetActive(false);
 
-		timeTravelButton.gameObject.SetActive(false);
-		resetButton.gameObject.SetActive(false);
-
-		timeTravelHelpTextGameObject.SetActive(false);
-		resetHelpTextGameObject.SetActive(false);
+		ShowTouchControlButtons(false);
+		ShowKeyboardControlPrompts(false);
 
 		blueKeyCardIndicator.SetActive(false);
 		greenKeyCardIndicator.SetActive(false);
@@ -258,6 +266,16 @@ public class UI : Singleton<UI>
 		centerNeutralNotificationText.gameObject.SetActive(false);
 
 		StartCoroutine(TimeParadoxAnimation());
+	}
+
+	void ShowTouchControlButtons(bool show) {
+		timeTravelTouchButton.gameObject.SetActive(show);
+		resetTouchButton.gameObject.SetActive(show);
+	}
+
+	void ShowKeyboardControlPrompts(bool show) {
+		timeTravelKeyboardPromptTextGameObject.SetActive(show);
+		resetPromptTextGameObject.SetActive(show);
 	}
 
 	/// <summary>
@@ -337,5 +355,10 @@ public class UI : Singleton<UI>
 
 		interactPrompt.LinkedButtonPedestal = buttonPedestal;
 		return interactPrompt;
+	}
+
+	internal void OnTimeMachineObtained()
+	{
+		SetControlMode(currentControlMode);
 	}
 }

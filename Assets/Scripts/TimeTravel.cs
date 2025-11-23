@@ -89,6 +89,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 		for (int i = 1; i <= GetTimeTravelCount(); i++) {
 			var stateInTime = momentsInTime.GetObject<CharacterInTime>($"Player{i}", time);
 
+			// Supposedly GameObject.Find is slow. But unless I am seeing measurable performance issues, I will keep it for code simplicity.
 			var pastPlayer = GameObject.Find($"Player{i}");
 
 			if (stateInTime != null && pastPlayer != null) {
@@ -178,7 +179,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	[Obsolete("Deprecated, use TimeParadox(TimeParadoxCause, Transform) instead")]
 	internal void TimeParadox(TimeParadoxCause eventThatCausedTimeParadox) {
-		TimeParadox(eventThatCausedTimeParadox, FindObjectOfType<PastPlayer>().transform);
+		TimeParadox(eventThatCausedTimeParadox, FindAnyObjectByType<PastPlayer>().transform);
 	}
 
 	internal void TimeParadox(TimeParadoxCause eventThatCausedTimeParadox, Transform entityThatCausedTimeParadox) {
@@ -260,7 +261,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	private void SnapshotDoors() {
 		var largeDoors = FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
-		
+
 		foreach (var largeDoor in largeDoors) {
 			var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
 			momentsInTime.AddObject(stateInTime);
