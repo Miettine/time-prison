@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SecuritySystem : MonoBehaviour, IEffectedByTimeTravel
+public class SecuritySystem : Singleton<SecuritySystem>, IEffectedByTimeTravel
 {
 	public bool AlarmByPresentAction { get; private set; }
 
@@ -21,7 +21,7 @@ public class SecuritySystem : MonoBehaviour, IEffectedByTimeTravel
 		if (doors.Count == 0) {
 			throw new Exception("Security system has no doors set");
 		}
-		ui = FindFirstObjectByType<UI>(FindObjectsInactive.Include);
+		ui = UI.GetInstance();
 	}
 
 	void Start() {
