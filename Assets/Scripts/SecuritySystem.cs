@@ -15,11 +15,13 @@ public class SecuritySystem : Singleton<SecuritySystem>, IEffectedByTimeTravel
 
 	private void Awake()
 	{
-		foreach( Transform child in transform ) {
-			doors.Add(child.GetComponent<LargeDoor>());
-		}
-		if (doors.Count == 0) {
+		// GetComponentsInChildren returns an array; add each element to the set
+		var foundDoors = transform.GetComponentsInChildren<LargeDoor>();
+		if (foundDoors == null || foundDoors.Length ==0) {
 			throw new Exception("Security system has no doors set");
+		}
+		foreach (var d in foundDoors) {
+			doors.Add(d);
 		}
 		ui = UI.GetInstance();
 	}

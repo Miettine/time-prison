@@ -174,7 +174,6 @@ public class Player : Singleton<Player>
 
 	public void OnTimeMachinePickedUp(){
 		HasObtainedTimeMachine = true;
-		ui.OnTimeMachineObtained();
 	}
 
 	private void OnKeyboardInputUsed()
