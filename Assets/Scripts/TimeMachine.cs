@@ -18,6 +18,7 @@ public class TimeMachine : MonoBehaviour
 	{
 		player.OnTimeMachinePickedUp();
 		ui.OnTimeMachineObtained();
+
 		Destroy(gameObject);
 	}
 }

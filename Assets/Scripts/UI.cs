@@ -26,7 +26,9 @@ public class UI : Singleton<UI>
 	private GameObject yellowKeyCardIndicator;
 	 
 	private GameObject timeParadoxTextGameObject;
- 
+
+	private PlatformSpecificText platformSpecificText;
+
 	private TextMeshProUGUI centerImportantNotificationText;
 	private TextMeshProUGUI centerNeutralNotificationText;
 
@@ -38,7 +40,7 @@ public class UI : Singleton<UI>
 
 	[SerializeField]
 	GameObject interactUIPromptPrefab;
-	
+
 	void Awake()
 	{
 		cameraControl = CameraControl.GetInstance();
@@ -78,6 +80,7 @@ public class UI : Singleton<UI>
 		centerNeutralNotificationText.gameObject.SetActive(false);
 
 		player = Player.GetInstance();
+		platformSpecificText = PlatformSpecificText.GetInstance();
 
 		timeTravelTouchButton.onClick.AddListener(() => player.OnPlayerWantsToActivateTimeMachine());
 		resetTouchButton.onClick.AddListener(() => player.OnResetActivated());
@@ -360,5 +363,11 @@ public class UI : Singleton<UI>
 	internal void OnTimeMachineObtained()
 	{
 		SetControlMode(currentControlMode);
+		platformSpecificText.ShowTimeMachineObtainedTutorialText(currentControlMode);
+	}
+
+	internal void OnTimeTravelStarted()
+	{
+		platformSpecificText.Hide(); // Might have to make this more elaborate later if there are more texts to show.
 	}
 }

@@ -95,6 +95,11 @@ public class Tutorial : Singleton<Tutorial> {
 		return GetCurrentLevelNumber() >= 6;
 	 }
 
+	public static bool PlayerObtainsTimeMachineOnCurrentLevel()
+	{
+		return GetCurrentLevelNumber() == 5;
+	}
+
 	private static int GetCurrentLevelNumber(){
 		var sceneName = SceneManager.GetActiveScene().name;
 		var digits = System.Text.RegularExpressions.Regex.Match(sceneName, @"\d+").Value;
@@ -126,12 +131,12 @@ public class Tutorial : Singleton<Tutorial> {
 		return "WARNING: Do not be seen or heard by your past self";
 	}
 
-	public string GetTimeMachineTutorialText() {
-		return "Press space bar key to time travel";
+	public static string GetTimeMachineObtainedTutorialText() {
+		return "Obtained time machine\nPress space bar key to time travel";
 	}
 
-	public string GetTimeMachineTouchControlTutorialText() {
-		return "Press the Time Travel button";
+	public static string GetTimeMachineTouchControlTutorialText() {
+		return "Obtained time machine\nPress the Time Travel button";
 	}
 
 	internal void OnPlayerEnteredLevel1GoalTutorialTrigger()
@@ -141,6 +146,20 @@ public class Tutorial : Singleton<Tutorial> {
 
 	public void OnTimePortalEntered()
 	{
-		ui.ShowTemporaryCenterNotificationText(GetFirstTimeTravelTutorialText(timeTravel.GetTime()), NotificationType.Neutral);
+		ShowTimeTravelCenterTutorialText();
+	}
+
+	public void OnTimeMachineActivated()
+	{
+		if(PlayerObtainsTimeMachineOnCurrentLevel()){
+			OnTimeMachineActivatedForTheFirstTime();
+		}
+	}
+	public void OnTimeMachineActivatedForTheFirstTime(){
+		ShowTimeTravelCenterTutorialText();
+	}
+
+	void ShowTimeTravelCenterTutorialText(){
+		ui.ShowTemporaryCenterNotificationText(GetFirstTimeTravelTutorialText(timeTravel.GetTime()), NotificationType.Neutral);	
 	}
 }

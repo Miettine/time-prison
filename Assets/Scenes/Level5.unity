@@ -325,7 +325,7 @@ Transform:
   m_GameObject: {fileID: 159712563}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.27, y: 1.52, z: -37.68}
+  m_LocalPosition: {x: -3.55, y: 1.52, z: -37.68}
   m_LocalScale: {x: 46.40001, y: 3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -408,6 +408,24 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 159712563}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &297842131 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6824500155964004071, guid: 0974643ff93e8f2439999c244044585e,
+    type: 3}
+  m_PrefabInstance: {fileID: 2189560751686750527}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &297842133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 297842131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 308473434b6f4574bb63a5e3b814a1d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlatformSpecificText
 --- !u!1 &374476565
 GameObject:
   m_ObjectHideFlags: 0
@@ -2095,7 +2113,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6824500155964004071, guid: 0974643ff93e8f2439999c244044585e,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 297842133}
   m_SourcePrefab: {fileID: 100100000, guid: 0974643ff93e8f2439999c244044585e, type: 3}
 --- !u!1001 &3332692246211877259
 PrefabInstance:

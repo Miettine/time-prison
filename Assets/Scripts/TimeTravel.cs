@@ -166,7 +166,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 		if (security != null) {
 			var past = momentsInTime.GetObject<SecuritySystemInTime>(time);
-			Debug.Log(past);
+
 			if (past != null) {
 				security.AlarmByPastAction = past.Alarm;
 			}
@@ -348,5 +348,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	internal void StartTimeTravelToBeginning() {
 		StartTimeTravel(GetTime());
+		tutorial.OnTimeMachineActivated();
+		ui.OnTimeTravelStarted();
 	}
 }
