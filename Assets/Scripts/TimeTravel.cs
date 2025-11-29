@@ -347,8 +347,8 @@ public class TimeTravel : Singleton<TimeTravel> {
 	}
 
 	internal void StartTimeTravelToBeginning() {
-		StartTimeTravel(GetTime());
 		tutorial.OnTimeMachineActivated();
+		StartTimeTravel(GetTime());
 		ui.OnTimeTravelStarted();
 	}
 }
