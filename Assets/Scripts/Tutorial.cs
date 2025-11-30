@@ -93,7 +93,7 @@ public class Tutorial : Singleton<Tutorial> {
 	}
 
 	public static bool LevelStartsWithTimeMachine() {
-		return GetCurrentLevelNumber() >= 6;
+		return GetCurrentLevelNumber() >= 6 || SceneManager.GetActiveScene().name.Contains("debug", StringComparison.InvariantCultureIgnoreCase);
 	 }
 
 	public static bool PlayerObtainsTimeMachineOnCurrentLevel()
