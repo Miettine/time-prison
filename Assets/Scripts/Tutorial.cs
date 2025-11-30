@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// This class exists to show the player tutorial texts. Keeps track of what tutorials the player has seen.
+/// This is one of the few classes that does not get destroyed on level load.
 /// </summary>
 public class Tutorial : Singleton<Tutorial> {
 

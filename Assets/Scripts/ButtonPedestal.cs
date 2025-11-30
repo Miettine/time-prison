@@ -8,17 +8,17 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	[SerializeField]
 	LargeDoor door;
 
-    /// <summary>
-    /// We want there to be a specific point on the button mechanism where the interact prompt appears.
+	/// <summary>
+	/// We want there to be a specific point on the button mechanism where the interact prompt appears.
 	/// The button mechanism could do but that might be offset or rotated in some way.
 	/// This empty game object is used as the target point for the prompt.
-    /// </summary>
-    public Transform InteractPromptTargetTransform { get; private set; }
+	/// </summary>
+	public Transform InteractPromptTargetTransform { get; private set; }
 
 	private Transform buttonMechanismGameObject;
 
-    private Vector3 buttonMechanismStartPosition;
-    UI ui;
+	private Vector3 buttonMechanismStartPosition;
+	UI ui;
 	Player player;
 
 	/// <summary>
@@ -32,8 +32,6 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 
 	[SerializeField]
 	float openForTime = 5;
-
-	GameObject buttonMechanismObject;
 
 	// Backing field for the linked interact prompt. Can only be set once.
 	private InteractPrompt _linkedInteractPrompt;
@@ -73,15 +71,15 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 			throw new Exception("InteractPromptTarget child not found on ButtonPedestal");
 		}
 
-        buttonMechanismGameObject = transform.Find("ButtonMechanism");
-        if (buttonMechanismGameObject == null)
-        {
-            throw new Exception("ButtonMechanism child not found on ButtonPedestal");
-        }
+		buttonMechanismGameObject = transform.Find("ButtonMechanism");
+		if (buttonMechanismGameObject == null)
+		{
+			throw new Exception("ButtonMechanism child not found on ButtonPedestal");
+		}
 
-        buttonMechanismStartPosition = buttonMechanismGameObject.localPosition;
+		buttonMechanismStartPosition = buttonMechanismGameObject.localPosition;
 
-        ui = UI.GetInstance();
+		ui = UI.GetInstance();
 		player = Player.GetInstance();
 
 		if (door == null) {
@@ -104,7 +102,7 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 		// It's hard to say where this code belongs. It could go to Player::Update or InteractPrompt::Update.
 		// A reference to the button mechanism's world position is needed to position the prompt.
 		// This is the best place.
-		if (player.FocusedInteractableObject == this)
+		if (player.FocusedInteractableObject == this && interactable)
 		{
 			LinkedInteractPrompt.ShowAtWorldObject(InteractPromptTargetTransform);
 		}
@@ -117,11 +115,11 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 	void OnDestroy() {
 		if (LinkedInteractPrompt != null&& LinkedInteractPrompt.gameObject != null)
 		{
-            Destroy(LinkedInteractPrompt.gameObject);
-        }
-    }
+			Destroy(LinkedInteractPrompt.gameObject);
+		}
+	}
 
-    public bool IsInteractable() {
+	public bool IsInteractable() {
 		return interactable;
 	}
 
@@ -148,6 +146,7 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 		ui.ShowDoorOpenForSeconds(openForTime);
 
 		if (oneShot) {
+			LinkedInteractPrompt.Hide();
 			SetButtonActive(false);
 		}
 	}
@@ -170,8 +169,8 @@ public class ButtonPedestal : MonoBehaviour, IEffectedByTimeTravel
 		// Animate localPosition Y to target 1.3 and back
 
 		Transform rt = buttonMechanismGameObject.transform;
-        Vector3 start = buttonMechanismStartPosition;
-        Vector3 down = new Vector3(start.x,1.3f, start.z);
+		Vector3 start = buttonMechanismStartPosition;
+		Vector3 down = new Vector3(start.x, 1.3f, start.z);
 
 		float downTime =0.08f;
 		float upTime =0.12f;

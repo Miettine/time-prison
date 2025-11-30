@@ -21,6 +21,19 @@ public class SentientCharacter : MonoBehaviour
 	int doorsLayer;
 	int doorsAndWallsLayer;
 	Player player;
+
+	/// <summary>
+	/// The field of view degrees mercy tolerance is subtracted from the actual spot angle of the light component
+	/// This is the angle in degrees that is subtracted to give some mercy to the player.
+	/// </summary>
+	private float fieldOfViewDegreesMercyTolerance = 15f;
+
+	/// <summary>
+	/// The field of view range mercy tolerance is subtracted from the actual range of the light component
+	/// This is the length in meters that is subtracted to give some mercy to the player.
+	/// </summary>
+	private float fieldOfViewRangeMercyTolerance = 2f;
+
 	public Transform TimeParadoxObject { get; private set; }
 
 	void Awake() {
@@ -33,9 +46,12 @@ public class SentientCharacter : MonoBehaviour
 	}
 
 	void Start() {
+		// The field of view parameters are taken from a Light component that is a child of this GameObject.	
+		// The field of view is slightly reduced to give some mercy to the player.
+		// if the field of view is too precise, it can lead to a feeling of the game being unfair.
 		var fieldOfViewLight = GetComponentInChildren<Light>();
-		fieldOfViewDegrees = fieldOfViewLight.spotAngle;
-		fieldOfViewRange = fieldOfViewLight.range;
+		fieldOfViewDegrees = fieldOfViewLight.spotAngle - fieldOfViewDegreesMercyTolerance;
+		fieldOfViewRange = fieldOfViewLight.range - fieldOfViewRangeMercyTolerance;
 
 		player = FindFirstObjectByType<Player>(FindObjectsInactive.Include);
 		playerTransform = player.transform;
