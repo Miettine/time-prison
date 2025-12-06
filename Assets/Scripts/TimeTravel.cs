@@ -23,11 +23,12 @@ public class TimeTravel : Singleton<TimeTravel> {
 	private List<string> trackedInanimateObjectNames = new List<string>();
 
 	[SerializeField]
-	private float snapshotRate = 0.1f;
+	private float snapshotRate = 0.017f;
 
 	/// <summary>
 	/// Choose the behaviour of the game when a time paradox occurs. Only need to change for testing purposes.
 	/// </summary>
+	[SerializeField]
 	private TimeParadoxBehaviour behaviourOnTimeParadox = TimeParadoxBehaviour.TimeParadoxAnimation;
 
 	CameraControl cameraControl;
@@ -186,12 +187,6 @@ public class TimeTravel : Singleton<TimeTravel> {
 		if (ongoingTimeParadox) {
 			return;
 		}
-		ongoingTimeParadox = true;
-
-		tutorial.OnTimeParadox();
-
-		CauseOfTimeParadox = eventThatCausedTimeParadox;
-		EntityThatCausedTimeParadox = entityThatCausedTimeParadox;
 
 		switch (behaviourOnTimeParadox) {
 			case TimeParadoxBehaviour.NoEffect:
@@ -204,6 +199,14 @@ public class TimeTravel : Singleton<TimeTravel> {
 				game.ReloadCurrentLevel();
 				break;
 			case TimeParadoxBehaviour.TimeParadoxAnimation:
+
+				ongoingTimeParadox = true;
+
+				tutorial.OnTimeParadox();
+
+				CauseOfTimeParadox = eventThatCausedTimeParadox;
+				EntityThatCausedTimeParadox = entityThatCausedTimeParadox;
+
 				DebugLogTimeParadox(CauseOfTimeParadox);
 				StartTimeParadoxAnimation();
 				break;

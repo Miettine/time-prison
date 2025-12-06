@@ -1423,6 +1423,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   snapshotRate: 0.017
+  behaviourOnTimeParadox: 1
 --- !u!4 &1258483077
 Transform:
   m_ObjectHideFlags: 0
