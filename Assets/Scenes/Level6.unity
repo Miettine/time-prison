@@ -859,8 +859,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81a54dcaefe26b041900e82092733644, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timeTravelVignetteFadeToTransparentDuration: 1.5
+  timeTravelVignetteFadeToVisibleDuration: 0.1
   timeParadoxAnimationLength: 10
-  interactUIPromptPrefab: {fileID: 0}
 --- !u!4 &980353225
 Transform:
   m_ObjectHideFlags: 0
@@ -1239,6 +1240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   snapshotRate: 0.017
+  behaviourOnTimeParadox: 3
 --- !u!4 &1258483077
 Transform:
   m_ObjectHideFlags: 0

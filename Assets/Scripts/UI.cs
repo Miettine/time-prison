@@ -25,8 +25,15 @@ public class UI : Singleton<UI>
 	private GameObject greenKeyCardIndicator;
 	private GameObject yellowKeyCardIndicator;
 
-	private Image timeTravelVignette;
-	private Color timeTravelVignetteVisibleColor;
+	private Image vignette;
+	/// <summary>
+	/// The vignette becomes this color when time travel starts.
+	/// </summary>
+	private Color timeTravelVignetteColor = new Color(0f, 0f, 52f / 255f, 121f / 255f);
+	/// <summary>
+	/// The vignette becomes this color when a time paradox occurs.
+	/// </summary>
+	private Color timeParadoxVignetteColor = new Color(145f / 255f, 40f / 255f, 0f, 175f / 255f);
 	[SerializeField] private float timeTravelVignetteFadeToTransparentDuration = 1.5f;
 	[SerializeField] private float timeTravelVignetteFadeToVisibleDuration = 0.1f;
 
@@ -70,7 +77,7 @@ public class UI : Singleton<UI>
 		greenKeyCardIndicator = GameObject.Find("GreenKeyCardIndicator");
 		yellowKeyCardIndicator = GameObject.Find("YellowKeyCardIndicator");
 
-		timeTravelVignette = GameObject.Find("Vignette").GetComponent<Image>();
+		vignette = GameObject.Find("Vignette").GetComponent<Image>();
 
 		timeTravelTouchButton = GameObject.Find("TimeTravelButton").GetComponent<Button>();
 		resetTouchButton = GameObject.Find("ResetButton").GetComponent<Button>();
@@ -101,12 +108,11 @@ public class UI : Singleton<UI>
 
 	void Start() {
 		// Ensure vignette is initially hidden and fully transparent
-		timeTravelVignette.enabled = false;
-		var col = timeTravelVignette.color;
-		timeTravelVignetteVisibleColor = col;
-		col.a =0f;
+		vignette.enabled = false;
+		var col = vignette.color;
+		col.a = 0f;
 
-		timeTravelVignette.color = col;
+		vignette.color = col;
  		timeParadoxTextGameObject.SetActive(false);
  		UpdateControlModeUI(ControlMode.Touch);
  	}
@@ -282,6 +288,7 @@ public class UI : Singleton<UI>
 		centerImportantNotificationText.gameObject.SetActive(false);
 		centerNeutralNotificationText.gameObject.SetActive(false);
 
+		ShowVignette(timeParadoxVignetteColor);
 		StartCoroutine(TimeParadoxAnimation());
 	}
 
@@ -373,56 +380,6 @@ public class UI : Singleton<UI>
 		interactPrompt.LinkedButtonPedestal = buttonPedestal;
 		return interactPrompt;
 	}
-	private void ShowTimeTravelVignette()
-	{
-		// Cancel any running fade and start a fast fade-in to visible color
-		if (vignetteFadeCoroutine != null) {
-			StopCoroutine(vignetteFadeCoroutine);
-			vignetteFadeCoroutine = null;
-		}
-		vignetteFadeCoroutine = StartCoroutine(FadeVignette(timeTravelVignetteVisibleColor.a, timeTravelVignetteFadeToVisibleDuration));
-	}
-
-	// Reusable vignette fade coroutine: lerps alpha from current to target over duration
-	private IEnumerator FadeVignette(float targetAlpha, float duration)
-	{
-		// Ensure vignette is enabled so we can see the fade
-		timeTravelVignette.enabled = true;
-
-		float startAlpha = timeTravelVignette.color.a;
-		float elapsed =0f;
-		duration = Mathf.Max(0f, duration);
-
-		// If duration is zero, set immediately
-		if (duration <= 0f)
-		{
-			var immediate = timeTravelVignetteVisibleColor;
-			immediate.a = targetAlpha;
-			timeTravelVignette.color = immediate;
-			if (Mathf.Approximately(targetAlpha,0f)) timeTravelVignette.enabled = false;
-			vignetteFadeCoroutine = null;
-			yield break;
-		}
-
-		while (elapsed < duration)
-		{
-			elapsed += Time.deltaTime;
-			float t = Mathf.Clamp01(elapsed / duration);
-			var c = timeTravelVignetteVisibleColor;
-			c.a = Mathf.Lerp(startAlpha, targetAlpha, t);
-			timeTravelVignette.color = c;
-			yield return null;
-		}
-
-		var final = timeTravelVignetteVisibleColor;
-		final.a = targetAlpha;
-		timeTravelVignette.color = final;
-		if (Mathf.Approximately(targetAlpha, 0f))
-		{
-			timeTravelVignette.enabled = false;
-		}
-		vignetteFadeCoroutine = null;
-	}
 
 	internal void OnTimeMachineObtained()
 	{
@@ -432,16 +389,63 @@ public class UI : Singleton<UI>
 
 	internal void OnTimeTravelStarted()
 	{
-		ShowTimeTravelVignette();
+		ShowVignette(timeTravelVignetteColor, timeTravelVignetteFadeToVisibleDuration);
 		platformSpecificText.Hide(); // Might have to make this more elaborate later if there are more texts to show.
 	}
 
 	internal void OnTimeTravelEnded()
 	{
-		// Start a fade out coroutine to fade the vignette alpha from100% to0% over a couple of seconds
-		if (vignetteFadeCoroutine != null) {
+		// Fade to a transparent version of the timeTravelVignetteColor
+		var transparent = timeTravelVignetteColor;
+		transparent.a = 0f;
+		ShowVignette(transparent, timeTravelVignetteFadeToTransparentDuration);
+	}
+
+	private void ShowVignette(Color targetColor, float fadeDuration = 0.1f)
+	{
+		// Cancel any running fade and start a fade to target color
+		if (vignetteFadeCoroutine != null)
+		{
 			StopCoroutine(vignetteFadeCoroutine);
+			vignetteFadeCoroutine = null;
 		}
-		vignetteFadeCoroutine = StartCoroutine(FadeVignette(0f, timeTravelVignetteFadeToTransparentDuration));
+		vignetteFadeCoroutine = StartCoroutine(FadeVignette(targetColor, fadeDuration));
+	}
+
+	// Reusable vignette fade coroutine: lerps color from current to target over duration
+	private IEnumerator FadeVignette(Color targetColor, float duration)
+	{
+		// Ensure vignette is enabled so we can see the fade
+		vignette.enabled = true;
+
+		Color startColor = vignette.color;
+		float elapsed = 0f;
+		duration = Mathf.Max(0f, duration);
+
+		// If duration is zero, set immediately
+		if (duration <= 0f)
+		{
+			vignette.color = targetColor;
+			if (Mathf.Approximately(targetColor.a, 0f)) vignette.enabled = false;
+			vignetteFadeCoroutine = null;
+			yield break;
+		}
+
+		while (elapsed < duration)
+		{
+			elapsed += Time.deltaTime;
+			float t = Mathf.Clamp01(elapsed / duration);
+			var c = Color.Lerp(startColor, targetColor, t);
+			vignette.color = c;
+			yield return null;
+		}
+
+		var final = targetColor;
+		vignette.color = final;
+		if (Mathf.Approximately(targetColor.a, 0f))
+		{
+			vignette.enabled = false;
+		}
+		vignetteFadeCoroutine = null;
 	}
 }
