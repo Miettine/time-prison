@@ -97,15 +97,14 @@ public class TimeTravel : Singleton<TimeTravel> {
 				pastPlayer.transform.position = stateInTime.Position;
 				pastPlayer.transform.rotation = stateInTime.Rotation;
 
-				if (stateInTime.Action.Equals(ActionType.StartTimeTravel)) {
-					Debug.Log($"The latest action is StartTimeTravel Player{i}");
-					Destroy(pastPlayer);
+				if (ActionType.StartTimeTravel.Equals(stateInTime.Action)) {
+					Debug.Log($"The latest action is StartTimeTravel for Player{i}");
 				}
 
 				numberOfPastPlayers++;
 			} else if (pastPlayer != null && stateInTime == null) {
-				Debug.LogWarning($"Given state in time has no player recorded for Player{i}");
-				//Destroy(pastPlayer);
+				Debug.LogWarning($"Given state in time has no player recorded. Destroying that player. Player{i}");
+				Destroy(pastPlayer);
 			} else if (pastPlayer == null && stateInTime != null) {
 				Debug.LogWarning($"Found a state in time with no player instantiated. Instantiating Player{i}");
 				InstantiatePastPlayer(i, stateInTime.Position, stateInTime.Rotation);

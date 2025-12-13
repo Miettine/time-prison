@@ -27,7 +27,10 @@ public class Player : Singleton<Player>
 
 	int pastPlayerLayer;
 
-	internal ActionType LatestAction { get; set; }
+	/// <summary>
+	/// The latest action performed by the player character. This is used to record what the player is doing so that we can play back the correct animation on time travel.
+	/// </summary>
+	internal ActionType LatestAction { get; private set; } = ActionType.Standing;
 
 	int interactableObjectsLayerMask;
 
@@ -198,8 +201,11 @@ public class Player : Singleton<Player>
 
 	public void OnTimeTravelActivated() {
 		if (!timeTravel.IsTimeParadoxOngoing()) {
-			LatestAction = CharacterInTime.ActionType.StartTimeTravel;
 			timeTravel.StartTimeTravelToBeginning();
+			// The latest action is set to standing because when the time travel starts, the player character will be standing still.
+			// Not setting the standing action has caused bugs in the animation playback system.
+			// The action StartTimeTravel will be added in the TimeTravel class.
+			LatestAction = ActionType.Standing;
 		}
 	}
 
@@ -283,9 +289,9 @@ public class Player : Singleton<Player>
 			} else if (timeTravel.TimeTravelling && sneaking) {
 				HideSoundIndicator();
 			}
-			LatestAction = CharacterInTime.ActionType.Walking;
+			LatestAction = ActionType.Walking;
 		} else {
-			LatestAction = CharacterInTime.ActionType.Standing;
+			LatestAction = ActionType.Standing;
 		}
 	}
 
