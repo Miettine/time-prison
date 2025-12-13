@@ -87,44 +87,80 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 		int numberOfPastPlayers = 0;
 
-		for (int i = 1; i <= GetTimeTravelCount(); i++) {
+		// Past player section
+		UpdatePastPlayers(time, ref numberOfPastPlayers);
+
+		if (TimeTravelling && numberOfPastPlayers == 0) {
+			TimeTravelling = false;
+			ui.OnTimeTravelEnded();
+		}
+
+		// Inanimate objects section
+		UpdateInanimateObjects(time);
+
+		// Security system section
+		UpdateSecuritySystem(time);
+	}
+
+	private void UpdatePastPlayers(float time, ref int numberOfPastPlayers)
+	{
+		for (int i = 1; i <= GetTimeTravelCount(); i++)
+		{
 			var stateInTime = momentsInTime.GetObject<CharacterInTime>($"Player{i}", time);
 
-			// Supposedly GameObject.Find is slow. But unless I am seeing measurable performance issues, I will keep it for code simplicity.
-			var pastPlayer = GameObject.Find($"Player{i}");
+			// Check for duplicate objects with the same name and warn if found.
+			var pastPlayers = FindObjectsByType<PastPlayer>(FindObjectsSortMode.None).Where(g => g.name == $"Player{i}").ToArray();
+			if (pastPlayers.Length >1) {
+				Debug.LogWarning($"Found {pastPlayers.Length} GameObjects with name Player{i}. This may cause unexpected behavior.");
+			}
 
-			if (stateInTime != null && pastPlayer != null) {
+			GameObject pastPlayer = null;
+			if (pastPlayers.Length >0) {
+				pastPlayer = pastPlayers[0].gameObject;
+			}
+
+			if (stateInTime != null && pastPlayer != null)
+			{
 				pastPlayer.transform.position = stateInTime.Position;
 				pastPlayer.transform.rotation = stateInTime.Rotation;
 
-				if (ActionType.StartTimeTravel.Equals(stateInTime.Action)) {
+				if (ActionType.StartTimeTravel.Equals(stateInTime.Action))
+				{
 					Debug.Log($"The latest action is StartTimeTravel for Player{i}");
 				}
 
 				numberOfPastPlayers++;
-			} else if (pastPlayer != null && stateInTime == null) {
+			}
+			else if (pastPlayer != null && stateInTime == null)
+			{
 				Debug.LogWarning($"Given state in time has no player recorded. Destroying that player. Player{i}");
 				Destroy(pastPlayer);
-			} else if (pastPlayer == null && stateInTime != null) {
+			}
+			else if (pastPlayer == null && stateInTime != null)
+			{
 				Debug.LogWarning($"Found a state in time with no player instantiated. Instantiating Player{i}");
 				InstantiatePastPlayer(i, stateInTime.Position, stateInTime.Rotation);
 			}
 		}
-		if (numberOfPastPlayers == 0) {
-			TimeTravelling = false;
-		}
-		foreach (var name in trackedInanimateObjectNames) {
+	}
+
+	private void UpdateInanimateObjects(float time)
+	{
+		foreach (var name in trackedInanimateObjectNames)
+		{
 
 			var inanimateGameObject = GameObject.Find(name);
 
-			if (inanimateGameObject == null) {
+			if (inanimateGameObject == null)
+			{
 				throw new Exception($"Did not find an inanimate object with name {name}");
 			}
 
 			var stateInTime = momentsInTime.GetObject<DoorObjectInTime>(name, time);
 			var largeDoor = inanimateGameObject.GetComponent<LargeDoor>();
 
-			if (stateInTime != null && largeDoor != null) {
+			if (stateInTime != null && largeDoor != null)
+			{
 				//Wrapping my head around this logic has been difficult.
 				//Some of these if-clauses and helper variables are redundant.
 
@@ -132,7 +168,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 				bool wasClosedInTimeStateRecords = !stateInTime.IsOpen;
 
 				bool isOpenedNowByPastAction = largeDoor.IsOpenByPastAction();
-				
+
 				bool isClosedNowByPastAction = !largeDoor.IsOpenByPastAction();
 
 				//Note: I do not make any checks of largeDoor.IsOpenByPresentAction() here.
@@ -143,9 +179,13 @@ public class TimeTravel : Singleton<TimeTravel> {
 				/* 
 				if (wasOpenInTimeStateRecords && isOpenedNowByPastAction) {
 					//No effect.
-				} else */ if (wasOpenInTimeStateRecords && isClosedNowByPastAction) {
+				} else */
+				if (wasOpenInTimeStateRecords && isClosedNowByPastAction)
+				{
 					largeDoor.OpenByPastAction();
-				} else if (wasClosedInTimeStateRecords && isOpenedNowByPastAction) {
+				}
+				else if (wasClosedInTimeStateRecords && isOpenedNowByPastAction)
+				{
 					largeDoor.CloseByPastAction();
 				} /* else if (wasClosedInTimeStateRecords && isClosedNowByPastAction) {
 					//No effect.
@@ -156,19 +196,27 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 			var buttonPedestal = inanimateGameObject.GetComponent<ButtonPedestal>();
 
-			if (buttonPedestal != null && buttonPedestal.IsOneShot()) {
+			if (buttonPedestal != null && buttonPedestal.IsOneShot())
+			{
 				var buttonPedestalTime = momentsInTime.GetObject<ButtonPedestalInTime>(name, time);
-				if (buttonPedestalTime != null && !buttonPedestalTime.IsInteractable) {
+				if (buttonPedestalTime != null && !buttonPedestalTime.IsInteractable)
+				{
 					buttonPedestal.ActivatedByPastPlayer();
 				}
 			}
 		}
+	}
+
+	private void UpdateSecuritySystem(float time)
+	{
 		var security = FindFirstObjectByType<SecuritySystem>(FindObjectsInactive.Include);
 
-		if (security != null) {
+		if (security != null)
+		{
 			var past = momentsInTime.GetObject<SecuritySystemInTime>(time);
 
-			if (past != null) {
+			if (past != null)
+			{
 				security.AlarmByPastAction = past.Alarm;
 			}
 		}
@@ -327,7 +375,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 		//The current time is different now that the player has started to time travel.
 		float currentTime = GetTime();
 
-		for (int i = 1; i <= GetTimeTravelCount(); i++) {
+		for (int i =1; i <= GetTimeTravelCount(); i++) {
 			var state = momentsInTime.GetObject<CharacterInTime>($"Player{i}", currentTime);
 
 			InstantiatePastPlayer(i, state.Position, state.Rotation);

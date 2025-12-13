@@ -370,4 +370,9 @@ public class UI : Singleton<UI>
 	{
 		platformSpecificText.Hide(); // Might have to make this more elaborate later if there are more texts to show.
 	}
+
+	internal void OnTimeTravelEnded()
+	{
+		// Not implemented yet. I want there to be graphical effects during time travel and when time travel ends.
+	}
 }
