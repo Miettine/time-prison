@@ -349,25 +349,8 @@ public class TimeTravel : Singleton<TimeTravel> {
 		return timeTravelAmounts.Count;
 	}
 
-	internal void StartTimeTravel(float toPastInSeconds) 
+	private void StartTimeTravel(float toPastInSeconds) 
 	{
-
-		var playerTransform = playerController.transform;
-
-		//TODO: Could remove the latest state in time before adding the StartTimeTravel-action, to make the time travel recording more reliable.
-
-		//I want the time that gets stored here to be the moment in time when the player started time travel.
-		momentsInTime.AddObject(
-			new CharacterInTime(
-				$"Player{GetTimeTravelCount() + 1}",
-				GetTime(),
-				CharacterType.Player, 
-				new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), 
-				new Quaternion(playerTransform.rotation.x, playerTransform.rotation.y, playerTransform.rotation.z, playerTransform.rotation.w),
-				ActionType.StartTimeTravel
-				)
-			);
-
 		timeTravelAmounts.Add(toPastInSeconds);
 
 		TimeTravelling = true;
@@ -397,9 +380,38 @@ public class TimeTravel : Singleton<TimeTravel> {
 		pastPlayer.name = $"Player{playerId}";
 	}
 
+	private void PrepareToStartTimeTravel()
+	{
+		var playerTransform = playerController.transform;
+
+		//I want the time that gets stored here to be the moment in time when the player started time travel.
+		momentsInTime.AddObject(
+			new CharacterInTime(
+				$"Player{GetTimeTravelCount() + 1}",
+				GetTime(),
+				CharacterType.Player,
+				new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z),
+				new Quaternion(playerTransform.rotation.x, playerTransform.rotation.y, playerTransform.rotation.z, playerTransform.rotation.w),
+				ActionType.StartTimeTravel
+				)
+			);
+
+		var pastPlayers = FindObjectsByType<PastPlayer>(FindObjectsSortMode.None);
+		foreach (var pp in pastPlayers)
+		{
+			if (pp != null)
+			{
+				Destroy(pp.gameObject);
+			}
+		}
+	}
+
 	internal void StartTimeTravelToBeginning() {
 		tutorial.OnTimeMachineActivated();
+
+		PrepareToStartTimeTravel();
 		StartTimeTravel(GetTime());
+
 		ui.OnTimeTravelStarted();
 	}
 }
