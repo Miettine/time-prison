@@ -24,6 +24,9 @@ public class UI : Singleton<UI>
 	private GameObject blueKeyCardIndicator;
 	private GameObject greenKeyCardIndicator;
 	private GameObject yellowKeyCardIndicator;
+
+	private Image timeTravelVignette;
+	private Color timeTravelVignetteVisibleColor;
 	 
 	private GameObject timeParadoxTextGameObject;
 
@@ -35,11 +38,12 @@ public class UI : Singleton<UI>
 	ControlMode currentControlMode;
 
 	[SerializeField] private float timeParadoxAnimationLength = 10f;
+	[SerializeField] private float timeTravelVignetteFadeDuration = 5f;
 
 	private Canvas canvas;
 
-	[SerializeField]
 	GameObject interactUIPromptPrefab;
+	private Coroutine vignetteFadeCoroutine;
 
 	void Awake()
 	{
@@ -64,6 +68,8 @@ public class UI : Singleton<UI>
 		blueKeyCardIndicator = GameObject.Find("BlueKeyCardIndicator");
 		greenKeyCardIndicator = GameObject.Find("GreenKeyCardIndicator");
 		yellowKeyCardIndicator = GameObject.Find("YellowKeyCardIndicator");
+
+		timeTravelVignette = GameObject.Find("Vignette").GetComponent<Image>();
 
 		timeTravelTouchButton = GameObject.Find("TimeTravelButton").GetComponent<Button>();
 		resetTouchButton = GameObject.Find("ResetButton").GetComponent<Button>();
@@ -93,9 +99,16 @@ public class UI : Singleton<UI>
 	}
 
 	void Start() {
-		timeParadoxTextGameObject.SetActive(false);
-		UpdateControlModeUI(ControlMode.Touch);
-	}
+		// Ensure vignette is initially hidden and fully transparent
+		timeTravelVignette.enabled = false;
+		var col = timeTravelVignette.color;
+		timeTravelVignetteVisibleColor = col;
+		col.a =0f;
+
+		timeTravelVignette.color = col;
+ 		timeParadoxTextGameObject.SetActive(false);
+ 		UpdateControlModeUI(ControlMode.Touch);
+ 	}
 
 	public void SetTimeText(float time) {
 		timeText.text = time.ToString("Time: 0");
@@ -359,6 +372,43 @@ public class UI : Singleton<UI>
 		interactPrompt.LinkedButtonPedestal = buttonPedestal;
 		return interactPrompt;
 	}
+	private void ShowTimeTravelVignette()
+	{
+		// Cancel any running fade and show vignette at full opacity
+		if (vignetteFadeCoroutine != null) {
+			StopCoroutine(vignetteFadeCoroutine);
+			vignetteFadeCoroutine = null;
+		}
+		timeTravelVignette.color = timeTravelVignetteVisibleColor;
+		timeTravelVignette.enabled = true;
+	}
+
+	// Fade vignette alpha from current alpha (expected1) down to0 over timeTravelVignetteFadeDuration seconds
+	private IEnumerator FadeOutTimeTravelVignette()
+	{
+		// Ensure vignette is enabled so we can see the fade
+		timeTravelVignette.enabled = true;
+
+		var startColor = timeTravelVignetteVisibleColor;
+		float startAlpha = startColor.a;
+		float duration = timeTravelVignetteFadeDuration;
+		float elapsed = 0f;
+		while (elapsed < duration)
+		{
+			elapsed += Time.deltaTime;
+			float t = Mathf.Clamp01(elapsed / duration);
+			var c = timeTravelVignette.color;
+			c.a = Mathf.Lerp(startAlpha,0f, t);
+			timeTravelVignette.color = c;
+			yield return null;
+		}
+		// Ensure fully transparent and disable
+		var final = timeTravelVignette.color;
+		final.a =0f;
+		timeTravelVignette.color = final;
+		timeTravelVignette.enabled = false;
+		vignetteFadeCoroutine = null;
+	}
 
 	internal void OnTimeMachineObtained()
 	{
@@ -368,11 +418,16 @@ public class UI : Singleton<UI>
 
 	internal void OnTimeTravelStarted()
 	{
+		ShowTimeTravelVignette();
 		platformSpecificText.Hide(); // Might have to make this more elaborate later if there are more texts to show.
 	}
 
 	internal void OnTimeTravelEnded()
 	{
-		// Not implemented yet. I want there to be graphical effects during time travel and when time travel ends.
+		// Start a fade out coroutine to fade the vignette alpha from100% to0% over a couple of seconds
+		if (vignetteFadeCoroutine != null) {
+			StopCoroutine(vignetteFadeCoroutine);
+		}
+		vignetteFadeCoroutine = StartCoroutine(FadeOutTimeTravelVignette());
 	}
 }
