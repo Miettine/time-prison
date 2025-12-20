@@ -23,7 +23,7 @@ public class Player : Singleton<Player>
 
 	ISet<KeyCardType> keycards = new HashSet<KeyCardType>();
 
-	GameObject soundIndicator;
+	SoundIndicator soundIndicator;
 
 	int pastPlayerLayer;
 
@@ -51,7 +51,7 @@ public class Player : Singleton<Player>
 	float MoveSpeed => playerVariables.MoveSpeed;
 	float LookTowardsRotationModifier => playerVariables.LookTowardsRotationModifier;
 	float HideSoundIndicatorDelay => playerVariables.HideSoundIndicatorDelay;
-	float RunningSoundWaveRadius => playerVariables.RunningSoundWaveRadius;
+	public float RunningSoundWaveRadius => playerVariables.RunningSoundWaveRadius;
 	float SneakingRadius => playerVariables.SneakingRadius;
 	float SneakingSpeedMultiplier => playerVariables.SneakingSpeedMultiplier;
 	float InteractionRadius => playerVariables.InteractionRadius;
@@ -78,10 +78,8 @@ public class Player : Singleton<Player>
 		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
 		ui = UI.GetInstance();
 
-		var soundIndicatorTransform = transform.Find("SoundIndicator");
+		soundIndicator = SoundIndicator.GetInstance();
 		// use values from the scriptable object
-		soundIndicatorTransform.localScale = new Vector3(RunningSoundWaveRadius *2,1, RunningSoundWaveRadius *2);
-		soundIndicator = soundIndicatorTransform.gameObject;
 	}
 
 	internal bool HasKeyCard(KeyCardType type) {
@@ -91,7 +89,7 @@ public class Player : Singleton<Player>
 	// Start is called before the first frame update
 	void Start()
 	{
-		soundIndicator.SetActive(false);
+		soundIndicator.Hide();
 		HasObtainedTimeMachine = Tutorial.LevelStartsWithTimeMachine();
 	}
 
@@ -298,7 +296,8 @@ public class Player : Singleton<Player>
 	void SendSoundWaves() {
 		CancelInvoke("HideSoundIndicator");
 
-		soundIndicator.SetActive(true);
+		soundIndicator.Show();
+		soundIndicator.gameObject.transform.position = transform.position; // Position the sound indicator at the player's position
 
 		var soundOverlapSphereColliders = Physics.OverlapSphere(transform.position, RunningSoundWaveRadius, pastPlayerLayer, QueryTriggerInteraction.Collide);
 		
@@ -311,13 +310,14 @@ public class Player : Singleton<Player>
 				}
 			}
 		}
-		
+
+		// Schedule hiding the sound indicator after a delay. This makes the sound indicator look more dynamic and interesting.
 		Invoke("HideSoundIndicator", HideSoundIndicatorDelay);
 	}
 
 	void HideSoundIndicator() {
 		CancelInvoke("HideSoundIndicator");
-		soundIndicator.SetActive(false);
+		soundIndicator.Hide();
 	}
 
 	/// <summary>
