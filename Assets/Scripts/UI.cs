@@ -8,50 +8,53 @@ using static Player;
 
 public class UI : Singleton<UI>
 {
-	private Player player;
-	private CameraControl cameraControl;
-	private TimeTravel timeTravel;
+	Player player;
+	CameraControl cameraControl;
+	TimeTravel timeTravel;
 
-	private Text timeText;
-	private Text doorOpenText;
+	Text timeText;
+	Text doorOpenText;
 
-	private Button timeTravelTouchButton;
-	private Button resetTouchButton;
+	GameObject timeTravelingTextGameObject;
 
-	private GameObject timeTravelKeyboardPromptTextGameObject;
-	private GameObject resetPromptTextGameObject;
-	 
-	private GameObject blueKeyCardIndicator;
-	private GameObject greenKeyCardIndicator;
-	private GameObject yellowKeyCardIndicator;
+	Button timeTravelTouchButton;
+	Button resetTouchButton;
 
-	private Image vignette;
+	GameObject timeTravelKeyboardPromptTextGameObject;
+	GameObject resetPromptTextGameObject;
+	
+	GameObject blueKeyCardIndicator;
+	GameObject greenKeyCardIndicator;
+	GameObject yellowKeyCardIndicator;
+
+	Image vignette;
+
 	/// <summary>
 	/// The vignette becomes this color when time travel starts.
 	/// </summary>
-	private Color timeTravelVignetteColor = new Color(0f, 0f, 52f / 255f, 121f / 255f);
+	Color timeTravelVignetteColor = new Color(0f, 0f, 52f / 255f, 121f / 255f);
 	/// <summary>
 	/// The vignette becomes this color when a time paradox occurs.
 	/// </summary>
-	private Color timeParadoxVignetteColor = new Color(145f / 255f, 40f / 255f, 0f, 175f / 255f);
-	[SerializeField] private float timeTravelVignetteFadeToTransparentDuration = 1.5f;
-	[SerializeField] private float timeTravelVignetteFadeToVisibleDuration = 0.1f;
+	Color timeParadoxVignetteColor = new Color(145f / 255f, 40f / 255f, 0f, 175f / 255f);
+	[SerializeField] float timeTravelVignetteFadeToTransparentDuration = 1.5f;
+	[SerializeField] float timeTravelVignetteFadeToVisibleDuration = 0.1f;
 
-	private GameObject timeParadoxTextGameObject;
+	GameObject timeParadoxTextGameObject;
 
-	private PlatformSpecificText platformSpecificText;
+	PlatformSpecificText platformSpecificText;
 
-	private TextMeshProUGUI centerImportantNotificationText;
-	private TextMeshProUGUI centerNeutralNotificationText;
+	TextMeshProUGUI centerImportantNotificationText;
+	TextMeshProUGUI centerNeutralNotificationText;
 
 	ControlMode currentControlMode;
 
-	[SerializeField] private float timeParadoxAnimationLength = 10f;
+	[SerializeField] float timeParadoxAnimationLength = 10f;
 
-	private Canvas canvas;
+	Canvas canvas;
 
 	GameObject interactUIPromptPrefab;
-	private Coroutine vignetteFadeCoroutine;
+	Coroutine vignetteFadeCoroutine;
 
 	void Awake()
 	{
@@ -66,6 +69,9 @@ public class UI : Singleton<UI>
 
 		timeText = GameObject.Find("TimeText").GetComponent<Text>();
 		doorOpenText = GameObject.Find("DoorOpenText").GetComponent<Text>();
+
+		timeTravelingTextGameObject = GameObject.Find("TimeTravelingText");
+		timeTravelingTextGameObject.SetActive(false);
 
 		interactUIPromptPrefab = (GameObject) Resources.Load("InteractUIPrompt");
 
@@ -276,6 +282,8 @@ public class UI : Singleton<UI>
 		timeText.gameObject.SetActive(false);
 		doorOpenText.gameObject.SetActive(false);
 
+		timeTravelingTextGameObject.SetActive(false);
+
 		ShowTouchControlButtons(false);
 		ShowKeyboardControlPrompts(false);
 
@@ -390,6 +398,7 @@ public class UI : Singleton<UI>
 	internal void OnTimeTravelStarted()
 	{
 		ShowVignette(timeTravelVignetteColor, timeTravelVignetteFadeToVisibleDuration);
+		timeTravelingTextGameObject.SetActive(true);
 		platformSpecificText.Hide(); // Might have to make this more elaborate later if there are more texts to show.
 	}
 
@@ -398,6 +407,7 @@ public class UI : Singleton<UI>
 		// Fade to a transparent version of the timeTravelVignetteColor
 		var transparent = timeTravelVignetteColor;
 		transparent.a = 0f;
+		timeTravelingTextGameObject.SetActive(false);
 		ShowVignette(transparent, timeTravelVignetteFadeToTransparentDuration);
 	}
 
