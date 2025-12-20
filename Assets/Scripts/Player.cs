@@ -23,6 +23,7 @@ public class Player : Singleton<Player>
 
 	ISet<KeyCardType> keycards = new HashSet<KeyCardType>();
 
+	GameObject soundIndicatorPrefab;
 	SoundIndicator soundIndicator;
 	float soundIndicatorHeightFromGroud = 0.7f;
 
@@ -79,8 +80,8 @@ public class Player : Singleton<Player>
 		interactableObjectsLayerMask = LayerMask.GetMask("Interactable");
 		ui = UI.GetInstance();
 
-		soundIndicator = SoundIndicator.GetInstance();
-		// use values from the scriptable object
+		soundIndicatorPrefab = Resources.Load<GameObject>("SoundIndicator");
+		Instantiate(soundIndicatorPrefab);
 	}
 
 	internal bool HasKeyCard(KeyCardType type) {
@@ -90,6 +91,7 @@ public class Player : Singleton<Player>
 	// Start is called before the first frame update
 	void Start()
 	{
+		soundIndicator = SoundIndicator.GetInstance();
 		soundIndicator.Hide();
 		HasObtainedTimeMachine = Tutorial.LevelStartsWithTimeMachine();
 	}
