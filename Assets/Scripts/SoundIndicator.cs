@@ -20,7 +20,7 @@ public class SoundIndicator : Singleton<SoundIndicator>
 	{
 		// Set the scale of the sound indicator to match the running sound wave radius.
 		// The 3D model is already flat so we also need to scale the y axis.
-		transform.localScale = new Vector3(runningSoundWaveRadius * 2, runningSoundWaveRadius * 2, runningSoundWaveRadius * 2);
+		transform.localScale = new Vector3(runningSoundWaveRadius, runningSoundWaveRadius, runningSoundWaveRadius);
 	}
 
 	internal void Hide()

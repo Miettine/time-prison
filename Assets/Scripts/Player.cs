@@ -24,6 +24,7 @@ public class Player : Singleton<Player>
 	ISet<KeyCardType> keycards = new HashSet<KeyCardType>();
 
 	SoundIndicator soundIndicator;
+	float soundIndicatorHeightFromGroud = 0.7f;
 
 	int pastPlayerLayer;
 
@@ -123,7 +124,7 @@ public class Player : Singleton<Player>
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); // Cast a ray from the camera towards the mouse position
 
 			float rayDistance; // Declare a variable to store the distance along the ray to the intersection point
-			Plane groundPlane = new Plane(Vector3.up, Vector3.zero); // Create a plane at y = 0
+			Plane groundPlane = new Plane(Vector3.up, Vector3.zero); // Create a plane at y =0
 
 			if (groundPlane.Raycast(ray, out rayDistance)) // Check if the ray intersects with the ground plane
 			{
@@ -297,7 +298,11 @@ public class Player : Singleton<Player>
 		CancelInvoke("HideSoundIndicator");
 
 		soundIndicator.Show();
-		soundIndicator.gameObject.transform.position = transform.position; // Position the sound indicator at the player's position
+		// Position the sound indicator at the player's position with vertical offset
+
+		var soundIndicatorPosition = transform.position;
+		soundIndicatorPosition.y = soundIndicatorHeightFromGroud;
+		soundIndicator.gameObject.transform.position = soundIndicatorPosition;
 
 		var soundOverlapSphereColliders = Physics.OverlapSphere(transform.position, RunningSoundWaveRadius, pastPlayerLayer, QueryTriggerInteraction.Collide);
 		
@@ -331,7 +336,7 @@ public class Player : Singleton<Player>
 		Vector3 origin = transform.position + Vector3.up *1.55f; // approximate eye or ear height
 		Vector3 toTarget = target.position - origin;
 		float dist = toTarget.magnitude;
-		if (dist <= 0f) return false;
+		if (dist <=0f) return false;
 
 		int occlusionMask = LayerMask.GetMask("Walls", "Doors");
 
