@@ -110,7 +110,10 @@ public class TimeTravel : Singleton<TimeTravel> {
 		{
 			TimeTravelling = false;
 			ui.OnTimeTravelEnded();
-
+			foreach (var portal in timePortals)
+			{
+				portal.Enable();
+			}
 		}
 	}
 
