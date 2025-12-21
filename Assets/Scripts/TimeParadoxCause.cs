@@ -8,5 +8,6 @@ public enum TimeParadoxCause {
 	PastPlayerHeardPresentPlayer,
 	PastPlayerSawDoorClosedByPresentPlayer,
 	PastPlayerSawDoorOpenedByPresentPlayer,
-	PastPlayerSawObjectInteractionFromPresentPlayer
+	PastPlayerSawObjectInteractionFromPresentPlayer,
+	TouchedYourPastSelf
 }

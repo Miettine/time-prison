@@ -351,6 +351,9 @@ public class UI : Singleton<UI>
 			case TimeParadoxCause.PastPlayerSawDoorClosedByPresentPlayer:
 				ShowCenterNotificationTextHideOther("Cause:\npast self saw a door closed by you", NotificationType.Important);
 				break;
+			case TimeParadoxCause.TouchedYourPastSelf:
+				ShowCenterNotificationTextHideOther("Cause:\nyou touched your past self", NotificationType.Important);
+				break;
 			default:
 				ShowCenterNotificationTextHideOther("Cause:\n404 cause not found", NotificationType.Important);
 				break;

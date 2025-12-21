@@ -1,5 +1,6 @@
 
 
+using System;
 using UnityEngine;
 using static LargeDoor;
 
@@ -7,7 +8,9 @@ public class PastPlayer : SentientCharacter {
 
 	// Update is called once per frame
 	void Update() {
-		if (SeesPresentPlayer()) {
+		if (TouchesPresentPlayer()){
+
+		} else if (SeesPresentPlayer()) {
 			timeTravel.TimeParadox(TimeParadoxCause.PastPlayerSawPresentPlayer, transform);
 		} else if (SeesDoorPresentPlayerInteractedWith(out DoorTimeTravelState? doorState)) {
 			// Coming up with design for time travel code is hard... :(

@@ -5,7 +5,7 @@ using UnityEngine;
 using static LargeDoor;
 
 /// <summary>
-/// This class was made in preparation of making the Guard or the Warden. The purpose was to
+/// This class was made in preparation of making the Guard enemy character. The purpose was to
 /// re-use some code related to seeing or hearing the player. Development of the Guard enemy characters is discontinued.
 /// </summary>
 public class SentientCharacter : MonoBehaviour
@@ -34,6 +34,12 @@ public class SentientCharacter : MonoBehaviour
 	/// </summary>
 	private float fieldOfViewRangeMercyTolerance = 2f;
 
+	/// <summary>
+	/// It is possible to sneak right up to the past player without being seen or heard.
+	/// It is also possible to materialize right on top of the past player.
+	/// </summary>
+	private float touchRange = 0.3f;
+
 	public Transform TimeParadoxObject { get; private set; }
 
 	void Awake() {
@@ -55,6 +61,13 @@ public class SentientCharacter : MonoBehaviour
 
 		player = FindFirstObjectByType<Player>(FindObjectsInactive.Include);
 		playerTransform = player.transform;
+	}
+
+	protected bool TouchesPresentPlayer()
+	{
+		var toPlayer = playerTransform.position - transform.position;
+
+		return toPlayer.magnitude < touchRange;
 	}
 
 	protected bool SeesPresentPlayer() {
