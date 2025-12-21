@@ -43,14 +43,18 @@ public class TimePortal : MonoBehaviour
 		}
 	}
 
-	// Enables the portal collider so it can be triggered.
-	private void Enable()
+	/// <summary>
+	/// Enables the portal. The triggers will be checked and the portal graphic will change to an enabled state.
+	/// </summary>
+	internal void Enable()
 	{
 		portalCollider.enabled = true;
 	}
 
-	// Disables the portal collider to prevent re-triggering.
-	private void Disable()
+	/// <summary>
+	/// Disables the portal. The triggers will not be checked and the portal graphic will change to a disabled state.
+	/// </summary>
+	internal void Disable()
 	{
 		portalCollider.enabled = false;
 	}

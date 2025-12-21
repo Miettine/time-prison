@@ -22,6 +22,11 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	private List<string> trackedInanimateObjectNames = new List<string>();
 
+	/// <summary>
+	/// The time portals in the level. We want to add these at the beginning of the scene to ensure the references are found.
+	/// </summary>
+	private List<TimePortal> timePortals = new List<TimePortal>();
+
 	[SerializeField]
 	private float snapshotRate = 0.017f;
 
@@ -68,6 +73,14 @@ public class TimeTravel : Singleton<TimeTravel> {
 		foreach (var oneTimeButtonPedestal in oneTimeButtonPedestals) {
 			trackedInanimateObjectNames.Add(oneTimeButtonPedestal.name);
 		}
+
+		timePortals = FindTimePortals();
+
+		// Ensure all portals are enabled initially
+		foreach (var portal in timePortals)
+		{
+			portal.Enable();
+		}
 	}
 
 	internal bool IsTimeParadoxOngoing() {
@@ -87,19 +100,18 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 		int numberOfPastPlayers = 0;
 
-		// Past player section
 		UpdatePastPlayers(time, ref numberOfPastPlayers);
 
-		if (TimeTravelling && numberOfPastPlayers == 0) {
-			TimeTravelling = false;
-			ui.OnTimeTravelEnded();
-		}
-
-		// Inanimate objects section
 		UpdateInanimateObjects(time);
 
-		// Security system section
 		UpdateSecuritySystem(time);
+
+		if (TimeTravelling && numberOfPastPlayers == 0)
+		{
+			TimeTravelling = false;
+			ui.OnTimeTravelEnded();
+
+		}
 	}
 
 	private void UpdatePastPlayers(float time, ref int numberOfPastPlayers)
@@ -297,6 +309,11 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	private static List<ButtonPedestal> FindOneShotButtonPedestals() {
 		return GameObject.FindObjectsByType<ButtonPedestal>(FindObjectsSortMode.None).ToList().FindAll(e => e.IsOneShot());
+	}
+
+	private static List<TimePortal> FindTimePortals()
+	{
+		return FindObjectsByType<TimePortal>(FindObjectsSortMode.None).ToList();
 	}
 
 	private void SnapshotSecuritySystem()

@@ -32,11 +32,11 @@ public class UI : Singleton<UI>
 	/// <summary>
 	/// The vignette becomes this color when time travel starts.
 	/// </summary>
-	Color timeTravelVignetteColor = new Color(0f, 0f, 52f / 255f, 121f / 255f);
+	[SerializeField] Color timeTravelVignetteColor = new Color(0f, 0f, 52f / 255f, 121f / 255f);
 	/// <summary>
 	/// The vignette becomes this color when a time paradox occurs.
 	/// </summary>
-	Color timeParadoxVignetteColor = new Color(145f / 255f, 40f / 255f, 0f, 175f / 255f);
+	[SerializeField] Color timeParadoxVignetteColor = new Color(145f / 255f, 40f / 255f, 0f, 175f / 255f);
 	[SerializeField] float timeTravelVignetteFadeToTransparentDuration = 1.5f;
 	[SerializeField] float timeTravelVignetteFadeToVisibleDuration = 0.1f;
 

@@ -93,13 +93,15 @@ public class Tutorial : Singleton<Tutorial> {
 	}
 
 	public static bool LevelStartsWithTimeMachine() {
-		return GetCurrentLevelNumber() >= 6 || SceneManager.GetActiveScene().name.Contains("debug", StringComparison.InvariantCultureIgnoreCase);
+		return GetCurrentLevelNumber() > GetLevelNumberWherePlayerObtainsTimeMachine() || SceneManager.GetActiveScene().name.Contains("debug", StringComparison.InvariantCultureIgnoreCase);
 	 }
 
 	public static bool PlayerObtainsTimeMachineOnCurrentLevel()
 	{
-		return GetCurrentLevelNumber() == 5;
+		return GetCurrentLevelNumber() == GetLevelNumberWherePlayerObtainsTimeMachine();
 	}
+
+	static int GetLevelNumberWherePlayerObtainsTimeMachine() => 5;
 
 	private static int GetCurrentLevelNumber(){
 		var sceneName = SceneManager.GetActiveScene().name;
@@ -126,7 +128,7 @@ public class Tutorial : Singleton<Tutorial> {
 
 	string GetFirstTimeTravelTutorialText(float secondsToPast) {
 		int secs = Mathf.FloorToInt(secondsToPast);
-		return $"You have travelled {secs} seconds to the past";
+		return $"You have traveled {secs} seconds to the past";
 	}
 	string GetFirstTimeParadoxWarningText() {
 		return "WARNING: Do not be seen or heard by your past self";
@@ -161,6 +163,6 @@ public class Tutorial : Singleton<Tutorial> {
 	}
 
 	void ShowTimeTravelCenterTutorialText(){
-		ui.ShowTemporaryCenterNotificationText(GetFirstTimeTravelTutorialText(timeTravel.GetTime()), NotificationType.Neutral);	
+		ui.ShowTemporaryCenterNotificationText(GetFirstTimeTravelTutorialText(timeTravel.GetTime()), NotificationType.Neutral, 10f);	
 	}
 }
