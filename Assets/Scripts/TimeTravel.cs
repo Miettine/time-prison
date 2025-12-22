@@ -169,15 +169,25 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 			if (stateInTime != null && largeDoor != null)
 			{
+
+				bool isOpenedNowByPresentAction = largeDoor.IsOpenByPresentAction();
+				bool isClosedNowByPresentAction = !isOpenedNowByPresentAction;
+
+				if (isOpenedNowByPresentAction) {
+					// The door is currently opened by present action, but it was closed in the past.
+					Debug.Log($"{largeDoor.name} is currently opened by present action");
+					stateInTime.IsOpen = true;
+				}
+
 				// Wrapping my head around this logic has been difficult.
 				// Some of these helper variables are redundant.
 
 				bool wasOpenInTimeStateRecords = stateInTime.IsOpen;
-				bool wasClosedInTimeStateRecords = !stateInTime.IsOpen;
+				bool wasClosedInTimeStateRecords = !wasOpenInTimeStateRecords;
 
 				bool isOpenedNowByPastAction = largeDoor.IsOpenByPastAction();
+				bool isClosedNowByPastAction = !isOpenedNowByPastAction;
 
-				bool isClosedNowByPastAction = !largeDoor.IsOpenByPastAction();
 
 				// Note: I do not make any checks of largeDoor.IsOpenByPresentAction() here.
 				// This class does not deal with opening things by present action.
@@ -326,7 +336,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	private void SnapshotDoors() {
 		foreach (var largeDoor in largeDoors) {
-			var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
+			var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), largeDoor.IsOpenByPresentAction());
 			momentsInTime.AddObject(stateInTime);
 		}
 	}
@@ -335,7 +345,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 		var playerTransform = playerController.transform;
 		var l = (ActionType)(int)playerController.LatestAction;
 
-		var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", GetTime(), CharacterType.Player, new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
+		var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
 		//playerController.ResetLatestAction();
 		momentsInTime.AddObject(stateInTime);
 	}
@@ -355,7 +365,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 	}
 
 	public float GetTime() {
-		return UnityEngine.Time.timeSinceLevelLoad - timeTravelAmounts.Sum();
+		return Time.timeSinceLevelLoad - timeTravelAmounts.Sum();
 	}
 	public int GetTimeTravelCount() {
 		return timeTravelAmounts.Count;
@@ -401,7 +411,6 @@ public class TimeTravel : Singleton<TimeTravel> {
 			new CharacterInTime(
 				$"Player{GetTimeTravelCount() + 1}",
 				GetTime(),
-				CharacterType.Player,
 				new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z),
 				new Quaternion(playerTransform.rotation.x, playerTransform.rotation.y, playerTransform.rotation.z, playerTransform.rotation.w),
 				ActionType.StartTimeTravel
