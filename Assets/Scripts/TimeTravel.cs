@@ -20,12 +20,14 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	private List<float> timeTravelAmounts = new List<float>();
 
-	private List<string> trackedInanimateObjectNames = new List<string>();
-
 	/// <summary>
 	/// The time portals in the level. We want to add these at the beginning of the scene to ensure the references are found.
 	/// </summary>
-	private List<TimePortal> timePortals = new List<TimePortal>();
+	List<TimePortal> timePortals = new List<TimePortal>();
+
+	List<ButtonPedestal> buttonPedestals = new List<ButtonPedestal>();
+
+	List<LargeDoor> largeDoors = new List<LargeDoor>();
 
 	[SerializeField]
 	private float snapshotRate = 0.017f;
@@ -62,18 +64,8 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 		InvokeRepeating("TakeSnapshot", snapshotRate, snapshotRate);
 
-		var largeDoors = GameObject.FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
-
-		foreach (var largeDoor in largeDoors) {
-			trackedInanimateObjectNames.Add(largeDoor.name);
-		}
-
-		List<ButtonPedestal> oneTimeButtonPedestals = FindOneShotButtonPedestals();
-
-		foreach (var oneTimeButtonPedestal in oneTimeButtonPedestals) {
-			trackedInanimateObjectNames.Add(oneTimeButtonPedestal.name);
-		}
-
+		largeDoors = FindLargeDoors();
+		buttonPedestals = FindButtonPedestals();
 		timePortals = FindTimePortals();
 
 		// Ensure all portals are enabled initially
@@ -98,6 +90,10 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 		ui.SetTimeText(time);
 
+		if (!TimeTravelling) {
+			return;
+		}
+
 		int numberOfPastPlayers = 0;
 
 		UpdatePastPlayers(time, ref numberOfPastPlayers);
@@ -121,7 +117,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 	{
 		for (int i = 1; i <= GetTimeTravelCount(); i++)
 		{
-			var stateInTime = momentsInTime.GetObject<CharacterInTime>($"Player{i}", time);
+			var stateInTime = momentsInTime.GetCharacter($"Player{i}", time);
 
 			// Check for duplicate objects with the same name and warn if found.
 			var pastPlayers = FindObjectsByType<PastPlayer>(FindObjectsSortMode.None).Where(g => g.name == $"Player{i}").ToArray();
@@ -159,25 +155,22 @@ public class TimeTravel : Singleton<TimeTravel> {
 		}
 	}
 
+	/// <summary>
+	/// Update inanimate objects like doors and buttons to their past states. Note: it is recommended to call this only during time travel.
+	/// Calling it outside of time travel should be safe but unnecessary.
+	/// </summary>
+	/// <param name="time">In what time do you wish to update the objects' states to</param>
+	/// <exception cref="Exception"></exception>
 	private void UpdateInanimateObjects(float time)
 	{
-		foreach (var name in trackedInanimateObjectNames)
+		foreach (var largeDoor in largeDoors)
 		{
-
-			var inanimateGameObject = GameObject.Find(name);
-
-			if (inanimateGameObject == null)
-			{
-				throw new Exception($"Did not find an inanimate object with name {name}");
-			}
-
-			var stateInTime = momentsInTime.GetObject<DoorObjectInTime>(name, time);
-			var largeDoor = inanimateGameObject.GetComponent<LargeDoor>();
+			var stateInTime = momentsInTime.GetObject<DoorObjectInTime>(largeDoor.name, time);
 
 			if (stateInTime != null && largeDoor != null)
 			{
-				//Wrapping my head around this logic has been difficult.
-				//Some of these if-clauses and helper variables are redundant.
+				// Wrapping my head around this logic has been difficult.
+				// Some of these helper variables are redundant.
 
 				bool wasOpenInTimeStateRecords = stateInTime.IsOpen;
 				bool wasClosedInTimeStateRecords = !stateInTime.IsOpen;
@@ -186,15 +179,13 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 				bool isClosedNowByPastAction = !largeDoor.IsOpenByPastAction();
 
-				//Note: I do not make any checks of largeDoor.IsOpenByPresentAction() here.
-				//This class does not deal with opening things by present action.
-				//The Player interacts with objects like ButtonPedestal and PressurePlate.
-				//They call LargeDoor::OpenByPresentAction
+				// Note: I do not make any checks of largeDoor.IsOpenByPresentAction() here.
+				// This class does not deal with opening things by present action.
+				// The Player interacts with objects like ButtonPedestal and PressurePlate.
+				// They call LargeDoor::OpenByPresentAction
 
-				/* 
-				if (wasOpenInTimeStateRecords && isOpenedNowByPastAction) {
-					//No effect.
-				} else */
+				// if (wasOpenInTimeStateRecords && isOpenedNowByPastAction) ...
+				// No effect.
 				if (wasOpenInTimeStateRecords && isClosedNowByPastAction)
 				{
 					largeDoor.OpenByPastAction();
@@ -202,18 +193,17 @@ public class TimeTravel : Singleton<TimeTravel> {
 				else if (wasClosedInTimeStateRecords && isOpenedNowByPastAction)
 				{
 					largeDoor.CloseByPastAction();
-				} /* else if (wasClosedInTimeStateRecords && isClosedNowByPastAction) {
-					//No effect.
 				}
-				*/
-				continue;
+				// else if (wasClosedInTimeStateRecords && isClosedNowByPastAction) ...
+				// No effect.
 			}
+		}
 
-			var buttonPedestal = inanimateGameObject.GetComponent<ButtonPedestal>();
-
+		foreach (var buttonPedestal in buttonPedestals)
+		{
 			if (buttonPedestal != null && buttonPedestal.IsOneShot())
 			{
-				var buttonPedestalTime = momentsInTime.GetObject<ButtonPedestalInTime>(name, time);
+				var buttonPedestalTime = momentsInTime.GetObject<ButtonPedestalInTime>(buttonPedestal.name, time);
 				if (buttonPedestalTime != null && !buttonPedestalTime.IsInteractable)
 				{
 					buttonPedestal.ActivatedByPastPlayer();
@@ -296,27 +286,31 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	private void TakeSnapshot() {
 		SnapshotPlayer();
+
 		SnapshotDoors();
-		
 		SnapshotSecuritySystem();
-		SnapshotOneTimeButtons();
+		SnapshotButtonPedestals();
 	}
 
-	private void SnapshotOneTimeButtons() {
-		List<ButtonPedestal> oneTimeButtonPedestals = FindOneShotButtonPedestals();
-		foreach (var buttonPedestal in oneTimeButtonPedestals) {
+	private void SnapshotButtonPedestals() {
+		foreach (var buttonPedestal in buttonPedestals) {
 			var stateInTime = new ButtonPedestalInTime(buttonPedestal.gameObject.name, GetTime(), buttonPedestal.IsInteractable());
 			momentsInTime.AddObject(stateInTime);
 		}
 	}
 
-	private static List<ButtonPedestal> FindOneShotButtonPedestals() {
-		return GameObject.FindObjectsByType<ButtonPedestal>(FindObjectsSortMode.None).ToList().FindAll(e => e.IsOneShot());
+	private static List<ButtonPedestal> FindButtonPedestals() {
+		return FindObjectsByType<ButtonPedestal>(FindObjectsSortMode.None).ToList().FindAll(e => e.IsOneShot());
 	}
 
 	private static List<TimePortal> FindTimePortals()
 	{
 		return FindObjectsByType<TimePortal>(FindObjectsSortMode.None).ToList();
+	}
+
+	private static List<LargeDoor> FindLargeDoors()
+	{
+		return FindObjectsByType<LargeDoor>(FindObjectsSortMode.None).ToList();
 	}
 
 	private void SnapshotSecuritySystem()
@@ -331,8 +325,6 @@ public class TimeTravel : Singleton<TimeTravel> {
 	}
 
 	private void SnapshotDoors() {
-		var largeDoors = FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
-
 		foreach (var largeDoor in largeDoors) {
 			var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
 			momentsInTime.AddObject(stateInTime);

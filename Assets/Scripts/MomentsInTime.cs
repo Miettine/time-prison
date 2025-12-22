@@ -58,25 +58,13 @@ public class MomentsInTime
 		return (T)match;
 	}
 
-	public T GetCharacter<T>(string id, float time) where T : CharacterInTime
-	{
-
-		var match = objectsInTime.Find(objectInTime =>
-		id.Equals(objectInTime.Name) &&
-		objectInTime.Time >= time &&
-		objectInTime is T);
-
-		return (T)match;
-	}
-
-	public T GetCharacter<T>(string id, float time, CharacterInTime.ActionType action) where T : CharacterInTime
+	public CharacterInTime GetCharacter(string id, float time)
 	{
 		var match = objectsInTime.Find(objectInTime =>
 		id.Equals(objectInTime.Name) &&
 		objectInTime.Time >= time &&
-		objectInTime is T &&
-		((CharacterInTime)objectInTime).Action == action);
+		objectInTime is CharacterInTime);
 
-		return (T)match;
+		return (CharacterInTime) match;
 	}
 }
