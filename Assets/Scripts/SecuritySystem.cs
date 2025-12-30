@@ -32,7 +32,10 @@ public class SecuritySystem : Singleton<SecuritySystem>, IEffectedByTimeTravel
 
 	public void OnTimeTravelStarted() {
 		AlarmByPresentAction = false;
-		ResetDoors();
+		// It turns out that we don't actually need to call ResetDoors here,
+		// because the doors were already reset in Start(). So when we return to the past where time is 0,
+		// the doors will already be closed by the TimeTravel class where the past is update according to
+		// the recorded moments in time. Thus the doors will be in the correct state
 	}
 
 	internal void DetectedPresentPlayer() {
@@ -48,7 +51,7 @@ public class SecuritySystem : Singleton<SecuritySystem>, IEffectedByTimeTravel
 
 	void ResetDoors() {
 		foreach (var door in doors) {
-			door.OpenByPastAction();
+			door.OpenByPresentAction();
 		}
 	}
 

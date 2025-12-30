@@ -339,7 +339,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 		foreach (var largeDoor in largeDoors) {
 			var foundStateInTime = momentsInTime.GetObject<DoorObjectInTime>(largeDoor.gameObject.name, GetTime());
 			if (foundStateInTime == null) {
-				var newStateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), largeDoor.IsOpenByPresentAction());
+				var newStateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), largeDoor.IsOpenByPresentAction() || largeDoor.IsOpenByPastAction());
 				momentsInTime.AddObject(newStateInTime);
 			} else
 			{
@@ -368,15 +368,16 @@ public class TimeTravel : Singleton<TimeTravel> {
 			};
 			return false;
 		}
-		bool openInPast = objectPastState.IsOpen;
+		bool wasOpenInTimeStateRecords = objectPastState.IsOpen;
+		bool openInPast = door.IsOpenByPastAction();
 		bool openInPresent = door.IsOpenByPresentAction();
 
 		doorTimeTravelState = new DoorTimeTravelState {
-			OpenInPast = openInPast,
-			OpenInPresent = openInPresent
+			OpenInPast = wasOpenInTimeStateRecords,
+			OpenInPresent = openInPresent || openInPast
 		};
 
-		return openInPast != openInPresent;
+		return wasOpenInTimeStateRecords != (openInPresent || openInPast);
 	}
 
 	public float GetTime() {
