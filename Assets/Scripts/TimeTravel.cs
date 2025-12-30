@@ -178,16 +178,17 @@ public class TimeTravel : Singleton<TimeTravel> {
 					Debug.Log($"{largeDoor.name} is currently opened by present action");
 					stateInTime.IsOpen = true;
 				}
-
 				// Wrapping my head around this logic has been difficult.
 				// Some of these helper variables are redundant.
+
+				// The key to getting this code right is to avoid "polling" logic where we check on every frame what the current state is.
+				// Instead, we want to only close and open doors when the past and present states differ.
 
 				bool wasOpenInTimeStateRecords = stateInTime.IsOpen;
 				bool wasClosedInTimeStateRecords = !wasOpenInTimeStateRecords;
 
 				bool isOpenedNowByPastAction = largeDoor.IsOpenByPastAction();
 				bool isClosedNowByPastAction = !isOpenedNowByPastAction;
-
 
 				// Note: I do not make any checks of largeDoor.IsOpenByPresentAction() here.
 				// This class does not deal with opening things by present action.
@@ -336,8 +337,15 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	private void SnapshotDoors() {
 		foreach (var largeDoor in largeDoors) {
-			var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), largeDoor.IsOpenByPresentAction());
-			momentsInTime.AddObject(stateInTime);
+			var foundStateInTime = momentsInTime.GetObject<DoorObjectInTime>(largeDoor.gameObject.name, GetTime());
+			if (foundStateInTime == null) {
+				var newStateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), largeDoor.IsOpenByPresentAction());
+				momentsInTime.AddObject(newStateInTime);
+			} else
+			{
+				foundStateInTime.IsOpen = largeDoor.IsOpenByPresentAction() || largeDoor.IsOpenByPastAction();
+			}
+
 		}
 	}
 
@@ -346,13 +354,20 @@ public class TimeTravel : Singleton<TimeTravel> {
 		var l = (ActionType)(int)playerController.LatestAction;
 
 		var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
-		//playerController.ResetLatestAction();
+
 		momentsInTime.AddObject(stateInTime);
 	}
 
-	internal bool HasStateContradiction(string doorName, LargeDoor door, out DoorTimeTravelState doorTimeTravelState) {
-		var objectPastState = momentsInTime.GetObject<DoorObjectInTime>(doorName, GetTime());
+	internal bool HasStateContradiction(LargeDoor door, out DoorTimeTravelState doorTimeTravelState) {
+		var objectPastState = momentsInTime.GetObject<DoorObjectInTime>(door.name, GetTime());
 
+		if (objectPastState == null) {
+			doorTimeTravelState = new DoorTimeTravelState {
+				OpenInPast = false,
+				OpenInPresent = door.IsOpenByPresentAction()
+			};
+			return false;
+		}
 		bool openInPast = objectPastState.IsOpen;
 		bool openInPresent = door.IsOpenByPresentAction();
 

@@ -28,8 +28,6 @@ public class PressurePlate : MonoBehaviour
 		FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
 	}
 	private void OnTriggerEnter(Collider other) {
-		Debug.Log(other.gameObject.layer);
-		Debug.Log(playerLayer);
 		if (other.gameObject.layer == playerLayer) {
 			activated = true;
 			door.OpenByPresentAction();

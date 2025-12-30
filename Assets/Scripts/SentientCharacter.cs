@@ -199,7 +199,7 @@ public class SentientCharacter : MonoBehaviour
 				return false;
 			}
 
-			bool HasStateContradiction = timeTravel.HasStateContradiction(door.name, door, out DoorTimeTravelState doorTimeTravelState2);
+			bool HasStateContradiction = timeTravel.HasStateContradiction(door, out DoorTimeTravelState doorTimeTravelState2);
 			if (HasStateContradiction) {
 				TimeParadoxObject = door.transform;
 				doorTimeTravelState = doorTimeTravelState2;
