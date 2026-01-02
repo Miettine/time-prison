@@ -60,8 +60,7 @@ public class Tutorial : Singleton<Tutorial> {
 		}
 	}
 
-	private bool IsMobilePlatform()
-	{
+	private bool IsMobilePlatform() {
 		return Application.platform == RuntimePlatform.WebGLPlayer && Application.isMobilePlatform;
 	}
 
@@ -69,8 +68,7 @@ public class Tutorial : Singleton<Tutorial> {
 		ui = UI.GetInstance();
 		timeTravel = TimeTravel.GetInstance();
 
-		if (IsCurrentLevelFirstLevel())
-		{
+		if (IsCurrentLevelFirstLevel()) {
 			var controlsTutorialText = IsMobilePlatform() ? GetPhoneTutorialText() : GetComputerTutorialText();
 
 			ui.ShowPermanentCenterNotificationText(controlsTutorialText);
@@ -87,36 +85,38 @@ public class Tutorial : Singleton<Tutorial> {
 
 	private static bool IsCurrentLevelFirstLevel() => CurrentLevelIsNumber(1);
 
-	private static bool CurrentLevelIsNumber(int levelNumber)
-	{
+	private static bool CurrentLevelIsNumber(int levelNumber) {
 		return SceneManager.GetActiveScene().name.Contains(levelNumber.ToString());
 	}
 
 	public static bool LevelStartsWithTimeMachine() {
 		return GetCurrentLevelNumber() > GetLevelNumberWherePlayerObtainsTimeMachine() || SceneManager.GetActiveScene().name.Contains("debug", StringComparison.InvariantCultureIgnoreCase);
-	 }
+	}
 
-	public static bool PlayerObtainsTimeMachineOnCurrentLevel()
-	{
+	public static bool PlayerObtainsTimeMachineOnCurrentLevel() {
 		return GetCurrentLevelNumber() == GetLevelNumberWherePlayerObtainsTimeMachine();
 	}
 
-	static int GetLevelNumberWherePlayerObtainsTimeMachine() => 5;
+	static int GetLevelNumberWherePlayerObtainsTimeMachine() => 6;
 
-	private static int GetCurrentLevelNumber(){
+	private static int GetCurrentLevelNumber() {
 		var sceneName = SceneManager.GetActiveScene().name;
 		var digits = System.Text.RegularExpressions.Regex.Match(sceneName, @"\d+").Value;
-		if (int.TryParse(digits, out int levelNumber))
-		{
+		if (int.TryParse(digits, out int levelNumber)) {
 			return levelNumber;
 		}
 		return -1; // Return -1 if no valid level number is found
 	}
 
 	private static string GetComputerTutorialText() => "Move: use the arrow keys\nor hold the left mouse button";
-	
+
 	private static string GetPhoneTutorialText() => "Move: touch and hold the screen";
-	
+
+	private static string GetSneakingKeyboardTutorialText() => "Hold the C key to sneak";
+
+	private static string GetSneakingMouseTutorialText() => "To sneak, press and hold close to the character";
+
+	private static string GetSneakingPhoneTutorialText() => "To sneak, touch and hold down close to the character";
 
 	string GetGoalTutorialText() {
 		return "Proceed to the next chamber";
@@ -142,27 +142,28 @@ public class Tutorial : Singleton<Tutorial> {
 		return "Obtained time machine\nPress the Time Travel button";
 	}
 
-	internal void OnPlayerEnteredLevel1GoalTutorialTrigger()
-	{
+	internal void OnPlayerEnteredLevel1GoalTutorialTrigger() {
 		ui.ShowPermanentCenterNotificationText(GetGoalTutorialText());
 	}
 
-	public void OnTimePortalEntered()
-	{
+	internal void OnPlayerEnteredTimePortalOnSneakingTutorialLevel() {
+		ui.ShowPermanentCenterNotificationText(GetSneakingKeyboardTutorialText());
+	}
+
+	public void OnTimePortalEntered() {
 		ShowTimeTravelCenterTutorialText();
 	}
 
-	public void OnTimeMachineActivated()
-	{
-		if(PlayerObtainsTimeMachineOnCurrentLevel()){
+	public void OnTimeMachineActivated() {
+		if (PlayerObtainsTimeMachineOnCurrentLevel()) {
 			OnTimeMachineActivatedForTheFirstTime();
 		}
 	}
-	public void OnTimeMachineActivatedForTheFirstTime(){
+	public void OnTimeMachineActivatedForTheFirstTime() {
 		ShowTimeTravelCenterTutorialText();
 	}
 
-	void ShowTimeTravelCenterTutorialText(){
-		ui.ShowTemporaryCenterNotificationText(GetFirstTimeTravelTutorialText(timeTravel.GetTime()), NotificationType.Neutral, 10f);	
+	void ShowTimeTravelCenterTutorialText() {
+		ui.ShowTemporaryCenterNotificationText(GetFirstTimeTravelTutorialText(timeTravel.GetTime()), NotificationType.Neutral, 10f);
 	}
 }

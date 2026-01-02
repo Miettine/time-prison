@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PressurePlate : MonoBehaviour
-{
-	bool activated = false;
+public class PressurePlate : MonoBehaviour {
+	public bool ActivatedByPresentAction { get; private set; } = false;
+	public bool ActivatedByPastAction { get; internal set; } = false;
 
 	int playerLayer;
 	UI ui;
@@ -24,26 +22,25 @@ public class PressurePlate : MonoBehaviour
 
 		playerLayer = LayerMask.NameToLayer("Player");
 
-		ui = FindFirstObjectByType<UI>();
-		FindObjectsByType<LargeDoor>(FindObjectsSortMode.None);
+		ui = UI.GetInstance();
 	}
 	private void OnTriggerEnter(Collider other) {
-		if (other.gameObject.layer == playerLayer) {
-			activated = true;
+		Debug.Log("Trigger entered on pressure plate Activated by past action: " + ActivatedByPastAction);
+		if (other.gameObject.layer == playerLayer && !ActivatedByPastAction) {
+			Debug.Log("Stepped on pressure plate");
+			ActivatedByPresentAction = true;
 			door.OpenByPresentAction();
 			ui.ShowDoorOpenPermanentNotification();
 		}
 	}
 
 	private void OnTriggerExit(Collider other) {
-		if (other.gameObject.layer == playerLayer) {
-			activated = false;
+		Debug.Log("Trigger exited on pressure plate Activated by past action: " + ActivatedByPastAction);
+		if (other.gameObject.layer == playerLayer && !ActivatedByPastAction) {
+			Debug.Log("Stepped out of pressure plate");
+			ActivatedByPresentAction = false;
 			door.CloseByPresentAction();
 			ui.ShowDoorClosed();
 		}
-	}
-
-	public bool isActivated() {
-		return activated;
 	}
 }
