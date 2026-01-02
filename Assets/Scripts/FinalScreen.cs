@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class FinalScreen : MonoBehaviour
+public class FinalScreen : Singleton<FinalScreen>
 {
 	private const string FullScreenButtonName = "FullScreenButton";
 

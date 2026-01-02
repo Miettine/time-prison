@@ -27,7 +27,6 @@ public class MomentsInTime
 	/// <typeparam name="T">The type of the object in time</typeparam>
 	/// <param name="name">The name of the gameobject</param>
 	/// <param name="time">The moment in time from scene start where you wish to retrieve the object's state</param>
-	/// <remarks>For the record, I wrote this code before AI was invented. So this came from my own brain.</remarks>
 	/// <returns> The matching object of type <typeparamref name="T"/>, or <c>null</c> if no match is found. </returns>
 	public T GetObject<T>(string name, float time) where T : ObjectInTime {
 		// The time comparison has a greater than or equal to operator.

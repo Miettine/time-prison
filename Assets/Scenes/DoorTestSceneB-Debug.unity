@@ -1320,8 +1320,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebeeace49a9af3b4faca54c4525c5eb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  snapshotRate: 5
-  behaviourOnTimeParadox: 1
+  snapshotRate: 0.1
+  behaviourOnTimeParadox: 0
 --- !u!4 &1258483077
 Transform:
   m_ObjectHideFlags: 0

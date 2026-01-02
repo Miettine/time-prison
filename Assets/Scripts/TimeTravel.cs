@@ -169,15 +169,26 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 			if (stateInTime != null && largeDoor != null)
 			{
+
+				bool isOpenedNowByPresentAction = largeDoor.IsOpenByPresentAction();
+				bool isClosedNowByPresentAction = !isOpenedNowByPresentAction;
+
+				if (isOpenedNowByPresentAction) {
+					// The door is currently opened by present action, but it was closed in the past.
+					Debug.Log($"{largeDoor.name} is currently opened by present action");
+					stateInTime.IsOpen = true;
+				}
 				// Wrapping my head around this logic has been difficult.
 				// Some of these helper variables are redundant.
 
+				// The key to getting this code right is to avoid "polling" logic where we check on every frame what the current state is.
+				// Instead, we want to only close and open doors when the past and present states differ.
+
 				bool wasOpenInTimeStateRecords = stateInTime.IsOpen;
-				bool wasClosedInTimeStateRecords = !stateInTime.IsOpen;
+				bool wasClosedInTimeStateRecords = !wasOpenInTimeStateRecords;
 
 				bool isOpenedNowByPastAction = largeDoor.IsOpenByPastAction();
-
-				bool isClosedNowByPastAction = !largeDoor.IsOpenByPastAction();
+				bool isClosedNowByPastAction = !isOpenedNowByPastAction;
 
 				// Note: I do not make any checks of largeDoor.IsOpenByPresentAction() here.
 				// This class does not deal with opening things by present action.
@@ -326,8 +337,15 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 	private void SnapshotDoors() {
 		foreach (var largeDoor in largeDoors) {
-			var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), InanimateObjectType.LargeDoor, largeDoor.IsOpenByPresentAction());
-			momentsInTime.AddObject(stateInTime);
+			var foundStateInTime = momentsInTime.GetObject<DoorObjectInTime>(largeDoor.gameObject.name, GetTime());
+			if (foundStateInTime == null) {
+				var newStateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), largeDoor.IsOpenByPresentAction() || largeDoor.IsOpenByPastAction());
+				momentsInTime.AddObject(newStateInTime);
+			} else
+			{
+				foundStateInTime.IsOpen = largeDoor.IsOpenByPresentAction() || largeDoor.IsOpenByPastAction();
+			}
+
 		}
 	}
 
@@ -335,27 +353,35 @@ public class TimeTravel : Singleton<TimeTravel> {
 		var playerTransform = playerController.transform;
 		var l = (ActionType)(int)playerController.LatestAction;
 
-		var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", GetTime(), CharacterType.Player, new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
-		//playerController.ResetLatestAction();
+		var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
+
 		momentsInTime.AddObject(stateInTime);
 	}
 
-	internal bool HasStateContradiction(string doorName, LargeDoor door, out DoorTimeTravelState doorTimeTravelState) {
-		var objectPastState = momentsInTime.GetObject<DoorObjectInTime>(doorName, GetTime());
+	internal bool HasStateContradiction(LargeDoor door, out DoorTimeTravelState doorTimeTravelState) {
+		var objectPastState = momentsInTime.GetObject<DoorObjectInTime>(door.name, GetTime());
 
-		bool openInPast = objectPastState.IsOpen;
+		if (objectPastState == null) {
+			doorTimeTravelState = new DoorTimeTravelState {
+				OpenInPast = false,
+				OpenInPresent = door.IsOpenByPresentAction()
+			};
+			return false;
+		}
+		bool wasOpenInTimeStateRecords = objectPastState.IsOpen;
+		bool openInPast = door.IsOpenByPastAction();
 		bool openInPresent = door.IsOpenByPresentAction();
 
 		doorTimeTravelState = new DoorTimeTravelState {
-			OpenInPast = openInPast,
-			OpenInPresent = openInPresent
+			OpenInPast = wasOpenInTimeStateRecords,
+			OpenInPresent = openInPresent || openInPast
 		};
 
-		return openInPast != openInPresent;
+		return wasOpenInTimeStateRecords != (openInPresent || openInPast);
 	}
 
 	public float GetTime() {
-		return UnityEngine.Time.timeSinceLevelLoad - timeTravelAmounts.Sum();
+		return Time.timeSinceLevelLoad - timeTravelAmounts.Sum();
 	}
 	public int GetTimeTravelCount() {
 		return timeTravelAmounts.Count;
@@ -401,7 +427,6 @@ public class TimeTravel : Singleton<TimeTravel> {
 			new CharacterInTime(
 				$"Player{GetTimeTravelCount() + 1}",
 				GetTime(),
-				CharacterType.Player,
 				new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z),
 				new Quaternion(playerTransform.rotation.x, playerTransform.rotation.y, playerTransform.rotation.z, playerTransform.rotation.w),
 				ActionType.StartTimeTravel

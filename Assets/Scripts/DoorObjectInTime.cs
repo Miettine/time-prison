@@ -1,9 +1,7 @@
 ﻿public class DoorObjectInTime : ObjectInTime{
-	public InanimateObjectType ObjectType { get; private set; }
-	public bool IsOpen { get; private set; }
+	public bool IsOpen { get; internal set; }
 
-	public DoorObjectInTime(string name, float time, InanimateObjectType type, bool isOpen) : base(name, time) {
-		ObjectType = type;
+	public DoorObjectInTime(string name, float time, bool isOpen) : base(name, time) {
 		IsOpen = isOpen;
 	}
 

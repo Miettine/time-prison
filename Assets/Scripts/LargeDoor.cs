@@ -25,7 +25,6 @@ public class LargeDoor : MonoBehaviour
 
 	public void OpenByPastAction() {
 		pastStateIsOpen = true;
-		isOpen = true;
 		EnableGraphicsAndCollider(false);
 		Debug.Log("OpenByPastAction");
 	}
@@ -38,7 +37,6 @@ public class LargeDoor : MonoBehaviour
 
 	public void CloseByPastAction() {
 		pastStateIsOpen = false;
-		isOpen = false;
 		EnableGraphicsAndCollider(true);
 		Debug.Log("CloseByPastAction");
 	}
