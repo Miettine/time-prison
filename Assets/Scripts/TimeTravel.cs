@@ -26,6 +26,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 	List<TimePortal> timePortals = new List<TimePortal>();
 
 	List<ButtonPedestal> buttonPedestals = new List<ButtonPedestal>();
+	List<PressurePlate> pressurePlates = new List<PressurePlate>();
 
 	List<LargeDoor> largeDoors = new List<LargeDoor>();
 
@@ -66,11 +67,11 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 		largeDoors = FindLargeDoors();
 		buttonPedestals = FindButtonPedestals();
+		pressurePlates = FindPressurePlates();
 		timePortals = FindTimePortals();
 
 		// Ensure all portals are enabled initially
-		foreach (var portal in timePortals)
-		{
+		foreach (var portal in timePortals) {
 			portal.Enable();
 		}
 	}
@@ -80,8 +81,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 	}
 
 	// Update is called once per frame
-	void Update()
-	{
+	void Update() {
 		if (ongoingTimeParadox) {
 			return;
 		}
@@ -98,57 +98,48 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 		UpdatePastPlayers(time, ref numberOfPastPlayers);
 
-		UpdateInanimateObjects(time);
-
+		UpdateDoors(time);
+		UpdateButtonPedestals(time);
+		UpdatePressurePlates(time);
 		UpdateSecuritySystem(time);
 
-		if (TimeTravelling && numberOfPastPlayers == 0)
-		{
+		if (TimeTravelling && numberOfPastPlayers == 0) {
 			TimeTravelling = false;
 			ui.OnTimeTravelEnded();
-			foreach (var portal in timePortals)
-			{
+			foreach (var portal in timePortals) {
 				portal.Enable();
 			}
 		}
 	}
 
-	private void UpdatePastPlayers(float time, ref int numberOfPastPlayers)
-	{
-		for (int i = 1; i <= GetTimeTravelCount(); i++)
-		{
+	private void UpdatePastPlayers(float time, ref int numberOfPastPlayers) {
+		for (int i = 1; i <= GetTimeTravelCount(); i++) {
 			var stateInTime = momentsInTime.GetCharacter($"Player{i}", time);
 
 			// Check for duplicate objects with the same name and warn if found.
 			var pastPlayers = FindObjectsByType<PastPlayer>(FindObjectsSortMode.None).Where(g => g.name == $"Player{i}").ToArray();
-			if (pastPlayers.Length >1) {
+			if (pastPlayers.Length > 1) {
 				Debug.LogWarning($"Found {pastPlayers.Length} GameObjects with name Player{i}. This may cause unexpected behavior.");
 			}
 
 			GameObject pastPlayer = null;
-			if (pastPlayers.Length >0) {
+			if (pastPlayers.Length > 0) {
 				pastPlayer = pastPlayers[0].gameObject;
 			}
 
-			if (stateInTime != null && pastPlayer != null)
-			{
+			if (stateInTime != null && pastPlayer != null) {
 				pastPlayer.transform.position = stateInTime.Position;
 				pastPlayer.transform.rotation = stateInTime.Rotation;
 
-				if (ActionType.StartTimeTravel.Equals(stateInTime.Action))
-				{
+				if (ActionType.StartTimeTravel.Equals(stateInTime.Action)) {
 					Debug.Log($"The latest action is StartTimeTravel for Player{i}");
 				}
 
 				numberOfPastPlayers++;
-			}
-			else if (pastPlayer != null && stateInTime == null)
-			{
+			} else if (pastPlayer != null && stateInTime == null) {
 				Debug.LogWarning($"Given state in time has no player recorded. Destroying that player. Player{i}");
 				Destroy(pastPlayer);
-			}
-			else if (pastPlayer == null && stateInTime != null)
-			{
+			} else if (pastPlayer == null && stateInTime != null) {
 				Debug.LogWarning($"Found a state in time with no player instantiated. Instantiating Player{i}");
 				InstantiatePastPlayer(i, stateInTime.Position, stateInTime.Rotation);
 			}
@@ -161,14 +152,11 @@ public class TimeTravel : Singleton<TimeTravel> {
 	/// </summary>
 	/// <param name="time">In what time do you wish to update the objects' states to</param>
 	/// <exception cref="Exception"></exception>
-	private void UpdateInanimateObjects(float time)
-	{
-		foreach (var largeDoor in largeDoors)
-		{
+	private void UpdateDoors(float time) {
+		foreach (var largeDoor in largeDoors) {
 			var stateInTime = momentsInTime.GetObject<DoorObjectInTime>(largeDoor.name, time);
 
-			if (stateInTime != null && largeDoor != null)
-			{
+			if (stateInTime != null && largeDoor != null) {
 
 				bool isOpenedNowByPresentAction = largeDoor.IsOpenByPresentAction();
 				bool isClosedNowByPresentAction = !isOpenedNowByPresentAction;
@@ -197,42 +185,53 @@ public class TimeTravel : Singleton<TimeTravel> {
 
 				// if (wasOpenInTimeStateRecords && isOpenedNowByPastAction) ...
 				// No effect.
-				if (wasOpenInTimeStateRecords && isClosedNowByPastAction)
-				{
+				if (wasOpenInTimeStateRecords && isClosedNowByPastAction) {
 					largeDoor.OpenByPastAction();
-				}
-				else if (wasClosedInTimeStateRecords && isOpenedNowByPastAction)
-				{
+				} else if (wasClosedInTimeStateRecords && isOpenedNowByPastAction) {
 					largeDoor.CloseByPastAction();
 				}
 				// else if (wasClosedInTimeStateRecords && isClosedNowByPastAction) ...
 				// No effect.
 			}
 		}
+	}
 
-		foreach (var buttonPedestal in buttonPedestals)
-		{
-			if (buttonPedestal != null && buttonPedestal.IsOneShot())
-			{
+	void UpdateButtonPedestals(float time) {
+		foreach (var buttonPedestal in buttonPedestals) {
+			if (buttonPedestal == null) {
+				continue;
+			}
+
+			if (buttonPedestal.IsOneShot()) {
 				var buttonPedestalTime = momentsInTime.GetObject<ButtonPedestalInTime>(buttonPedestal.name, time);
-				if (buttonPedestalTime != null && !buttonPedestalTime.IsInteractable)
-				{
+				if (buttonPedestalTime != null && !buttonPedestalTime.IsInteractable) {
 					buttonPedestal.ActivatedByPastPlayer();
 				}
 			}
 		}
 	}
 
-	private void UpdateSecuritySystem(float time)
-	{
+	private void UpdatePressurePlates(float time) {
+		foreach (var pressurePlate in pressurePlates) {
+			if (pressurePlate == null) {
+				continue;
+			}
+			var pressurePlateTimeRecord = momentsInTime.GetObject<PressurePlateInTime>(pressurePlate.name, time);
+			if (pressurePlateTimeRecord == null) {
+				continue;
+			}
+			pressurePlate.ActivatedByPastAction = pressurePlateTimeRecord.IsActivated;
+		}
+	}
+
+
+	private void UpdateSecuritySystem(float time) {
 		var security = FindFirstObjectByType<SecuritySystem>(FindObjectsInactive.Include);
 
-		if (security != null)
-		{
+		if (security != null) {
 			var past = momentsInTime.GetObject<SecuritySystemInTime>(time);
 
-			if (past != null)
-			{
+			if (past != null) {
 				security.AlarmByPastAction = past.Alarm;
 			}
 		}
@@ -274,7 +273,8 @@ public class TimeTravel : Singleton<TimeTravel> {
 				DebugLogTimeParadox(CauseOfTimeParadox);
 				StartTimeParadoxAnimation();
 				break;
-		};
+		}
+		;
 	}
 
 	void StartTimeParadoxAnimation() {
@@ -296,16 +296,26 @@ public class TimeTravel : Singleton<TimeTravel> {
 	}
 
 	private void TakeSnapshot() {
-		SnapshotPlayer();
+		var time = GetTime();
 
-		SnapshotDoors();
-		SnapshotSecuritySystem();
-		SnapshotButtonPedestals();
+		SnapshotPlayer(time);
+
+		SnapshotDoors(time);
+		SnapshotSecuritySystem(time);
+		SnapshotButtonPedestals(time);
+		SnapshotPressurePlates(time);
 	}
 
-	private void SnapshotButtonPedestals() {
+	private void SnapshotPressurePlates(float time) {
+		foreach (var pressurePlate in pressurePlates) {
+			var stateInTime = new PressurePlateInTime(pressurePlate.gameObject.name, time, pressurePlate.ActivatedByPresentAction);
+			momentsInTime.AddObject(stateInTime);
+		}
+	}
+
+	private void SnapshotButtonPedestals(float time) {
 		foreach (var buttonPedestal in buttonPedestals) {
-			var stateInTime = new ButtonPedestalInTime(buttonPedestal.gameObject.name, GetTime(), buttonPedestal.IsInteractable());
+			var stateInTime = new ButtonPedestalInTime(buttonPedestal.gameObject.name, time, buttonPedestal.IsInteractable());
 			momentsInTime.AddObject(stateInTime);
 		}
 	}
@@ -314,47 +324,41 @@ public class TimeTravel : Singleton<TimeTravel> {
 		return FindObjectsByType<ButtonPedestal>(FindObjectsSortMode.None).ToList().FindAll(e => e.IsOneShot());
 	}
 
-	private static List<TimePortal> FindTimePortals()
-	{
+	private List<PressurePlate> FindPressurePlates() {
+		return FindObjectsByType<PressurePlate>(FindObjectsSortMode.None).ToList();
+	}
+
+	private static List<TimePortal> FindTimePortals() {
 		return FindObjectsByType<TimePortal>(FindObjectsSortMode.None).ToList();
 	}
 
-	private static List<LargeDoor> FindLargeDoors()
-	{
+	private static List<LargeDoor> FindLargeDoors() {
 		return FindObjectsByType<LargeDoor>(FindObjectsSortMode.None).ToList();
 	}
 
-	private void SnapshotSecuritySystem()
-	{
+	private void SnapshotSecuritySystem(float time) {
 		var security = FindFirstObjectByType<SecuritySystem>(FindObjectsInactive.Include);
 
 		if (security != null) {
-			var stateInTime = new SecuritySystemInTime(security.gameObject.name, GetTime(), security.AlarmByPresentAction);
+			var stateInTime = new SecuritySystemInTime(security.gameObject.name, time, security.AlarmByPresentAction);
 
 			momentsInTime.AddObject(stateInTime);
 		}
 	}
 
-	private void SnapshotDoors() {
+	private void SnapshotDoors(float time) {
 		foreach (var largeDoor in largeDoors) {
-			var foundStateInTime = momentsInTime.GetObject<DoorObjectInTime>(largeDoor.gameObject.name, GetTime());
-			if (foundStateInTime == null) {
-				var newStateInTime = new DoorObjectInTime(largeDoor.gameObject.name, GetTime(), largeDoor.IsOpenByPresentAction() || largeDoor.IsOpenByPastAction());
-				momentsInTime.AddObject(newStateInTime);
-			} else
-			{
-				foundStateInTime.IsOpen = largeDoor.IsOpenByPresentAction() || largeDoor.IsOpenByPastAction();
-			}
-
+			var stateInTime = new DoorObjectInTime(largeDoor.gameObject.name, time, largeDoor.IsOpenByPresentAction());
+			momentsInTime.AddObject(stateInTime);
 		}
 	}
 
-	private void SnapshotPlayer() {
+	private void SnapshotPlayer(float time) {
 		var playerTransform = playerController.transform;
 		var l = (ActionType)(int)playerController.LatestAction;
 
-		var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", GetTime(), new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
-
+		var stateInTime = new CharacterInTime($"Player{GetTimeTravelCount() + 1}", time, new Vector3(playerTransform.position.x, playerTransform.position.y, playerTransform.position.z), playerTransform.rotation, l);
+		//playerController.ResetLatestAction();
 		momentsInTime.AddObject(stateInTime);
 	}
 
@@ -387,8 +391,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 		return timeTravelAmounts.Count;
 	}
 
-	private void StartTimeTravel(float toPastInSeconds) 
-	{
+	private void StartTimeTravel(float toPastInSeconds) {
 		timeTravelAmounts.Add(toPastInSeconds);
 
 		TimeTravelling = true;
@@ -396,7 +399,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 		//The current time is different now that the player has started to time travel.
 		float currentTime = GetTime();
 
-		for (int i =1; i <= GetTimeTravelCount(); i++) {
+		for (int i = 1; i <= GetTimeTravelCount(); i++) {
 			var state = momentsInTime.GetObject<CharacterInTime>($"Player{i}", currentTime);
 
 			InstantiatePastPlayer(i, state.Position, state.Rotation);
@@ -418,8 +421,7 @@ public class TimeTravel : Singleton<TimeTravel> {
 		pastPlayer.name = $"Player{playerId}";
 	}
 
-	private void PrepareToStartTimeTravel()
-	{
+	private void PrepareToStartTimeTravel() {
 		var playerTransform = playerController.transform;
 
 		//I want the time that gets stored here to be the moment in time when the player started time travel.
@@ -434,10 +436,8 @@ public class TimeTravel : Singleton<TimeTravel> {
 			);
 
 		var pastPlayers = FindObjectsByType<PastPlayer>(FindObjectsSortMode.None);
-		foreach (var pp in pastPlayers)
-		{
-			if (pp != null)
-			{
+		foreach (var pp in pastPlayers) {
+			if (pp != null) {
 				Destroy(pp.gameObject);
 			}
 		}
